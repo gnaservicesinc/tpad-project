@@ -1,0 +1,460 @@
+# Greek translation for tpad-project
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the tpad-project package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tpad-project\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/tpad-project\n"
+"POT-Creation-Date: 2016-08-18 03:56+0000\n"
+"PO-Revision-Date: 2016-08-20 18:29-0400\n"
+"Last-Translator: GNAServicesInc <Unknown>\n"
+"Language-Team: Greek <el@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2016-08-20 21:32+0000\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"Language: el\n"
+
+#: ../src/def.h:147
+msgid "Choose Font"
+msgstr "Επιλέξτε Γραμματοσειρά"
+
+#: ../src/def.h:150
+msgid "Show Line Numbers"
+msgstr "Εμφάνιση Αριθμών Γραμμής"
+
+#: ../src/def.h:153
+msgid "Show Language"
+msgstr "Εμφάνιση Γλώσσας"
+
+#: ../src/def.h:156
+msgid "Auto Indent"
+msgstr "Αυτόματη Εσοχή"
+
+#: ../src/def.h:159
+msgid "Spell Check"
+msgstr "Ορθογραφικός Έλεγχος"
+
+#: ../src/def.h:162
+msgid "Show Full File Path"
+msgstr "Εμφάνιση Πλήρους Διαδρομής Αρχείου"
+
+#: ../src/def.h:165
+msgid "Display UI Settings"
+msgstr "Ρυθμίσεις Εμφάνισης UI"
+
+#: ../src/def.h:168
+msgid "Default Window Width"
+msgstr "Προεπιλεγμένο Πλάτος Παραθύρου"
+
+#: ../src/def.h:171
+msgid "Default Window Height"
+msgstr "Προεπιλεγμένο Ύψος Παραθύρου"
+
+#: ../src/def.h:174
+msgid "Set Maximum Undo Level (0 For Unlimited) :"
+msgstr "Ορισμός Μέγιστου Επιπέδου Αναιρέσεων (0 Για Απεριόριστες) :"
+
+#: ../src/def.h:177
+msgid "Find / Find & Replace Text"
+msgstr "Εύρεση / Εύρεση & Αντικατάσταση Κειμένου"
+
+#: ../src/def.h:180
+msgid "Search Text For:"
+msgstr "Αναζήτηση Κειμένου Για:"
+
+#: ../src/def.h:183
+msgid "Error!"
+msgstr "Σφάλμα!"
+
+#: ../src/def.h:186
+msgid "Replace Text With:"
+msgstr "Αντικατάσταση Κειμένου Με:"
+
+#: ../src/def.h:189
+msgid "Find"
+msgstr "Εύρεση"
+
+#: ../src/def.h:192
+msgid "Help"
+msgstr ""
+
+#: ../src/def.h:195
+msgid "About"
+msgstr ""
+
+#: ../src/def.h:198
+msgid "Replace"
+msgstr "Αντικατάσταση"
+
+#: ../src/def.h:201
+msgid ""
+"Text was modified!\n"
+"Save it?"
+msgstr ""
+"Το κείμενο τροποποιήθηκε!\n"
+"Αποθήκευση;"
+
+#: ../src/def.h:204
+msgid ""
+"On disk content of file was modified while the file was open and saving your "
+"changes may overwrite outside changes made to the file. You may want to save "
+"the file as and use a unique file name.\n"
+"Doing do may help prevent you from inadvertently overwriting work\n"
+"\tSave as now?\n"
+"(REMEMBER TO CHANGE THE FILE NAME TO SOMETHING UNIQUE)\n"
+msgstr ""
+
+#: ../src/def.h:207
+msgid "Find & Replace"
+msgstr "Εύρεση & Αντικατάσταση"
+
+#: ../src/def.h:210
+msgid "en_US"
+msgstr "el"
+
+#: ../src/def.h:213
+msgid "Keep Window Above"
+msgstr ""
+
+#: ../src/def.h:216
+msgid "Wrap Lines"
+msgstr ""
+
+#: ../src/def.h:219
+msgid "Use Temp and  Check For (lock/tmp/swp)"
+msgstr ""
+
+#: ../src/def.h:222
+msgid "Use Libmagic"
+msgstr ""
+
+#: ../src/def.h:225
+msgid "That simple, fast, and user friendly text editor you love."
+msgstr ""
+
+#: ../src/def.h:228
+msgid "translator-credits"
+msgstr ""
+"Launchpad Contributions:\n"
+"  GNAServicesInc https://launchpad.net/~gnaservicesinc\n"
+"  Jim Spentzos https://launchpad.net/~jamesspentzos"
+
+#: ../src/def.h:231
+msgid "Reading file failed!"
+msgstr ""
+
+#: ../src/def.h:234
+msgid "Conversion to UTF-8 FAILED! Is this a text document?"
+msgstr ""
+
+#: ../src/def.h:237
+msgid "_File"
+msgstr ""
+
+#: ../src/def.h:240
+msgid "_New File"
+msgstr "_Νέο Αρχείο"
+
+#: ../src/def.h:243
+msgid "_Save File"
+msgstr "_Αποθήκευση Αρχείου"
+
+#: ../src/def.h:246
+msgid "_Open File"
+msgstr "_Άνοιγμα Αρχείου"
+
+#: ../src/def.h:249
+msgid "S_ave File As..."
+msgstr ""
+
+#: ../src/def.h:252
+msgid "_Quit"
+msgstr "_Έξοδος"
+
+#: ../src/def.h:255
+msgid "Edit"
+msgstr ""
+
+#: ../src/def.h:258
+msgid "F_ind"
+msgstr ""
+
+#: ../src/def.h:261
+msgid "Re_place"
+msgstr ""
+
+#: ../src/def.h:264
+msgid "_Undo"
+msgstr "_Αναίρεση"
+
+#: ../src/def.h:267
+msgid "_Redo"
+msgstr "_Επανάληψη"
+
+#: ../src/def.h:270
+msgid "Reload"
+msgstr ""
+
+#: ../src/def.h:273
+msgid "R_eload"
+msgstr ""
+
+#: ../src/def.h:276
+msgid "Settings"
+msgstr ""
+
+#: ../src/def.h:279
+msgid "Se_lect Font"
+msgstr ""
+
+#: ../src/def.h:282
+msgid "_Preferences"
+msgstr "_Προτιμήσεις"
+
+#: ../src/def.h:285
+msgid "Copy F_ile Path"
+msgstr ""
+
+#: ../src/def.h:288
+msgid "WARNING: Saving File Failed! Unable to write to file: "
+msgstr ""
+
+#: ../src/def.h:291
+msgid "Save File"
+msgstr "Αποθήκευση Αρχείου"
+
+#: ../src/def.h:294
+msgid "Thread could not be created"
+msgstr ""
+
+#: ../src/def.h:297
+msgid "Word Count"
+msgstr "Καταμέτρηση Λέξεων"
+
+#: ../src/def.h:300
+msgid "Word Count:"
+msgstr "Καταμέτρηση Λέξεων:"
+
+#: ../src/def.h:303
+msgid "Char Count:"
+msgstr "Καταμέτρηση Χαρακτήρων:"
+
+#: ../src/def.h:306
+msgid "Line Count:"
+msgstr "Καταμέτρηση Γραμμών:"
+
+#: ../src/def.h:309
+msgid "Reverse"
+msgstr "Αντιστροφή"
+
+#: ../src/def.h:312
+msgid "To upper case "
+msgstr ""
+
+#: ../src/def.h:315
+msgid ""
+"Config file is invalid.\n"
+"Failed to remove bad config file.\n"
+"Please manually remove it."
+msgstr ""
+
+#: ../src/def.h:318
+msgid "Config file is invalid."
+msgstr ""
+
+#: ../src/def.h:321
+msgid ""
+"Successfully removed bad config file.\n"
+"A new config file will be created.\n"
+"Press ok and tpad will restart..."
+msgstr ""
+
+#: ../src/def.h:324
+msgid ""
+"Error settings value out of range, change dropped.\n"
+"The change will not be saved.\n"
+" However, you REALLY should save your work and exit tpad right now. Please "
+"report bug"
+msgstr ""
+
+#: ../src/def.h:327
+msgid ""
+"Error! The default window size must have a height of 50 or more and a width "
+"of 25 or more."
+msgstr ""
+
+#: ../src/def.h:330
+msgid "To lower case"
+msgstr ""
+
+#: ../src/def.h:333
+msgid "File may alread be open in tpad or another program!"
+msgstr ""
+
+#: ../src/def.h:336
+#, c-format
+msgid ""
+"Do you still want to open the file?\n"
+"------------------------------------\n"
+"\n"
+"Description - File has a swap or temp file.\n"
+"Possible Causes --\n"
+"\n"
+"\t*File might be in-use already.\n"
+"\t*tpad or another program crashed or exited improperly while using this "
+"file.\n"
+"\t*other unknown reasons\n"
+"\n"
+"Details --\n"
+"\n"
+"File path:%s\n"
+"\n"
+"Path to tmp or swp file:%s\n"
+msgstr ""
+
+#: ../src/def.h:339
+msgid ""
+"Error invalid method. An error has occurred! Please save you work and exit "
+"tpad. Please report a bug!"
+msgstr ""
+
+#: ../src/def.h:342
+msgid "File Is Not  A Text File -- BAD MAGIC"
+msgstr "Το Αρχείο Δεν Είναι Αρχείο Κειμένου -- ΚΑΚΗ ΜΑΓΕΙΑ"
+
+#: ../src/def.h:345
+msgid ""
+"Oh-No! I was unable to initialize magic the magic library\n"
+"Skipping magic!"
+msgstr ""
+
+#: ../src/def.h:348
+msgid ""
+"Uh-oh! I can not load the magic database\n"
+"Skipping!"
+msgstr ""
+
+#: ../src/def.h:351
+msgid ""
+"Document text changes have failed!\n"
+"\tcoult not convert the new content to UTF-8.\n"
+msgstr ""
+
+#: ../src/def.h:354
+msgid "Quit"
+msgstr ""
+
+#: ../src/def.h:357
+msgid "Redo"
+msgstr ""
+
+#: ../src/def.h:360
+msgid "Undo"
+msgstr ""
+
+#: ../src/def.h:363
+msgid "Save As..."
+msgstr ""
+
+#: ../src/def.h:366
+msgid "Save"
+msgstr ""
+
+#: ../src/def.h:369
+msgid "Open"
+msgstr ""
+
+#: ../src/def.h:372
+msgid "New"
+msgstr ""
+
+#: ../src/def.h:375
+msgid "DejaVu Sans Mono 12"
+msgstr ""
+
+#: ../src/def.h:378
+msgid "Hash Selection To Clipboard [SHA-512]"
+msgstr ""
+
+#: ../src/def.h:381
+msgid "Hash Selection To Clipboard [SHA-256]"
+msgstr ""
+
+#: ../src/def.h:384
+msgid "Hash Selection To Clipboard [MD5]"
+msgstr ""
+
+#: ../src/def.h:387
+msgid "Hash"
+msgstr ""
+
+#: ../src/def.h:390
+msgid "Disable experimental file watching"
+msgstr ""
+
+#: ../src/def.h:393
+msgid "Hash File To Clipboard [SHA-512]..."
+msgstr ""
+
+#: ../src/def.h:396
+msgid "Hash File To Clipboard [SHA-256]..."
+msgstr ""
+
+#: ../src/def.h:399 ../src/def.h:414 ../src/def.h:417
+msgid "Hash File To Clipboard [MD5]..."
+msgstr ""
+
+#: ../src/def.h:420
+msgid "Experimental File Watching Toggled"
+msgstr ""
+
+#: ../src/def.h:423
+msgid "Convert Selection To Clipboard [TO BASE 64]"
+msgstr ""
+
+#: ../src/def.h:426
+msgid "Convert File To Clipboard [TO BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:429
+msgid "Convert Selection To Clipboard [FROM BASE 64]"
+msgstr ""
+
+#: ../src/def.h:432
+msgid "Convert File To Clipboard [FROM BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:435
+msgid ""
+"You should save any work and EXIT tpad after enabling or disabling this "
+"feature. Failure to do so may result in problems. You have been warned."
+msgstr ""
+
+#: ../src/error_warn.h:38
+msgid "Error Deatils:"
+msgstr "Λεπτομέρειες Σφάλματος:"
+
+#: ../src/error_warn.h:39
+#, c-format
+msgid "An error has occured: %s"
+msgstr "Προέκυψε σφάλμα: %s"
+
+#: ../src/error_warn.h:40
+#, c-format
+msgid ""
+"An error has occured and the program may abort.\n"
+"Any unsaved work may be lost.\n"
+"If you belive that a bug in tpad is the root cause report a bug at\n"
+"https://bugs.launchpad.net/tpad-project \n"
+"The following message may help you determine the cause\n"
+"\n"
+"%s\n"
+msgstr ""
+
+#: ../src/tpad_save.h:22
+msgid "Untitled"
+msgstr "Χωρίς τίτλο"

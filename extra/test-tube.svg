@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    id="svg3077"
+    sodipodi:docname="test_tube.svg"
+    viewBox="0 0 72.63 164.11"
+    version="1.1"
+    inkscape:version="0.47 r22583"
+  >
+  <title
+      id="title3104"
+    >Test Tube</title
+  >
+  <sodipodi:namedview
+      id="base"
+      bordercolor="#666666"
+      inkscape:pageshadow="2"
+      inkscape:window-y="-4"
+      pagecolor="#ffffff"
+      inkscape:window-height="968"
+      inkscape:window-maximized="1"
+      inkscape:zoom="0.35"
+      inkscape:window-x="-4"
+      showgrid="false"
+      borderopacity="1.0"
+      inkscape:current-layer="layer1"
+      inkscape:cx="-88.684959"
+      inkscape:cy="52.056313"
+      inkscape:window-width="1280"
+      inkscape:pageopacity="0.0"
+      inkscape:document-units="px"
+  />
+  <g
+      id="layer1"
+      inkscape:label="Layer 1"
+      inkscape:groupmode="layer"
+      transform="translate(-463.68 -444.59)"
+    >
+    <g
+        id="g3434"
+        transform="matrix(1.8949 .56991 -.56991 1.8949 -349.09 -314.03)"
+      >
+      <path
+          id="path2590"
+          style="opacity:.7;fill:#eeeeec"
+          sodipodi:nodetypes="csssssc"
+          transform="translate(38.695 -221.75)"
+          d="m501.53 464.49c0 0.34648-0.5275 1.369-1.8973 1.8594-1.3698 0.49045-3.5819 0.44882-5.6552 0.44882s-4.3056 0.0214-5.6552-0.44882c-1.3496-0.4702-1.8163-1.432-1.8163-1.7784 0-0.69297 3.0819-1.5388 7.2285-1.5388s7.7955 0.76489 7.7955 1.4578z"
+      />
+      <path
+          id="path4293"
+          sodipodi:nodetypes="cccscccsc"
+          style="opacity:.8;fill:#d3d7cf"
+          d="m525.21 242.48c-0.009 0.14993-0.0295 0.30478-0.0295 0.45701v75.967c0 4.1624 3.3562 7.5038 7.5186 7.5038s7.5038-3.3414 7.5038-7.5038v-75.967c0-0.15213-0.006-0.30717-0.0147-0.45701-0.22518 2.4379-3.4874 2.4914-7.4891 2.4914-4.0013 0.00001-7.2635-0.0538-7.4891-2.4914z"
+      />
+      <path
+          id="path4355"
+          style="opacity:.8;fill:#eeeeec"
+          d="m525.97 248.83v68.438c0.73569 0.60984 1.5676 1.1038 2.4662 1.4433v-68.438c-0.89859-0.33973-1.7303-0.83449-2.4662-1.4433z"
+      />
+    </g
+    >
+  </g
+  >
+  <metadata
+    >
+    <rdf:RDF
+      >
+      <cc:Work
+        >
+        <dc:format
+          >image/svg+xml</dc:format
+        >
+        <dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+        />
+        <cc:license
+            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
+        />
+        <dc:publisher
+          >
+          <cc:Agent
+              rdf:about="http://openclipart.org/"
+            >
+            <dc:title
+              >Openclipart</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:publisher
+        >
+        <dc:title
+          >Test Tube</dc:title
+        >
+        <dc:date
+          >2010-10-01T13:36:58</dc:date
+        >
+        <dc:description
+          >A simple and fast-made test tube</dc:description
+        >
+        <dc:source
+          >https://openclipart.org/detail/88027/test-tube-by-mev</dc:source
+        >
+        <dc:creator
+          >
+          <cc:Agent
+            >
+            <dc:title
+              >MeV</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:creator
+        >
+        <dc:subject
+          >
+          <rdf:Bag
+            >
+            <rdf:li
+              >chemistry</rdf:li
+            >
+            <rdf:li
+              >glassware</rdf:li
+            >
+            <rdf:li
+              >science</rdf:li
+            >
+            <rdf:li
+              >scientific</rdf:li
+            >
+            <rdf:li
+              >test</rdf:li
+            >
+            <rdf:li
+              >test tube</rdf:li
+            >
+            <rdf:li
+              >tube</rdf:li
+            >
+          </rdf:Bag
+          >
+        </dc:subject
+        >
+      </cc:Work
+      >
+      <cc:License
+          rdf:about="http://creativecommons.org/licenses/publicdomain/"
+        >
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Reproduction"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Distribution"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
+        />
+      </cc:License
+      >
+    </rdf:RDF
+    >
+  </metadata
+  >
+</svg
+>

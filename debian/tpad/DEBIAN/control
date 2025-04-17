@@ -1,0 +1,10 @@
+Package: tpad
+Version: 7.0.0.0-2
+Architecture: arm64
+Maintainer: Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>
+Installed-Size: 282
+Depends: libc6 (>= 2.34), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.16.0), libgtk-3-0t64 (>= 3.5.12), libgtksourceview-3.0-1 (>= 2.91.4), libgtkspell3-3-0, libpango-1.0-0 (>= 1.14.0), libsystemd0 (>= 233)
+Section: editors
+Priority: optional
+Description: Simple text editor
+ A simple, easy to use, fast text editor.

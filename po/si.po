@@ -1,0 +1,548 @@
+# Sinhalese translation for tpad-project
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the tpad-project package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tpad-project\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/tpad-project\n"
+"POT-Creation-Date: 2018-02-06 23:28-0500\n"
+"PO-Revision-Date: 2018-02-06 23:30-0500\n"
+"Last-Translator: GNAServicesInc <Unknown>\n"
+"Language-Team: Sinhalese <si@li.org>\n"
+"Language: si\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2016-08-20 21:32+0000\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-Basepath: ../src\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: ../src/def.h:147
+msgid "Choose Font"
+msgstr "ෆොන්ට තෝරාගන්න"
+
+#: ../src/def.h:150
+msgid "Show Line Numbers"
+msgstr "පෙළ අංකනය දක්වන්න"
+
+#: ../src/def.h:153
+msgid "Show Language"
+msgstr "භාෂාව පෙන්වන්න"
+
+#: ../src/def.h:156
+msgid "Auto Indent"
+msgstr "ස්වයංක්‍රීය එබුම"
+
+#: ../src/def.h:159
+msgid "Spell Check"
+msgstr "අක්ෂර වින්‍යාසය පිරික්සන්න"
+
+#: ../src/def.h:162
+msgid "Show Full File Path"
+msgstr "පුර්ණ ගොනු පෙත පෙන්වන්න"
+
+#: ../src/def.h:165
+msgid "Display UI Settings"
+msgstr "UI සිටුවම් විදැහන්න"
+
+#: ../src/def.h:168
+msgid "Default Window Width"
+msgstr "කවුළුවේ පෙරනිමි පළල"
+
+#: ../src/def.h:171
+msgid "Default Window Height"
+msgstr "කවුළුවේ පෙරනිමි උස"
+
+#: ../src/def.h:174
+msgid "Set Maximum Undo Level (0 For Unlimited) :"
+msgstr "අහෝසි කළහැකි උපරිම වාර ගණන සකසන්න (අසීමිත 0)"
+
+#: ../src/def.h:177
+msgid "Find / Find & Replace Text"
+msgstr "සොයන්න/ සොයන්න සහ පෙළ ප්‍රතිස්ථාපනය කරන්න"
+
+#: ../src/def.h:183
+msgid "Search Text For:"
+msgstr "සඳහා පෙළ සොයන්න:"
+
+#: ../src/def.h:186
+msgid "Error!"
+msgstr "දෝෂයක්!"
+
+#: ../src/def.h:189
+msgid "Replace Text With:"
+msgstr "සමඟ පෙළ ප්‍රතිස්ථාපනය:"
+
+#: ../src/def.h:192
+msgid "Find"
+msgstr "සොයන්න"
+
+#: ../src/def.h:195
+msgid "Help"
+msgstr ""
+
+#: ../src/def.h:198
+msgid "About"
+msgstr ""
+
+#: ../src/def.h:201
+msgid "Replace"
+msgstr "ප්‍රතිස්ථාපනය කරන්න"
+
+#: ../src/def.h:204
+msgid ""
+"Text was modified!\n"
+"Save it?"
+msgstr ""
+"පෙළ වෙනස්කර ඇත\n"
+"එය සුරකින්නද?"
+
+#: ../src/def.h:207
+msgid "Reload & Drop any Unsaved Changes"
+msgstr ""
+
+#: ../src/def.h:210
+msgid "Yes"
+msgstr ""
+
+#: ../src/def.h:213
+msgid "No"
+msgstr ""
+
+#: ../src/def.h:216
+msgid "Cancel"
+msgstr ""
+
+#: ../src/def.h:219
+msgid ""
+"WARNING!\n"
+"The on disk content of the open file was modified while the file was open!\n"
+"Saving your changes now may result in data loss.\n"
+"Save the file using a different, unique, file name to avoid this risk.\n"
+msgstr ""
+
+#: ../src/def.h:222
+#, fuzzy
+#| msgid "Save File"
+msgid "Save File Anyway"
+msgstr "ගොනුව සුරකින්න"
+
+#: ../src/def.h:225
+#, fuzzy
+msgid "Do a Save As... instead"
+msgstr "නව නම සමඟ ගොනුව සුරකින්න"
+
+#: ../src/def.h:228
+msgid "en_US"
+msgstr "si"
+
+#: ../src/def.h:231
+msgid "Keep Window Above"
+msgstr "ඉහළ කවුළුව නොවෙනස්ව තබාගන්න"
+
+#: ../src/def.h:234
+msgid "Wrap Lines"
+msgstr "පේළි එතුම"
+
+#: ../src/def.h:237
+msgid "Use Temp and  Check For (lock/tmp/swp)"
+msgstr "තාවකාලිකය භාවිතා කිරීම සහ අන්වේක්ෂණය සඳහා (lock/tmp/swp)"
+
+#: ../src/def.h:240
+msgid "Use Libmagic"
+msgstr ""
+
+#: ../src/def.h:243
+msgid "That simple, fast, and user friendly text editor you love."
+msgstr "සරලය , වේගවත් ,ඔබ කැමති පරිශීලක මිත්‍රශීලි පෙළ සකසනය"
+
+#: ../src/def.h:246
+msgid "translator-credits"
+msgstr ""
+"Launchpad Contributions:\n"
+"  GNAServicesInc https://launchpad.net/~gnaservicesinc\n"
+"  nuwan pushpakumara https://launchpad.net/~pushworld7"
+
+#: ../src/def.h:249
+msgid "Reading file failed!"
+msgstr "ගොනුව කියවීම අසාර්ථකයි!"
+
+#: ../src/def.h:252
+msgid "Conversion to UTF-8 FAILED! Is this a text document?"
+msgstr "එය අක්ෂර ලේඛනයක්ද? UTF-8 සඳහා පරිවර්තනය අසාර්ථකයි!"
+
+#: ../src/def.h:255
+#, fuzzy
+msgid "_File"
+msgstr "ගොනුව"
+
+#: ../src/def.h:258
+msgid "_New File"
+msgstr "නව ගොනුවක් (_N)"
+
+#: ../src/def.h:261
+msgid "_Save File"
+msgstr "ගොනුව සුරකින්න (_S)"
+
+#: ../src/def.h:264
+msgid "_Open File"
+msgstr "ගොනුව විවෘත කරන්න (_O)"
+
+#: ../src/def.h:267
+#, fuzzy
+msgid "S_ave File As..."
+msgstr "ගොනුව සුරකින්න ලෙස ..."
+
+#: ../src/def.h:270
+#, fuzzy
+msgid "_Quit"
+msgstr "පිටවීමේ වැඩසටහන (_Q)"
+
+#: ../src/def.h:273
+#, fuzzy
+msgid "Edit"
+msgstr "සංස්කරණය කරන්න"
+
+#: ../src/def.h:276
+#, fuzzy
+msgid "F_ind"
+msgstr "සොයන්න"
+
+#: ../src/def.h:279
+#, fuzzy
+msgid "Re_place"
+msgstr "ආදේශ"
+
+#: ../src/def.h:282
+msgid "_Undo"
+msgstr "නිෂ්ප්‍රභා කරන්න (_U)"
+
+#: ../src/def.h:285
+msgid "_Redo"
+msgstr "නැවත කරන්න (_R)"
+
+#: ../src/def.h:288
+#, fuzzy
+msgid "Reload"
+msgstr "රීලෝඩ්"
+
+#: ../src/def.h:291
+msgid "R_eload"
+msgstr "රීලෝඩ්"
+
+#: ../src/def.h:294
+#, fuzzy
+msgid "Settings"
+msgstr "සැකසුම්"
+
+#: ../src/def.h:297
+#, fuzzy
+msgid "Se_lect Font"
+msgstr ""
+"\n"
+"සැකසුම්"
+
+#: ../src/def.h:300
+msgid "_Preferences"
+msgstr "අභිරුචින් (_P)"
+
+#: ../src/def.h:303
+#, fuzzy
+msgid "Copy F_ile Path"
+msgstr "ගොනුව ස්ථානය"
+
+#: ../src/def.h:306
+msgid "WARNING: Saving File Failed! Unable to write to file: "
+msgstr "දැනුම්දීමයි: ගොනුව සුරැකුම අසාර්ථකයි! ගොනුව තුළ ලිවීම කළ නොහැක: "
+
+#: ../src/def.h:309
+msgid "Save File"
+msgstr "ගොනුව සුරකින්න"
+
+#: ../src/def.h:312
+msgid "Thread could not be created"
+msgstr "පොට නිර්මාණය කළනොහැකිය"
+
+#: ../src/def.h:315
+msgid "Word Count"
+msgstr "වචන ප්‍රමාණය"
+
+#: ../src/def.h:318
+msgid "Word Count:"
+msgstr "වචන ප්‍රමාණය:"
+
+#: ../src/def.h:321
+msgid "Char Count:"
+msgstr "අනුලකුණු ප්‍රමාණය"
+
+#: ../src/def.h:324
+msgid "Line Count:"
+msgstr "පෙළ ප්‍රමාණය"
+
+#: ../src/def.h:327
+msgid "Reverse"
+msgstr "ප්‍රතිලෝමය"
+
+#: ../src/def.h:330
+msgid "To upper case "
+msgstr "ඉහල වින්‍යාසය දක්වා "
+
+#: ../src/def.h:333
+msgid ""
+"Config file is invalid.\n"
+"Failed to remove bad config file.\n"
+"Please manually remove it."
+msgstr ""
+"අවලංගු වින්‍යාස ගොනුවකි.\n"
+"සදොස් වින්‍යාස ගොනුව ඉවත් කිරීම අසාර්ථකයි.\n"
+"කරුණාකර හස්තීයව එය ඉවත් කරන්න."
+
+#: ../src/def.h:336
+msgid ""
+"Spell-checking is not working correctly. I have turned it off.\n"
+"Technical information about the error:\n"
+"\n"
+"Failed to initialize spell checking.\n"
+"gtk_spell_checker_set_language returned with error\n"
+"Error Message:\t"
+msgstr ""
+
+#: ../src/def.h:339
+msgid "Config file is invalid."
+msgstr "අවලංගු වින්‍යාසයකි."
+
+#: ../src/def.h:342
+msgid ""
+"Successfully removed bad config file.\n"
+"A new config file will be created.\n"
+"Press ok and tpad will restart..."
+msgstr ""
+"සදොස් වින්‍යාස ගොනුව සාර්ථකව ඉවත්කරන ලදී.\n"
+"නව වින්‍යාස ගොනුවක් නිර්මාණය වෙමින් පවතී.\n"
+"ok එබීමෙන් අනතුරුව tpad යළි ආරම්භවේ..."
+
+#: ../src/def.h:345
+msgid ""
+"Error settings value out of range, change dropped.\n"
+"The change will not be saved.\n"
+" However, you REALLY should save your work and exit tpad right now. Please report bug"
+msgstr ""
+"සදොස් සිටුවම් අගය පරාසයෙන් පිටත වේ, හෙළුම වෙනස් කරන්න.\n"
+"වෙනස සුරැකෙන්නේ නැත.\n"
+"කෙසේ හෝ ඔබ ඔබගේ වැඩපත සුරැකීමෙන් අනතුරුව වහාම tpad තුලින් ඉවත් වන්න. කරුණාකර දෝෂය වර්තා කරන්න"
+
+#: ../src/def.h:348
+msgid ""
+"Error! The default window size must have a height of 50 or more and a width of 25 or more."
+msgstr "දෝෂයක්! පෙරනිමි කවුළුව 50ක හෝ වඩා වැඩි උස ප්‍රමාණයකින් හා පළල 25 ක හෝ වඩා වැඩි ප්‍රමාණයකින් යුක්ත විය යුතුය."
+
+#: ../src/def.h:351
+msgid "To lower case"
+msgstr "පහල වින්‍යාසය දක්වා"
+
+#: ../src/def.h:354
+msgid "File may alread be open in tpad or another program!"
+msgstr "ගොනුව tpad තුළ හෝ වෙනත් වැඩසටහනක් තුළ විවෘත වී තිබිය හැක!"
+
+#: ../src/def.h:357
+#, c-format
+msgid ""
+"Do you still want to open the file?\n"
+"------------------------------------\n"
+"\n"
+"Description - File has a swap or temp file.\n"
+"Possible Causes --\n"
+"\n"
+"\t*File might be in-use already.\n"
+"\t*tpad or another program crashed or exited improperly while using this file.\n"
+"\t*other unknown reasons\n"
+"\n"
+"Details --\n"
+"\n"
+"File path:%s\n"
+"\n"
+"Path to tmp or swp file:%s\n"
+msgstr ""
+"ඔබට තවමත් ගොනුව විවෘත කිරීමට අවශ්‍යද?\n"
+"------------------------------------\n"
+"\n"
+"සටහන - ගොනුව තුළ හුවමාරු හෝ තාවකාලික ගොනුවක් තිබිය හැක.\n"
+"වියහැකි කාරණා--\n"
+"\t*ගොනුව දැනටමත් භාවිතා වන්නට පුළුවන.\n"
+"\t*මෙම ගොනුව භාවිතා කරන අතරතුරදී tpad හෝ වෙනත් වැඩසටහනක් ක්‍රියාවිරහිත වී හෝ අනිසි අයුරින් ඉවත්වී ඇත.\n"
+"\t*වෙනත් නොදන්නා හේතූන්\n"
+"\n"
+"තොරතුරු--\n"
+"\n"
+"ගොනු පෙත:%s\n"
+"\n"
+"හුවමාරු හෝ තාවකාලික ගොනු සඳහා පෙත:%s\n"
+
+#: ../src/def.h:360
+msgid ""
+"Error invalid method. An error has occurred! Please save you work and exit tpad. Please report "
+"a bug!"
+msgstr ""
+"දෝෂයක් අවලංගු ක්‍රමවේදයකි. දෝෂයක් සිදුවී ඇත! කරුණාකර ඔබගේ වැඩපත සුරැකීමෙන් අනතුරුව tpad තුළින් ඉවත්වන්න. කරණාකර "
+"දෝෂය වර්තාකරන්න!"
+
+#: ../src/def.h:363
+msgid "File Is Not  A Text File -- BAD MAGIC"
+msgstr "ගොනුව පෙළ ගොනුවක් නොවේ-- BAD MAGIC"
+
+#: ../src/def.h:366
+msgid ""
+"Oh-No! I was unable to initialize magic the magic library\n"
+"Skipping magic!"
+msgstr ""
+"Oh-No! මාහට magic පුස්තකාලයේ magic ආරම්භ කිරීමට නොහැකි විය\n"
+"magic මගහරින්න!"
+
+#: ../src/def.h:369
+msgid ""
+"Uh-oh! I can not load the magic database\n"
+"Skipping!"
+msgstr ""
+"Uh-oh! මාහට magic දත්ත සමුදාය ඇතුල් කිරීමට නොහැක\n"
+"මගහරින්න!"
+
+#: ../src/def.h:372
+msgid ""
+"Document text changes have failed!\n"
+"\tcoult not convert the new content to UTF-8.\n"
+msgstr ""
+"ලේඛනයේ පෙළ වෙනස් කිරීම අසාර්ථකයි!\n"
+"\t අන්තර්ගතය UTF-8 දක්වා පරිවර්තනය කළ නොහැක.\n"
+
+#: ../src/def.h:375
+#, fuzzy
+msgid "Quit"
+msgstr "පිටවීමේ වැඩසටහන"
+
+#: ../src/def.h:378
+msgid "Redo"
+msgstr "නැවත කරන්න "
+
+#: ../src/def.h:381
+msgid "Undo"
+msgstr "නිෂ්ප්‍රභා කරන්න"
+
+#: ../src/def.h:384
+#, fuzzy
+msgid "Save As..."
+msgstr "නව නම සමඟ ගොනුව සුරකින්න"
+
+#: ../src/def.h:387
+#, fuzzy
+msgid "Save"
+msgstr "ගොනුව සුරකින්න"
+
+#: ../src/def.h:390
+#, fuzzy
+msgid "Open"
+msgstr "ගොනුව අරින්න"
+
+#: ../src/def.h:393
+msgid "New"
+msgstr "අළුත්"
+
+#: ../src/def.h:396
+msgid "DejaVu Sans Mono 12"
+msgstr ""
+
+#: ../src/def.h:399
+msgid "Hash Selection To Clipboard [SHA-512]"
+msgstr ""
+
+#: ../src/def.h:402
+msgid "Hash Selection To Clipboard [SHA-256]"
+msgstr ""
+
+#: ../src/def.h:405
+msgid "Hash Selection To Clipboard [MD5]"
+msgstr ""
+
+#: ../src/def.h:408
+msgid "Hash"
+msgstr ""
+
+#: ../src/def.h:411
+msgid "Disable experimental file watching"
+msgstr ""
+
+#: ../src/def.h:414
+msgid "Hash File To Clipboard [SHA-512]..."
+msgstr ""
+
+#: ../src/def.h:417
+msgid "Hash File To Clipboard [SHA-256]..."
+msgstr ""
+
+#: ../src/def.h:420 ../src/def.h:435 ../src/def.h:438
+msgid "Hash File To Clipboard [MD5]..."
+msgstr ""
+
+#: ../src/def.h:441
+msgid "Experimental File Watching Toggled"
+msgstr ""
+
+#: ../src/def.h:444
+msgid "Convert Selection To Clipboard [TO BASE 64]"
+msgstr ""
+
+#: ../src/def.h:447
+msgid "Convert File To Clipboard [TO BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:450
+msgid "Convert Selection To Clipboard [FROM BASE 64]"
+msgstr ""
+
+#: ../src/def.h:453
+msgid "Convert File To Clipboard [FROM BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:456
+#, fuzzy
+msgid ""
+"You should save any work and EXIT tpad after enabling or disabling this feature. Failure to do "
+"so may result in problems. You have been warned."
+msgstr "ස්විච් පසු පිටවීමේ වැඩසටහන"
+
+#: ../src/error_warn.h:38
+msgid "Error Deatils:"
+msgstr "දෝෂ තොරතුරු:"
+
+#: ../src/error_warn.h:39
+#, c-format
+msgid "An error has occured: %s"
+msgstr "වරදක් සිදු වී ඇත: %s"
+
+#: ../src/error_warn.h:40
+#, c-format
+msgid ""
+"An error has occured and the program may abort.\n"
+"Any unsaved work may be lost.\n"
+"If you belive that a bug in tpad is the root cause report a bug at\n"
+"https://bugs.launchpad.net/tpad-project \n"
+"The following message may help you determine the cause\n"
+"\n"
+"%s\n"
+msgstr ""
+"වරදක් සිදු වී ඇත වැඩසටහන ගබ්සා වේ.\n"
+"නොසුරැකු වැඩ නැති වියහැක.\n"
+"ඔබ සිතනා පරිදි මෙය tpad මූලය තුල හටගත් දෝෂයක් වියහැකි නම් දෝෂය වෙත  වර්තාකරන්න\n"
+"https://bugs.launchpad.net/tpad-project \n"
+"අනුගාමී පණිවුඩය ඔබට දෝෂ නිධානය තීරණය කිරීමට උපකාරීවනු ඇත\n"
+"\n"
+"%s\n"
+
+#: ../src/tpad_save.h:22
+msgid "Untitled"
+msgstr "නිර්ණාමික"
+
+#~ msgid "Find & Replace"
+#~ msgstr "සොයන්න සහ ප්‍රතිස්ථාපනය කරන්න"

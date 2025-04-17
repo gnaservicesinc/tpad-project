@@ -1,0 +1,2 @@
+?package(tpad):needs="X11" section="Editors"\
+  title="tpad" command="/usr/bin/tpad"

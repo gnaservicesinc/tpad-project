@@ -1,0 +1,89 @@
+		TPAD
+============================================
+
+Tpad was designed to be simple, fast, and 
+easy to use.
+
+We have lots of great text editors in the 
+world.  
+
+
+On one end of the spectrum we have
+Programs like gvim that are fast,
+feature loaded, versatile and 
+for users who are experienced
+with them they are easy to use.
+Not so much for the rest of us. 
+
+The problem: The number of features 
+can be overwhelming making documentation 
+difficult for newer  / less sophisticated 
+users. They also tent to behave in ways that
+these users do not expect. They are not intuitive
+for such users. 
+
+
+Then we have programs like the current 
+gedit. Lots of features, plug-ins and they behavior 
+in an intuitive manor. The problem, they are slow, 
+buggy, bloated, and unstable. 
+
+
+The goal of Tpad. Use GTK to create a text editor that
+is intuitive for new users (easy to use) that is fast and stable.
+
+We want all of the core features without the bloat.
+
+-------------------------------------------------------------------------------
+
+		Q & A
+============================================
+
+Q) I found a bug.
+
+A) Ok, fix it and submit a patch to my e-mail, see AUTHORS file. 
+
+Q) I don't want to / know how to fix it. 
+
+A) Ok, you can submit a bug report. 
+   Go to: https://bugs.launchpad.net/tpad-project/+filebug
+
+Q) If a CVE (Common Vulnerabilities and Exposures) is found,
+   do you post this information publicly, and if so where?
+
+A) Yes! If a CVE is linked to a bug report, it is automatically 
+   shown at: https://bugs.launchpad.net/tpad-project/+cve
+
+https://blueprints.launchpad.net/tpad-project
+
+Q) I have an AWESOME feature idea, can I submit a diff?
+
+A) Sure, but do not be upset if it gets rejected. To ensure that you do not
+   waste time, contact us first. Then we can
+   let you know if we like the idea and want to include it. 
+
+Q) No, it's just and IDEA, I can't / don't want to code it myself. 
+
+A) Create a blueprint, visit https://blueprints.launchpad.net/tpad-project
+
+Q) I like tpad and what to help out, what can I do?
+
+A) Thanks! Here is how to get involved:
+		Visit https://launchpad.net/~tpad
+		Contact us, 
+		tpad at lists dot launchpad dot net
+		Join the group
+		Submit patches, blue prints, bug reports etc.
+
+Q) I am running ubuntu and want a current version of tpad, how can
+   I get this without building it myself?
+
+A) We have PPAs, you can find them at https://launchpad.net/~tpad
+   If you are on quantal the PPA is, ppa:tpad/tpad
+   To add this, open up a terminal and type:
+		add-apt-repository ppa:tpad/tpad
+   If you are on raring, we suggest using ppa:tpad/tpad-raring
+		add-apt-repository ppa:tpad/tpad-raring
+
+
+

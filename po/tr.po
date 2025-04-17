@@ -1,0 +1,495 @@
+# Turkish translation for tpad-project
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# This file is distributed under the same license as the tpad-project package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tpad-project\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/tpad-project\n"
+"POT-Creation-Date: 2018-02-06 23:28-0500\n"
+"PO-Revision-Date: 2018-02-06 23:29-0500\n"
+"Last-Translator: Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc."
+"com>\n"
+"Language-Team: Turkish <tr@li.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2016-01-15 01:36+0000\n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: ../src/def.h:147
+msgid "Choose Font"
+msgstr "Font Seç"
+
+#: ../src/def.h:150
+msgid "Show Line Numbers"
+msgstr "Satır Numaralarını Göster"
+
+#: ../src/def.h:153
+msgid "Show Language"
+msgstr "Dili Göster"
+
+#: ../src/def.h:156
+msgid "Auto Indent"
+msgstr "Otomatik Girintile"
+
+#: ../src/def.h:159
+msgid "Spell Check"
+msgstr "Yazım Denetimi"
+
+#: ../src/def.h:162
+msgid "Show Full File Path"
+msgstr "Tam Dosya Yolunu Göster"
+
+#: ../src/def.h:165
+msgid "Display UI Settings"
+msgstr "Kullanıcı Arabirimi Ayarlarını Göster"
+
+#: ../src/def.h:168
+msgid "Default Window Width"
+msgstr "Varsayılan Pencere Genişliği"
+
+#: ../src/def.h:171
+msgid "Default Window Height"
+msgstr "Varsayılan Pencere Yüksekliği"
+
+#: ../src/def.h:174
+msgid "Set Maximum Undo Level (0 For Unlimited) :"
+msgstr "Maksimum geri alma seviyesini ayarla (Sınırsız için 0):"
+
+#: ../src/def.h:177
+msgid "Find / Find & Replace Text"
+msgstr "Bul / Bul ve Üzerine Yaz"
+
+#: ../src/def.h:183
+msgid "Search Text For:"
+msgstr "Yazıda şunu Ara:"
+
+#: ../src/def.h:186
+#, fuzzy
+msgid "Error!"
+msgstr "Hata"
+
+#: ../src/def.h:189
+msgid "Replace Text With:"
+msgstr "Yazıyı şununla değiştir:"
+
+#: ../src/def.h:192
+msgid "Find"
+msgstr "Bul"
+
+#: ../src/def.h:195
+#, fuzzy
+msgid "Help"
+msgstr "Bana yardım et"
+
+#: ../src/def.h:198
+msgid "About"
+msgstr "hakkında"
+
+#: ../src/def.h:201
+msgid "Replace"
+msgstr "Değiştir"
+
+#: ../src/def.h:204
+#, fuzzy
+msgid ""
+"Text was modified!\n"
+"Save it?"
+msgstr ""
+"metin değişti\n"
+"Değişiklikleri Kaydet?"
+
+#: ../src/def.h:207
+msgid "Reload & Drop any Unsaved Changes"
+msgstr ""
+
+#: ../src/def.h:210
+msgid "Yes"
+msgstr ""
+
+#: ../src/def.h:213
+msgid "No"
+msgstr ""
+
+#: ../src/def.h:216
+msgid "Cancel"
+msgstr ""
+
+#: ../src/def.h:219
+msgid ""
+"WARNING!\n"
+"The on disk content of the open file was modified while the file was open!\n"
+"Saving your changes now may result in data loss.\n"
+"Save the file using a different, unique, file name to avoid this risk.\n"
+msgstr ""
+
+#: ../src/def.h:222
+msgid "Save File Anyway"
+msgstr ""
+
+#: ../src/def.h:225
+msgid "Do a Save As... instead"
+msgstr ""
+
+#: ../src/def.h:228
+msgid "en_US"
+msgstr "tr"
+
+#: ../src/def.h:231
+msgid "Keep Window Above"
+msgstr "Pencereyi Üstte Tut"
+
+#: ../src/def.h:234
+msgid "Wrap Lines"
+msgstr "Sayfa Hattı Wrap"
+
+#: ../src/def.h:237
+msgid "Use Temp and  Check For (lock/tmp/swp)"
+msgstr ""
+
+#: ../src/def.h:240
+msgid "Use Libmagic"
+msgstr ""
+
+#: ../src/def.h:243
+msgid "That simple, fast, and user friendly text editor you love."
+msgstr "Sevdiğiniz basit, hızlı ve kullanıcı dostu metin düzenleyici."
+
+#: ../src/def.h:246
+msgid "translator-credits"
+msgstr ""
+"Launchpad Contributions:\n"
+"  GNAServicesInc https://launchpad.net/~gnaservicesinc\n"
+"  Yusuf Kayan https://launchpad.net/~c08b"
+
+#: ../src/def.h:249
+msgid "Reading file failed!"
+msgstr ""
+
+#: ../src/def.h:252
+msgid "Conversion to UTF-8 FAILED! Is this a text document?"
+msgstr ""
+
+#: ../src/def.h:255
+msgid "_File"
+msgstr ""
+
+#: ../src/def.h:258
+msgid "_New File"
+msgstr ""
+
+#: ../src/def.h:261
+msgid "_Save File"
+msgstr ""
+
+#: ../src/def.h:264
+msgid "_Open File"
+msgstr ""
+
+#: ../src/def.h:267
+msgid "S_ave File As..."
+msgstr ""
+
+#: ../src/def.h:270
+msgid "_Quit"
+msgstr ""
+
+#: ../src/def.h:273
+msgid "Edit"
+msgstr ""
+
+#: ../src/def.h:276
+msgid "F_ind"
+msgstr ""
+
+#: ../src/def.h:279
+msgid "Re_place"
+msgstr ""
+
+#: ../src/def.h:282
+msgid "_Undo"
+msgstr ""
+
+#: ../src/def.h:285
+msgid "_Redo"
+msgstr ""
+
+#: ../src/def.h:288
+msgid "Reload"
+msgstr ""
+
+#: ../src/def.h:291
+msgid "R_eload"
+msgstr ""
+
+#: ../src/def.h:294
+msgid "Settings"
+msgstr ""
+
+#: ../src/def.h:297
+msgid "Se_lect Font"
+msgstr ""
+
+#: ../src/def.h:300
+msgid "_Preferences"
+msgstr ""
+
+#: ../src/def.h:303
+msgid "Copy F_ile Path"
+msgstr ""
+
+#: ../src/def.h:306
+msgid "WARNING: Saving File Failed! Unable to write to file: "
+msgstr ""
+
+#: ../src/def.h:309
+msgid "Save File"
+msgstr ""
+
+#: ../src/def.h:312
+msgid "Thread could not be created"
+msgstr ""
+
+#: ../src/def.h:315
+msgid "Word Count"
+msgstr ""
+
+#: ../src/def.h:318
+msgid "Word Count:"
+msgstr ""
+
+#: ../src/def.h:321
+msgid "Char Count:"
+msgstr ""
+
+#: ../src/def.h:324
+msgid "Line Count:"
+msgstr ""
+
+#: ../src/def.h:327
+msgid "Reverse"
+msgstr ""
+
+#: ../src/def.h:330
+msgid "To upper case "
+msgstr ""
+
+#: ../src/def.h:333
+msgid ""
+"Config file is invalid.\n"
+"Failed to remove bad config file.\n"
+"Please manually remove it."
+msgstr ""
+
+#: ../src/def.h:336
+msgid ""
+"Spell-checking is not working correctly. I have turned it off.\n"
+"Technical information about the error:\n"
+"\n"
+"Failed to initialize spell checking.\n"
+"gtk_spell_checker_set_language returned with error\n"
+"Error Message:\t"
+msgstr ""
+
+#: ../src/def.h:339
+msgid "Config file is invalid."
+msgstr ""
+
+#: ../src/def.h:342
+msgid ""
+"Successfully removed bad config file.\n"
+"A new config file will be created.\n"
+"Press ok and tpad will restart..."
+msgstr ""
+
+#: ../src/def.h:345
+msgid ""
+"Error settings value out of range, change dropped.\n"
+"The change will not be saved.\n"
+" However, you REALLY should save your work and exit tpad right now. Please "
+"report bug"
+msgstr ""
+
+#: ../src/def.h:348
+msgid ""
+"Error! The default window size must have a height of 50 or more and a width "
+"of 25 or more."
+msgstr ""
+
+#: ../src/def.h:351
+msgid "To lower case"
+msgstr ""
+
+#: ../src/def.h:354
+msgid "File may alread be open in tpad or another program!"
+msgstr ""
+
+#: ../src/def.h:357
+#, c-format
+msgid ""
+"Do you still want to open the file?\n"
+"------------------------------------\n"
+"\n"
+"Description - File has a swap or temp file.\n"
+"Possible Causes --\n"
+"\n"
+"\t*File might be in-use already.\n"
+"\t*tpad or another program crashed or exited improperly while using this "
+"file.\n"
+"\t*other unknown reasons\n"
+"\n"
+"Details --\n"
+"\n"
+"File path:%s\n"
+"\n"
+"Path to tmp or swp file:%s\n"
+msgstr ""
+
+#: ../src/def.h:360
+msgid ""
+"Error invalid method. An error has occurred! Please save you work and exit "
+"tpad. Please report a bug!"
+msgstr ""
+
+#: ../src/def.h:363
+msgid "File Is Not  A Text File -- BAD MAGIC"
+msgstr ""
+
+#: ../src/def.h:366
+msgid ""
+"Oh-No! I was unable to initialize magic the magic library\n"
+"Skipping magic!"
+msgstr ""
+
+#: ../src/def.h:369
+msgid ""
+"Uh-oh! I can not load the magic database\n"
+"Skipping!"
+msgstr ""
+
+#: ../src/def.h:372
+msgid ""
+"Document text changes have failed!\n"
+"\tcoult not convert the new content to UTF-8.\n"
+msgstr ""
+
+#: ../src/def.h:375
+msgid "Quit"
+msgstr ""
+
+#: ../src/def.h:378
+msgid "Redo"
+msgstr ""
+
+#: ../src/def.h:381
+msgid "Undo"
+msgstr ""
+
+#: ../src/def.h:384
+msgid "Save As..."
+msgstr ""
+
+#: ../src/def.h:387
+msgid "Save"
+msgstr ""
+
+#: ../src/def.h:390
+msgid "Open"
+msgstr ""
+
+#: ../src/def.h:393
+msgid "New"
+msgstr ""
+
+#: ../src/def.h:396
+msgid "DejaVu Sans Mono 12"
+msgstr ""
+
+#: ../src/def.h:399
+msgid "Hash Selection To Clipboard [SHA-512]"
+msgstr ""
+
+#: ../src/def.h:402
+msgid "Hash Selection To Clipboard [SHA-256]"
+msgstr ""
+
+#: ../src/def.h:405
+msgid "Hash Selection To Clipboard [MD5]"
+msgstr ""
+
+#: ../src/def.h:408
+msgid "Hash"
+msgstr ""
+
+#: ../src/def.h:411
+msgid "Disable experimental file watching"
+msgstr ""
+
+#: ../src/def.h:414
+msgid "Hash File To Clipboard [SHA-512]..."
+msgstr ""
+
+#: ../src/def.h:417
+msgid "Hash File To Clipboard [SHA-256]..."
+msgstr ""
+
+#: ../src/def.h:420 ../src/def.h:435 ../src/def.h:438
+msgid "Hash File To Clipboard [MD5]..."
+msgstr ""
+
+#: ../src/def.h:441
+msgid "Experimental File Watching Toggled"
+msgstr ""
+
+#: ../src/def.h:444
+msgid "Convert Selection To Clipboard [TO BASE 64]"
+msgstr ""
+
+#: ../src/def.h:447
+msgid "Convert File To Clipboard [TO BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:450
+msgid "Convert Selection To Clipboard [FROM BASE 64]"
+msgstr ""
+
+#: ../src/def.h:453
+msgid "Convert File To Clipboard [FROM BASE 64]..."
+msgstr ""
+
+#: ../src/def.h:456
+msgid ""
+"You should save any work and EXIT tpad after enabling or disabling this "
+"feature. Failure to do so may result in problems. You have been warned."
+msgstr ""
+
+#: ../src/error_warn.h:38
+msgid "Error Deatils:"
+msgstr ""
+
+#: ../src/error_warn.h:39
+#, c-format
+msgid "An error has occured: %s"
+msgstr ""
+
+#: ../src/error_warn.h:40
+#, c-format
+msgid ""
+"An error has occured and the program may abort.\n"
+"Any unsaved work may be lost.\n"
+"If you belive that a bug in tpad is the root cause report a bug at\n"
+"https://bugs.launchpad.net/tpad-project \n"
+"The following message may help you determine the cause\n"
+"\n"
+"%s\n"
+msgstr ""
+
+#: ../src/tpad_save.h:22
+msgid "Untitled"
+msgstr ""
+
+#~ msgid "Find & Replace"
+#~ msgstr "Bul & Değiştir"
