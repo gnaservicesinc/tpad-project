@@ -108,32 +108,37 @@ char *str2md5(const char *str) {
 
 char* tpad_hash_read_in_file(char* fp){
 
- if(access(fp, R_OK ) == -1) return("--\n'\0'");
- else {
-  FILE * pFile;
-  unsigned int lSize;
+ int fd = open(fp, O_RDONLY);
+ if (fd == -1) return("--\n'\0'");
 
-  size_t result;
-
-  pFile = fopen ( fp , "rb" );
-  if (pFile==NULL) return("--\n'\0'");
-
-  fseek (pFile , 0 , SEEK_END);
-  lSize = ftell (pFile);
-  rewind (pFile);
-
-  char* buffer = (char*) calloc (lSize+1, sizeof(char));
-   if (buffer == NULL) return("--\n'\0'");
-  //char  buffer[lSize+1];
-  result = fread (buffer,1,lSize,pFile);
-  if (result != lSize) {
-    free(buffer);
-    return("--\n'\0'");
-  }
-
-  fclose (pFile);
-  return (buffer);
+ FILE *pFile = fdopen(fd, "rb");
+ if (pFile == NULL) {
+   close(fd);
+   return("--\n'\0'");
  }
+
+ unsigned int lSize;
+ size_t result;
+
+ fseek(pFile, 0, SEEK_END);
+ lSize = ftell(pFile);
+ rewind(pFile);
+
+ char* buffer = (char*) calloc(lSize + 1, sizeof(char));
+ if (buffer == NULL) {
+   fclose(pFile);
+   return("--\n'\0'");
+ }
+
+ result = fread(buffer, 1, lSize, pFile);
+ if (result != lSize) {
+   free(buffer);
+   fclose(pFile);
+   return("--\n'\0'");
+ }
+
+ fclose(pFile);
+ return (buffer);
 }
 char *strFrombase64(const char *str) {
 	if(str == NULL) return("--\n'\0'");
