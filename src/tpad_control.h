@@ -27,8 +27,9 @@
 #endif
 #include "tpad_headers.h"
 
-short tpad_control_store_hash_of_current_file_set();
-short tpad_control_compare_stored_file_hash_to_current_ondisk_file_hash();
+void tpad_control_cleanup(void);
+short tpad_control_store_hash_of_current_file_set(void);
+short tpad_control_compare_stored_file_hash_to_current_ondisk_file_hash(void);
 
 
 #endif

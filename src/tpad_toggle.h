@@ -29,11 +29,8 @@
 void toggle_line_wrap(GtkWidget *caller);
 void toggle_linenumber(GtkWidget *caller);
 void toggle_use_open_guard(GtkWidget *caller);
-void toggle_show_full_path();
+void toggle_show_full_path(GtkWidget *caller);
 void toggle_keep_above(GtkWidget *caller);
-#ifdef HAVE_LIBMAGIC
-void toggle_use_magic_settings(GtkWidget *caller);
-#endif
 #ifdef AUTO_TAB_TOGGLE
 void toggle_auto_tab(GtkWidget *caller);
 #endif

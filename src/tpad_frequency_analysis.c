@@ -21,8 +21,6 @@
 #include "tpad_headers.h"
 
 extern GtkSourceBuffer *mBuff;
-extern GtkSourceView *view;
-extern GtkWidget *fawindow;
 extern unsigned int frequency[];
 extern unsigned int freqMode;
 extern gchar freqModeChar;
@@ -34,69 +32,38 @@ gchar freqModeChar=0;
 
 size_t NumberOfElements=0;
 
-static void setrgb(guchar *a, int row, int col, int stride,
-            guchar r, guchar g, guchar b);
-static int update_pic(gpointer data) ;
-
-
-int tpad_frequency_analysis() {
+int tpad_frequency_analysis(void) {
 	GtkTextIter start,end;
-	gchar *RevBuff;
-	gchar* unknownContents;
-	unknownContents=NULL;
-gchar* temp_buffer;
-GError *error = NULL;
+	gchar *temp_buffer;
 
-	if(gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff)))
-		{
-if(gtk_text_buffer_get_selection_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end))
-			{
-			gtk_text_buffer_begin_user_action(GTK_TEXT_BUFFER(mBuff));
-			RevBuff=NULL;
+	if (!gtk_text_buffer_get_selection_bounds(GTK_TEXT_BUFFER(mBuff),
+	                                          &start, &end))
+		gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(mBuff), &start, &end);
 
-			gchar* cUnknown = (gchar*) g_strdup(gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),&start,&end,FALSE));
-
-
-			 temp_buffer = (gchar*) g_strdup(g_convert(cUnknown,(gsize) strlen (cUnknown), "UTF-8", g_get_codeset(),NULL, NULL, &error));
-		   if (error != NULL)
-       		{
-				gerror_warn(error->message,_ERROR_STR_REV,TRUE,TRUE);
-   				g_error_free (error);
-				return(-1);
-       		}
-
-		}
-	}
-	else {
-
-	gtk_text_buffer_begin_user_action(GTK_TEXT_BUFFER(mBuff));
-	gtk_text_buffer_get_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end);
-		gchar* cUnknown = (gchar*) g_strdup(gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),&start,&end,FALSE));
-		temp_buffer = (gchar*) g_strdup(g_convert(cUnknown,(gsize) strlen (cUnknown), "UTF-8", g_get_codeset(),NULL, NULL, &error));
-		   if (error != NULL)
-       		{
-				gerror_warn(error->message,_ERROR_STR_REV,TRUE,TRUE);
-   				g_error_free (error);
-				return(-1);
-       		}
-}
+	/* This feature is read-only.  Beginning a user action here left the
+	 * editor's undo group open indefinitely. */
+	temp_buffer = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),
+	                                       &start, &end, FALSE);
 
 int no_rows=3;
-int no_col=0;
-int ccount =0;
 double dcount=0.00;
 
-memset(frequency, 0, 1024);
+memset(frequency, 0, sizeof(frequency));
+freqMode = 0;
+freqModeChar = 0;
 NumberOfElements = strlen(temp_buffer);
 unsigned int i = 0;
 for(i=0;i<NumberOfElements;i++){
- if((int) temp_buffer[i]>=33 && (int) temp_buffer[i] <=FA_TABLE_SIZE) {
-frequency[(int)temp_buffer[i]]++;
+	unsigned int value = (guchar) temp_buffer[i];
+	/* Preserve the historical ASCII-only analysis.  Treating individual
+	 * UTF-8 bytes as characters would feed invalid strings to GTK labels. */
+	if(value >= 33 && value < 128) {
+frequency[value]++;
 dcount+=1.00;
 }
 }
 
-for(i=33;i<FA_TABLE_SIZE;i++) if(frequency[i]) no_col++;
+g_free(temp_buffer);
 
 
 
@@ -106,7 +73,6 @@ GtkWidget *mainbox,*graphbox,*modebox;
   gtk_window_set_title(GTK_WINDOW(fawindow), "Frequency Analysis");
   gtk_window_set_default_size(GTK_WINDOW(fawindow), 300, (no_rows*6));
   gtk_window_set_position(GTK_WINDOW(fawindow), GTK_WIN_POS_CENTER);
-  g_signal_connect(fawindow, "destroy", G_CALLBACK(gtk_widget_destroy), NULL);
 
 mainbox=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 graphbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
@@ -127,12 +93,10 @@ for(i=33;i<FA_TABLE_SIZE;i++) {
 				}
 
 double ldPercent=0;
-double freqValue=(double) frequency[i];
-
 ldPercent=(double)((double)((double)frequency[i]/(double) dcount)*100);
 gchar ravalue[FA_TABLE_SIZE*6]={0};
 
-snprintf(ravalue,(FA_TABLE_SIZE*6),"\n %i\n\n( %.2f%% )\n\n %c\t",frequency[i],ldPercent,(gchar) i);
+snprintf(ravalue,(FA_TABLE_SIZE*6),"\n %u\n\n( %.2f%% )\n\n %c\t",frequency[i],ldPercent,(gchar) i);
 
 gtk_box_pack_start (GTK_BOX (graphbox),GTK_WIDGET (gtk_label_new((const gchar *)ravalue)), TRUE, TRUE, 1);
 gtk_box_pack_start (GTK_BOX (graphbox),GTK_WIDGET (gtk_label_new((const gchar *)"\t")), TRUE, TRUE, 1);
@@ -150,5 +114,3 @@ gtk_box_pack_start (GTK_BOX (modebox),GTK_WIDGET (gtk_label_new((const gchar *)r
 
   return 0;
 }
-
-

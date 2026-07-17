@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tpad\n"
-"Report-Msgid-Bugs-To: https://bugs.launchpad.net/tpad-project\n"
-"POT-Creation-Date: 2018-02-06 23:28-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-17 15:27-0400\n"
 "PO-Revision-Date: 2018-02-06 23:31-0500\n"
 "Last-Translator: GNAServicesInc <Unknown>\n"
 "Language-Team: \n"
@@ -21,79 +21,99 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-SearchPath-0: ../src\n"
 
-#: ../src/def.h:147
+#: ../script/tpad.desktop.in.h:1
+msgid "tpad"
+msgstr ""
+
+#: ../script/tpad.desktop.in.h:2
+msgid "tpad Text Editor"
+msgstr ""
+
+#: ../script/tpad.desktop.in.h:3
+msgid "Edit text files"
+msgstr ""
+
+#: ../script/tpad.desktop.in.h:4
+msgid "Text;Plaintext;Write;"
+msgstr ""
+
+#: ../script/tpad.desktop.in.h:5
+msgid "Open a New Window"
+msgstr ""
+
+#: ../src/def.h:200
 msgid "Choose Font"
 msgstr "Elegir Fuente de letra"
 
-#: ../src/def.h:150
+#: ../src/def.h:203
 msgid "Show Line Numbers"
 msgstr "Mostrar números de línea"
 
-#: ../src/def.h:153
+#: ../src/def.h:206
 msgid "Show Language"
 msgstr "Mostrar lengua"
 
-#: ../src/def.h:156
+#: ../src/def.h:209
 msgid "Auto Indent"
 msgstr "Indentación automática"
 
-#: ../src/def.h:159
+#: ../src/def.h:212
 msgid "Spell Check"
 msgstr "Corrector ortográfico"
 
-#: ../src/def.h:162
+#: ../src/def.h:215
 msgid "Show Full File Path"
 msgstr "Mostrar ruta entero de archivo"
 
-#: ../src/def.h:165
+#: ../src/def.h:218
 msgid "Display UI Settings"
 msgstr ""
 
-#: ../src/def.h:168
+#: ../src/def.h:221
 msgid "Default Window Width"
 msgstr "Ancho predeterminado de ventana"
 
-#: ../src/def.h:171
+#: ../src/def.h:224
 msgid "Default Window Height"
 msgstr "Altura predeterminada de ventana"
 
-#: ../src/def.h:174
+#: ../src/def.h:227
 msgid "Set Maximum Undo Level (0 For Unlimited) :"
 msgstr "Nivel maximo de deshacer (0 para ilimitado)"
 
-#: ../src/def.h:177
+#: ../src/def.h:230
 msgid "Find / Find & Replace Text"
 msgstr "Buscar / Buscar & Reemplazar Texto"
 
-#: ../src/def.h:183
+#: ../src/def.h:236
 msgid "Search Text For:"
 msgstr "Buscar Texto para:"
 
-#: ../src/def.h:186
+#: ../src/def.h:239
 msgid "Error!"
 msgstr "Error!"
 
-#: ../src/def.h:189
+#: ../src/def.h:242
 msgid "Replace Text With:"
 msgstr "Reemplazar Texto con:"
 
-#: ../src/def.h:192
+#: ../src/def.h:245
 msgid "Find"
 msgstr "Buscar"
 
-#: ../src/def.h:195
+#: ../src/def.h:248
 msgid "Help"
 msgstr "Ayuda"
 
-#: ../src/def.h:198
+#: ../src/def.h:251
 msgid "About"
 msgstr "Acerca de"
 
-#: ../src/def.h:201
+#: ../src/def.h:254
 msgid "Replace"
 msgstr "Reemplazar"
 
-#: ../src/def.h:204
+#: ../src/def.h:257
 msgid ""
 "Text was modified!\n"
 "Save it?"
@@ -101,23 +121,23 @@ msgstr ""
 "Texto fue modificado!\n"
 "Guardar?"
 
-#: ../src/def.h:207
+#: ../src/def.h:260
 msgid "Reload & Drop any Unsaved Changes"
 msgstr ""
 
-#: ../src/def.h:210
+#: ../src/def.h:263
 msgid "Yes"
 msgstr ""
 
-#: ../src/def.h:213
+#: ../src/def.h:266
 msgid "No"
 msgstr ""
 
-#: ../src/def.h:216
+#: ../src/def.h:269
 msgid "Cancel"
 msgstr ""
 
-#: ../src/def.h:219
+#: ../src/def.h:272
 msgid ""
 "WARNING!\n"
 "The on disk content of the open file was modified while the file was open!\n"
@@ -125,43 +145,41 @@ msgid ""
 "Save the file using a different, unique, file name to avoid this risk.\n"
 msgstr ""
 
-#: ../src/def.h:222
+#: ../src/def.h:275
 #, fuzzy
-#| msgid "Save File"
 msgid "Save File Anyway"
 msgstr "Guardar Archivo"
 
-#: ../src/def.h:225
+#: ../src/def.h:278
 #, fuzzy
-#| msgid "Save As..."
 msgid "Do a Save As... instead"
 msgstr "Guardar como…"
 
-#: ../src/def.h:228
+#: ../src/def.h:281
 msgid "en_US"
 msgstr "es"
 
-#: ../src/def.h:231
+#: ../src/def.h:284
 msgid "Keep Window Above"
 msgstr "Mantener ventana encima"
 
-#: ../src/def.h:234
+#: ../src/def.h:287
 msgid "Wrap Lines"
 msgstr "Ajustar líneas"
 
-#: ../src/def.h:237
+#: ../src/def.h:290
 msgid "Use Temp and  Check For (lock/tmp/swp)"
 msgstr "Utilice Temp y comprobar la existencia de (lock/tmp/swp)"
 
-#: ../src/def.h:240
+#: ../src/def.h:293
 msgid "Use Libmagic"
 msgstr ""
 
-#: ../src/def.h:243
+#: ../src/def.h:296
 msgid "That simple, fast, and user friendly text editor you love."
 msgstr ""
 
-#: ../src/def.h:246
+#: ../src/def.h:299
 msgid "translator-credits"
 msgstr ""
 "Launchpad Contributions:\n"
@@ -169,121 +187,137 @@ msgstr ""
 "  Hector A. Mantellini https://launchpad.net/~xombra\n"
 "  Josh McMaster https://launchpad.net/~joshmcmaster"
 
-#: ../src/def.h:249
+#: ../src/def.h:302
 msgid "Reading file failed!"
 msgstr "Lectura de archivo falló!"
 
-#: ../src/def.h:252
+#: ../src/def.h:305
+msgid "Binary files containing NUL bytes are not supported."
+msgstr ""
+
+#: ../src/def.h:308
 msgid "Conversion to UTF-8 FAILED! Is this a text document?"
 msgstr "La conversión a UTF-8 FALLO! ¿Es este un documento de texto?"
 
-#: ../src/def.h:255
+#: ../src/def.h:311
 msgid "_File"
 msgstr "_Archivo"
 
-#: ../src/def.h:258
+#: ../src/def.h:314
 msgid "_New File"
 msgstr "_Nuevo Archivo"
 
-#: ../src/def.h:261
+#: ../src/def.h:317
 msgid "_Save File"
 msgstr "_Guardar archivo"
 
-#: ../src/def.h:264
+#: ../src/def.h:320
 msgid "_Open File"
 msgstr "_Abrir archivo"
 
-#: ../src/def.h:267
+#: ../src/def.h:323
 msgid "S_ave File As..."
 msgstr "G_uardar archivo como..."
 
-#: ../src/def.h:270
+#: ../src/def.h:326
+msgid "_Print..."
+msgstr ""
+
+#: ../src/def.h:329
+msgid "Printing failed"
+msgstr ""
+
+#: ../src/def.h:332
+msgid "The system print service did not provide additional details."
+msgstr ""
+
+#: ../src/def.h:335
 msgid "_Quit"
 msgstr "_Salir"
 
-#: ../src/def.h:273
+#: ../src/def.h:338
 msgid "Edit"
 msgstr "Editar"
 
-#: ../src/def.h:276
+#: ../src/def.h:341
 msgid "F_ind"
 msgstr "B_uscar"
 
-#: ../src/def.h:279
+#: ../src/def.h:344
 msgid "Re_place"
 msgstr "_Reemplazar"
 
-#: ../src/def.h:282
+#: ../src/def.h:347
 msgid "_Undo"
 msgstr "_Deshacer"
 
-#: ../src/def.h:285
+#: ../src/def.h:350
 msgid "_Redo"
 msgstr "_Restaurar"
 
-#: ../src/def.h:288
+#: ../src/def.h:353
 msgid "Reload"
 msgstr ""
 
-#: ../src/def.h:291
+#: ../src/def.h:356
 msgid "R_eload"
 msgstr ""
 
-#: ../src/def.h:294
+#: ../src/def.h:359
 msgid "Settings"
 msgstr "Configuración"
 
-#: ../src/def.h:297
+#: ../src/def.h:362
 msgid "Se_lect Font"
 msgstr "Se_leccionar Fuente"
 
-#: ../src/def.h:300
+#: ../src/def.h:365
 msgid "_Preferences"
 msgstr "_Preferencias"
 
-#: ../src/def.h:303
+#: ../src/def.h:368
 msgid "Copy F_ile Path"
 msgstr "Copiar Ruta Arch_ivo"
 
-#: ../src/def.h:306
+#: ../src/def.h:371
 msgid "WARNING: Saving File Failed! Unable to write to file: "
 msgstr ""
 "ADVERTENCIA: No se ha podido guardar el archivo! No se puede escribir en el "
 "archivo: "
 
-#: ../src/def.h:309
+#: ../src/def.h:374
 msgid "Save File"
 msgstr "Guardar Archivo"
 
-#: ../src/def.h:312
+#: ../src/def.h:377
 msgid "Thread could not be created"
 msgstr "Tema no se pudo crear"
 
-#: ../src/def.h:315
+#: ../src/def.h:380
 msgid "Word Count"
 msgstr "Número de Palabras"
 
-#: ../src/def.h:318
+#: ../src/def.h:383
 msgid "Word Count:"
 msgstr "Cantidad de Palabras:"
 
-#: ../src/def.h:321
+#: ../src/def.h:386
 msgid "Char Count:"
 msgstr "Número de letras:"
 
-#: ../src/def.h:324
+#: ../src/def.h:389
 msgid "Line Count:"
 msgstr "Número de línea:"
 
-#: ../src/def.h:327
+#: ../src/def.h:392
 msgid "Reverse"
 msgstr "Revertir"
 
-#: ../src/def.h:330
+#: ../src/def.h:395
 msgid "To upper case "
 msgstr "A mayúsculas "
 
-#: ../src/def.h:333
+#: ../src/def.h:398
 msgid ""
 "Config file is invalid.\n"
 "Failed to remove bad config file.\n"
@@ -293,7 +327,7 @@ msgstr ""
 "Error al eliminar el mal archivo de configuración.\n"
 "Por favor, elimine manualmente."
 
-#: ../src/def.h:336
+#: ../src/def.h:401
 msgid ""
 "Spell-checking is not working correctly. I have turned it off.\n"
 "Technical information about the error:\n"
@@ -303,11 +337,11 @@ msgid ""
 "Error Message:\t"
 msgstr ""
 
-#: ../src/def.h:339
+#: ../src/def.h:404
 msgid "Config file is invalid."
 msgstr "Archivo de Config no es no es válido."
 
-#: ../src/def.h:342
+#: ../src/def.h:407
 msgid ""
 "Successfully removed bad config file.\n"
 "A new config file will be created.\n"
@@ -317,7 +351,7 @@ msgstr ""
 "Se creará un nuevo archivo de configuración.\n"
 "Presione ok y tpad se reiniciarán ..."
 
-#: ../src/def.h:345
+#: ../src/def.h:410
 msgid ""
 "Error settings value out of range, change dropped.\n"
 "The change will not be saved.\n"
@@ -329,7 +363,7 @@ msgstr ""
 "  Sin embargo, usted realmente debe guardar su trabajo y salir de tpad "
 "ahora. Por favor, informe de errores"
 
-#: ../src/def.h:348
+#: ../src/def.h:413
 msgid ""
 "Error! The default window size must have a height of 50 or more and a width "
 "of 25 or more."
@@ -337,15 +371,15 @@ msgstr ""
 "Error! El tamaño de la ventana por defecto debe tener una altura de 50 o más "
 "y una anchura de 25 o más."
 
-#: ../src/def.h:351
+#: ../src/def.h:416
 msgid "To lower case"
 msgstr "A minúsculas"
 
-#: ../src/def.h:354
+#: ../src/def.h:419
 msgid "File may alread be open in tpad or another program!"
 msgstr "El archivo puede que este abierto con tpad u otro programa!"
 
-#: ../src/def.h:357
+#: ../src/def.h:422
 #, c-format
 msgid ""
 "Do you still want to open the file?\n"
@@ -366,7 +400,7 @@ msgid ""
 "Path to tmp or swp file:%s\n"
 msgstr ""
 
-#: ../src/def.h:360
+#: ../src/def.h:425
 msgid ""
 "Error invalid method. An error has occurred! Please save you work and exit "
 "tpad. Please report a bug!"
@@ -374,23 +408,23 @@ msgstr ""
 "Error método válido. Se ha producido un error! Por favor, guarde su trabajo "
 "y salga de tpad. Por favor, informar el error!"
 
-#: ../src/def.h:363
+#: ../src/def.h:428
 msgid "File Is Not  A Text File -- BAD MAGIC"
 msgstr ""
 
-#: ../src/def.h:366
+#: ../src/def.h:431
 msgid ""
 "Oh-No! I was unable to initialize magic the magic library\n"
 "Skipping magic!"
 msgstr ""
 
-#: ../src/def.h:369
+#: ../src/def.h:434
 msgid ""
 "Uh-oh! I can not load the magic database\n"
 "Skipping!"
 msgstr ""
 
-#: ../src/def.h:372
+#: ../src/def.h:437
 msgid ""
 "Document text changes have failed!\n"
 "\tcoult not convert the new content to UTF-8.\n"
@@ -398,91 +432,91 @@ msgstr ""
 "Cambios en documento falló\n"
 "\t coult no convierte el nuevo contenido a UTF-8.\n"
 
-#: ../src/def.h:375
+#: ../src/def.h:440
 msgid "Quit"
 msgstr "Salir"
 
-#: ../src/def.h:378
+#: ../src/def.h:443
 msgid "Redo"
 msgstr "Rehacer"
 
-#: ../src/def.h:381
+#: ../src/def.h:446
 msgid "Undo"
 msgstr "Deshacer"
 
-#: ../src/def.h:384
+#: ../src/def.h:449
 msgid "Save As..."
 msgstr "Guardar como…"
 
-#: ../src/def.h:387
+#: ../src/def.h:452
 msgid "Save"
 msgstr "Guardar"
 
-#: ../src/def.h:390
+#: ../src/def.h:455
 msgid "Open"
 msgstr "Abrir"
 
-#: ../src/def.h:393
+#: ../src/def.h:458
 msgid "New"
 msgstr "Nuevo"
 
-#: ../src/def.h:396
+#: ../src/def.h:461
 msgid "DejaVu Sans Mono 12"
 msgstr "DejaVu Sans Mono 12"
 
-#: ../src/def.h:399
+#: ../src/def.h:464
 msgid "Hash Selection To Clipboard [SHA-512]"
 msgstr ""
 
-#: ../src/def.h:402
+#: ../src/def.h:467
 msgid "Hash Selection To Clipboard [SHA-256]"
 msgstr ""
 
-#: ../src/def.h:405
+#: ../src/def.h:470
 msgid "Hash Selection To Clipboard [MD5]"
 msgstr ""
 
-#: ../src/def.h:408
+#: ../src/def.h:473
 msgid "Hash"
 msgstr "Hash"
 
-#: ../src/def.h:411
+#: ../src/def.h:476
 msgid "Disable experimental file watching"
 msgstr "Deshabilitar vista de archivo experimental"
 
-#: ../src/def.h:414
+#: ../src/def.h:479
 msgid "Hash File To Clipboard [SHA-512]..."
 msgstr "Hash File To Clipboard  [SHA-512]..."
 
-#: ../src/def.h:417
+#: ../src/def.h:482
 msgid "Hash File To Clipboard [SHA-256]..."
 msgstr "Hash de archivo a portapapeles [SHA-256]..."
 
-#: ../src/def.h:420 ../src/def.h:435 ../src/def.h:438
+#: ../src/def.h:485 ../src/def.h:500 ../src/def.h:503
 msgid "Hash File To Clipboard [MD5]..."
 msgstr "Hash de archivo a portapapeles [MD5]..."
 
-#: ../src/def.h:441
+#: ../src/def.h:506
 msgid "Experimental File Watching Toggled"
 msgstr "Cambiar vista Experimental de archivo"
 
-#: ../src/def.h:444
+#: ../src/def.h:509
 msgid "Convert Selection To Clipboard [TO BASE 64]"
 msgstr "Convertir Selección To Clipboard [TO BASE 64]"
 
-#: ../src/def.h:447
+#: ../src/def.h:512
 msgid "Convert File To Clipboard [TO BASE 64]..."
 msgstr ""
 
-#: ../src/def.h:450
+#: ../src/def.h:515
 msgid "Convert Selection To Clipboard [FROM BASE 64]"
 msgstr ""
 
-#: ../src/def.h:453
+#: ../src/def.h:518
 msgid "Convert File To Clipboard [FROM BASE 64]..."
 msgstr ""
 
-#: ../src/def.h:456
+#: ../src/def.h:521
 msgid ""
 "You should save any work and EXIT tpad after enabling or disabling this "
 "feature. Failure to do so may result in problems. You have been warned."
@@ -491,21 +525,21 @@ msgstr ""
 "deshabilitar esta función. El no hacerlo puede dar lugar a problemas. Usted "
 "ha sido advertido."
 
-#: ../src/error_warn.h:38
+#: ../src/error_warn.h:24
 msgid "Error Deatils:"
 msgstr "Detalles del error:"
 
-#: ../src/error_warn.h:39
-#, c-format
-msgid "An error has occured: %s"
+#: ../src/error_warn.h:25
+#, fuzzy, c-format
+msgid "An error has occurred: %s"
 msgstr "Un error ha occurido: %s"
 
-#: ../src/error_warn.h:40
-#, c-format
+#: ../src/error_warn.h:26
+#, fuzzy, c-format
 msgid ""
-"An error has occured and the program may abort.\n"
+"An error has occurred and the program may abort.\n"
 "Any unsaved work may be lost.\n"
-"If you belive that a bug in tpad is the root cause report a bug at\n"
+"If you believe that a bug in tpad is the root cause report a bug at\n"
 "https://bugs.launchpad.net/tpad-project \n"
 "The following message may help you determine the cause\n"
 "\n"

@@ -25,6 +25,6 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-GtkWidget * tpad_new_ui();
+GtkWidget *tpad_new_ui(void);
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
 #endif

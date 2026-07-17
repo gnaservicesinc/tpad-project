@@ -19,11 +19,34 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-static GtkSpinButton *xSpinButton,*ySpinButton,*uSpinButton,*stSpingButton;
+static GtkSpinButton *xSpinButton,*ySpinButton,*uSpinButton;
+static GtkWidget *preferences_window = NULL;
+
+static gboolean preferences_key_pressed(GtkWidget *dialog,
+	GdkEventKey *event, gpointer user_data)
+{
+	(void) user_data;
+	if (event->keyval != GDK_KEY_Escape)
+		return FALSE;
+	gtk_widget_destroy(dialog);
+	return TRUE;
+}
+
+static void preferences_destroyed(GtkWidget *dialog, gpointer user_data)
+{
+	(void) dialog;
+	(void) user_data;
+	preferences_window = NULL;
+	xSpinButton = NULL;
+	ySpinButton = NULL;
+	uSpinButton = NULL;
+}
 
 
 void do_UI_pref_update(GtkWidget *caller, gpointer dialog)
 {
+	(void) caller;
+	(void) dialog;
 	cfg_set_default_width(gtk_spin_button_get_value_as_int (xSpinButton));
 	cfg_set_default_height(gtk_spin_button_get_value_as_int (ySpinButton));
 	cfg_set_undo(gtk_spin_button_get_value_as_int (uSpinButton));
@@ -32,14 +55,22 @@ void do_UI_pref_update(GtkWidget *caller, gpointer dialog)
 	//gtk_widget_destroy((GtkWidget*) dialog);
 	cfg_save();
 }
-void show_ui_prefs (){
+void show_ui_prefs(void){
 
-	GtkWidget *dialog,*mainbox,*buttonbox,*xbox,*ybox,*ubox,*stbox,*buttonAccept; 
+	GtkWidget *dialog,*mainbox,*buttonbox,*xbox,*ybox,*ubox,*stbox;
+	if (preferences_window != NULL) {
+		gtk_window_present(GTK_WINDOW(preferences_window));
+		return;
+	}
 	dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	preferences_window = dialog;
+	g_signal_connect(dialog, "destroy",
+	                 G_CALLBACK(preferences_destroyed), NULL);
+	g_signal_connect(dialog, "key-press-event",
+	                 G_CALLBACK(preferences_key_pressed), NULL);
 	gtk_window_set_title(GTK_WINDOW(dialog),_UI_SETTINGS);
     gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
     gtk_window_set_resizable (GTK_WINDOW(dialog),FALSE);
-	g_signal_connect(dialog,"destroy",G_CALLBACK(gtk_widget_destroy),NULL);
 	mainbox=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 	xbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
 	ybox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);

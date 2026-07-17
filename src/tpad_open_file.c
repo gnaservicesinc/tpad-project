@@ -26,24 +26,20 @@ extern GtkWidget *window;
 extern gboolean save_locked;
 //extern gchar *content;
 
-gchar* unknownContents=NULL;
+static void tpad_do_file_open_dialog(void);
 
 
-static void tpad_do_file_open_dialog();
-
-
-void open_file(){  
+void open_file(void){
 	 if(save_modified()) tpad_do_file_open_dialog();
 }
 
 
 
 
-static void tpad_do_file_open_dialog(){
+static void tpad_do_file_open_dialog(void){
 	gint response;
 	
 	GtkWidget *dialog=NULL;
-  	gchar *tempFileName=NULL;
    
         dialog = gtk_file_chooser_dialog_new("Open File",GTK_WINDOW(window),GTK_FILE_CHOOSER_ACTION_OPEN,"Cancel",GTK_RESPONSE_CANCEL,"Open",GTK_RESPONSE_ACCEPT,NULL);
 		gtk_file_chooser_set_show_hidden (GTK_FILE_CHOOSER(dialog),TRUE);
@@ -60,18 +56,25 @@ static void tpad_do_file_open_dialog(){
 	save_locked=FALSE;
 
 	// Not actually using URIs. Set local only so changing this function to the filenames one for simplicity. 
-	GSList * ReturnedURIS=(GSList *)gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog));
+	GSList *filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
+	gchar *current = tpad_fp_get_current();
+	gboolean have_current = current != NULL;
+	GSList *item;
 
-	gint iFileN=0;
+	for (item = filenames; item != NULL; item = item->next) {
+		gchar *filename = item->data;
 
-	for(iFileN=0; tempFileName = (gchar*) g_slist_nth_data(ReturnedURIS,iFileN); iFileN++) {
-		if(tpad_fp_get_current()) new_thread_tpad((gchar*) g_strdup(tempFileName));	
-		else show_file((gchar*)g_strdup(tempFileName));	
-	} // Close File List Loop.
+		if (have_current)
+			new_thread_tpad(filename);
+		else if (show_file(filename) == 0)
+			have_current = TRUE;
+	}
+
+	g_free(current);
+	g_slist_free_full(filenames, g_free);
 
 		
 	} // Close Response Accepted.
   // Close/Destroy dialog box
   if(dialog) gtk_widget_destroy(GTK_WIDGET(dialog));
   }
-

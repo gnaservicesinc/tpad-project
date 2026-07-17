@@ -1,60 +1,81 @@
-name: tpad # use the same name as the package
-base: core22 # the base snap is the execution environment for this snap
-version: '7.0.0.3-2' # just for humans, typically '1.2+git' or '1.3.2'
+name: tpad
+title: Tpad
+base: core26
+version: '7.1.0.0'
 summary: Simple text editor
 description: |
-   A simple, easy to use, fast text editor.
+  A simple, easy to use, fast text editor.
 
-grade: stable # must be 'stable' to release into candidate/stable channels
+website: https://launchpad.net/tpad-project
+source-code: https://git.launchpad.net/tpad-project
+issues: https://bugs.launchpad.net/tpad-project
+contact: https://bugs.launchpad.net/tpad-project
+license: GPL-3.0+
+icon: icon/tpad_128.png
+
+grade: stable
 confinement: strict
+assumes:
+  - snapd2.55
 
+# The cups content plug causes the print service to be installed when needed.
+# It complements the safe, auto-connected cups interface used by the app.
 plugs:
-  desktop:
-  desktop-legacy:
-  wayland:
-  x11:
-  home:
-  gsettings:
-  unity7:
+  install-cups-runtime:
+    interface: content
+    content: foo
+    default-provider: cups
+    target: $SNAP_DATA/cups
+
+apps:
+  tpad:
+    command: usr/bin/tpad
+    desktop: usr/share/applications/tpad.desktop
+    command-chain:
+      - command-chain/desktop-launch
+    environment:
+      GTK_USE_PORTAL: '1'
+      SNAP_DESKTOP_RUNTIME: $SNAP
+    extensions:
+      - gpu
+    plugs:
+      - cups
+      - desktop
+      - desktop-legacy
+      - gsettings
+      - home
+      - opengl
+      - wayland
+      - x11
 
 parts:
+  # Snapcraft's GNOME extension does not yet support core26. Use Canonical's
+  # desktop launcher with this snap as its runtime until that support lands.
+  desktop-integration:
+    plugin: make
+    source: https://github.com/snapcore/snapcraft-desktop-integration.git
+    source-type: git
+    source-commit: ba67c3d6a9a26029808671d8265ed1d32200e418
+    source-subdir: gnome
+    make-parameters:
+      - PLATFORM_PLUG=desktop
+      - WITH_GRAPHICS=false
+
   tpad:
-    # See 'snapcraft plugins'
     plugin: autotools
     source: .
+    autotools-configure-parameters:
+      - --prefix=/usr
     build-packages:
-      - autoconf
-      - automake
-      - build-essential
-      - libgtksourceview-3.0-dev
-      - uuid-dev
-      - libuuid1
-      - libgtkspell3-3-dev
-      - libgtk-3-dev
-      - libgdk-pixbuf2.0-dev
-      - libglib2.0-dev
-      - libatk1.0-dev
-      - libgucharmap-2-90-dev
-      - gucharmap
-      - libpixman-1-dev
-      - libcairo-gobject2
-      - libsystemd-dev
-      - libpthread-stubs0-dev
-      - libicu-dev
-      - cdbs
-      - debhelper
       - intltool
+      - libgtk-3-dev
+      - libgtkspell3-3-dev
+      - libgtksourceview-3.0-dev
+      - libsystemd-dev
+      - pkgconf
     stage-packages:
-      - libgtksourceview-3.0-1
+      - libgtk-3-0t64
       - libgtkspell3-3-0
-      - libgtk-3-0
-      - libgdk-pixbuf2.0-0
-      - libgucharmap-2-90-7
+      - libgtksourceview-3.0-1
       - libsystemd0
-      - libicu70 | libicu66
-      - libpixman-1-0
-      - libatk1.0-0
-      - libcairo-gobject2
-      - libcairo2
-      - libpango-1.0-0
-      - libpangocairo-1.0-0
+      - xdg-user-dirs

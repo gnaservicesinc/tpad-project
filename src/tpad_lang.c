@@ -31,40 +31,32 @@ void toggle_show_lang(GtkWidget *caller){
 	cfg_save();
 }
 
-void set_language(){
+void set_language(void){
 	if(cfg_lang()){
-			GtkSourceLanguageManager *lm;
-			lm=gtk_source_language_manager_new();
-			char* currentfile=(char*)tpad_fp_get_current();
-			if(currentfile!=NULL){
-				long unsigned int i= 0,pos= 0;
-				size_t mlewn = sizeof(currentfile)/sizeof(currentfile[1]);
-				size_t blew = strlen(currentfile) + 1;
-
-				if(blew > mlewn) mlewn = blew;
-
-				 char fil[mlewn];
-
-    			for(i=0; currentfile[i]; i++){
-        			if(currentfile[i]=='\\') fil[pos++]='\\';
-        			fil[pos++]=currentfile[i];
-    				}
-    			fil[pos]=0;
-				gboolean result_uncertain;
-				gchar *content_type;
-				content_type = g_content_type_guess (fil, NULL, 0, &result_uncertain);
-				if (result_uncertain){
-					g_free (content_type);
-					content_type = NULL;
-					}
-				GtkSourceLanguage *lang = NULL;
-				lang = gtk_source_language_manager_guess_language (lm, fil, content_type);
-				gtk_source_buffer_set_language (GTK_SOURCE_BUFFER(mBuff),GTK_SOURCE_LANGUAGE(lang));
-				gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER(mBuff), (gboolean) cfg_lang());
-				if(cfg_lang()) (lang) ? gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),TRUE) : gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),FALSE);	
-				if(content_type) g_free (content_type);
+				GtkSourceLanguageManager *lm;
+				lm=gtk_source_language_manager_get_default();
+				char* currentfile=(char*)tpad_fp_get_current();
+					if(currentfile!=NULL){
+					gboolean result_uncertain;
+					gchar *content_type;
+					content_type = g_content_type_guess (currentfile, NULL, 0, &result_uncertain);
+					if (result_uncertain){
+						g_free (content_type);
+						content_type = NULL;
+						}
+					GtkSourceLanguage *lang = NULL;
+					lang = gtk_source_language_manager_guess_language (lm, currentfile, content_type);
+					gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(mBuff), lang);
+					gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER(mBuff), (gboolean) cfg_lang());
+					if(cfg_lang()) (lang) ? gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),TRUE) : gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),FALSE);
+					if(content_type) g_free (content_type);
+						g_free(currentfile);
+				}
+				else {
+					gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(mBuff), NULL);
+					gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff), FALSE);
+				}
 		}
-	}
 	else {
 		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(mBuff),NULL);
 		gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),FALSE); 

@@ -26,74 +26,69 @@ gchar* FILE_NAME_ON_LAST_OPEN_OR_SAVE =  (char*) NULL;
 gchar* FILE_HASH_ON_LAST_OPEN_OR_SAVE =  (char*) NULL;
 short FILE_HASH_STORED = 0;
 
+void tpad_control_cleanup(void)
+{
+	g_clear_pointer(&FILE_NAME_ON_LAST_OPEN_OR_SAVE, g_free);
+	g_clear_pointer(&FILE_HASH_ON_LAST_OPEN_OR_SAVE, g_free);
+	FILE_HASH_STORED = 0;
+}
 
 
 
-short tpad_control_store_hash_of_current_file_set() {
-	if (tpad_fp_get_current() != NULL && access(tpad_fp_get_current(), R_OK|W_OK ) != -1) {
-		gchar* temp_FILE_HASH_ON_LAST_OPEN_OR_SAVE = (gchar*) curFile2sha512();
-		gchar* temp_FILE_NAME_ON_LAST_OPEN_OR_SAVE = (gchar*) tpad_fp_get_current();
+short tpad_control_store_hash_of_current_file_set(void) {
+	gchar *current = tpad_fp_get_current();
+	gchar *hash = NULL;
 
-		if(temp_FILE_HASH_ON_LAST_OPEN_OR_SAVE != NULL && temp_FILE_NAME_ON_LAST_OPEN_OR_SAVE != NULL) {
-			FILE_HASH_ON_LAST_OPEN_OR_SAVE = (gchar*) g_strdup(temp_FILE_HASH_ON_LAST_OPEN_OR_SAVE);
-			FILE_NAME_ON_LAST_OPEN_OR_SAVE = (gchar*) g_strdup(temp_FILE_NAME_ON_LAST_OPEN_OR_SAVE);
-			FILE_HASH_STORED=1;
-		}
+	if (current != NULL)
+		hash = curFile2sha512();
 
-		g_free(temp_FILE_NAME_ON_LAST_OPEN_OR_SAVE);
-		g_free(temp_FILE_HASH_ON_LAST_OPEN_OR_SAVE);
+	tpad_control_cleanup();
 
-		
-
-	
+	/* A valid SHA-512 digest is exactly 128 hexadecimal characters. */
+	if (current != NULL && hash != NULL && strlen(hash) == 128) {
+		FILE_NAME_ON_LAST_OPEN_OR_SAVE = current;
+		FILE_HASH_ON_LAST_OPEN_OR_SAVE = hash;
+		FILE_HASH_STORED = 1;
+	} else {
+		g_free(current);
+		g_free(hash);
 	}
-	else {
-		FILE_NAME_ON_LAST_OPEN_OR_SAVE = (char*) NULL;
-		FILE_HASH_ON_LAST_OPEN_OR_SAVE = (char*) NULL;
 
-		FILE_HASH_STORED=0;
-	}
-   return( (short) FILE_HASH_STORED);
+	return FILE_HASH_STORED;
 
 }
 
-short tpad_control_compare_stored_file_hash_to_current_ondisk_file_hash() {
+short tpad_control_compare_stored_file_hash_to_current_ondisk_file_hash(void) {
 	//Returns 1 if they do not match... implies that file may have been changed while open. 
-	// Returns 0 if change was detected, no hash stored, no file path set, or on error. 
-	// In short, unless a mismatch is detected this function returns 0.
+	// A hash/read failure for a previously tracked path is also a change: the
+	// file may have been deleted or made unreadable and must not be silently
+	// recreated without the external-change decision.
 
-	int rets=0;
+	gchar *current;
+	gchar *current_hash;
+	gboolean changed;
 
-	//IF we don't have a stored hash to compare, 
-	// We must be doing a first save so we need to return 0 
-	// to allow a first save to occur.  We can not yet has the file as it has not been written to yet. 
+	if (!FILE_HASH_STORED || FILE_NAME_ON_LAST_OPEN_OR_SAVE == NULL ||
+	    FILE_HASH_ON_LAST_OPEN_OR_SAVE == NULL)
+		return 0;
 
+	current = tpad_fp_get_current();
+	if (current == NULL)
+		return 0;
 
-	if (!FILE_HASH_STORED) return 0;
+	if (g_strcmp0(FILE_NAME_ON_LAST_OPEN_OR_SAVE, current) != 0) {
+		g_free(current);
+		return 0;
+	}
+	g_free(current);
 
-
-
-	
-	if (FILE_HASH_STORED && tpad_fp_get_current() != NULL) {
-
-		size_t a = (size_t) strlen(FILE_NAME_ON_LAST_OPEN_OR_SAVE);
-		size_t b = (size_t) strlen(tpad_fp_get_current());
-		
-		if (a != b)  return(0); // If not the same len we can assume the filename has changed. Else lets compare the stored file name with the current one and check that we can read and write to the file path.
-		if ( strncmp((const char*) FILE_NAME_ON_LAST_OPEN_OR_SAVE,(const char*) tpad_fp_get_current(), a ) == 0 && access(tpad_fp_get_current(), R_OK|W_OK ) != -1) {
-			gchar* tmpHash = (gchar*) curFile2sha512();
-			if (rets = strncmp((const char*) FILE_HASH_ON_LAST_OPEN_OR_SAVE, (const char*) tmpHash, 128) != 0) {
-		printf("\n\nFILE_HASH_ON_LAST_OPEN_OR_SAVE\t=\t%s\ntmpHash=\t=\t%s\nFILE_NAME_ON_LAST_OPEN_OR_SAVE\t=\t%s\nrets\t=\t%i\n\n",FILE_HASH_ON_LAST_OPEN_OR_SAVE,tmpHash,FILE_NAME_ON_LAST_OPEN_OR_SAVE,rets);
-			g_free(tmpHash);				
-			return(1); // Hash of on disk file has changed since storing the hash. Return 1. 
-			}
-		g_free(tmpHash);
-		}
-		
-  	}
-	
-return(0);
+	current_hash = curFile2sha512();
+	if (current_hash == NULL || strlen(current_hash) != 128) {
+		g_free(current_hash);
+		return 1;
+	}
+	changed = g_strcmp0(FILE_HASH_ON_LAST_OPEN_OR_SAVE, current_hash) != 0;
+	g_free(current_hash);
+	return changed ? 1 : 0;
 
 }
-
-

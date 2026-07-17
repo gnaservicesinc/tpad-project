@@ -1,157 +1,71 @@
 #!/bin/sh
-# Run this to generate all the initial makefiles, etc.
 
-srcdir=`dirname $0`
-test -z "$srcdir" && srcdir=.
+# Regenerate tpad's Autotools build system and, unless NOCONFIGURE is set,
+# configure the source tree with any arguments supplied by the caller.
 
-DIE=0
+set -eu
 
-if [ -n "$GNOME2_DIR" ]; then
-	ACLOCAL_FLAGS="-I $GNOME2_DIR/share/aclocal $ACLOCAL_FLAGS"
-	LD_LIBRARY_PATH="$GNOME2_DIR/lib:$LD_LIBRARY_PATH"
-	PATH="$GNOME2_DIR/bin:$PATH"
-	export PATH
-	export LD_LIBRARY_PATH
+srcdir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+cd -- "$srcdir"
+
+if [ ! -f configure.ac ]; then
+	printf 'error: %s does not contain configure.ac\n' "$srcdir" >&2
+	exit 1
 fi
 
-(test -f $srcdir/configure.ac) || {
-    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
-    echo " top-level package directory"
-    exit 1
-}
-
-(autoconf --version) < /dev/null > /dev/null 2>&1 || {
-  echo
-  echo "**Error**: You must have \`autoconf' installed."
-  echo "Download the appropriate package for your distribution,"
-  echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-  DIE=1
-}
-
-(grep "^IT_PROG_INTLTOOL" $srcdir/configure.ac >/dev/null) && {
-  (intltoolize --version) < /dev/null > /dev/null 2>&1 || {
-    echo 
-    echo "**Error**: You must have \`intltool' installed."
-    echo "You can get it from:"
-    echo "  ftp://ftp.gnome.org/pub/GNOME/"
-    DIE=1
-  }
-}
-
-(grep "^AM_PROG_XML_I18N_TOOLS" $srcdir/configure.ac >/dev/null) && {
-  (xml-i18n-toolize --version) < /dev/null > /dev/null 2>&1 || {
-    echo
-    echo "**Error**: You must have \`xml-i18n-toolize' installed."
-    echo "You can get it from:"
-    echo "  ftp://ftp.gnome.org/pub/GNOME/"
-    DIE=1
-  }
-}
-
-(grep "^LT_INIT" $srcdir/configure.ac >/dev/null) && {
-  (libtool --version) < /dev/null > /dev/null 2>&1 || {
-    echo
-    echo "**Error**: You must have \`libtool' installed."
-    echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
-    DIE=1
-  }
-}
-
-(grep "^AM_GLIB_GNU_GETTEXT" $srcdir/configure.ac >/dev/null) && {
-  (grep "sed.*POTFILES" $srcdir/configure.ac) > /dev/null || \
-  (glib-gettextize --version) < /dev/null > /dev/null 2>&1 || {
-    echo
-    echo "**Error**: You must have \`glib' installed."
-    echo "You can get it from: ftp://ftp.gtk.org/pub/gtk"
-    DIE=1
-  }
-}
-
-(automake --version) < /dev/null > /dev/null 2>&1 || {
-  echo
-  echo "**Error**: You must have \`automake' installed."
-  echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
-  DIE=1
-  NO_AUTOMAKE=yes
-}
-
-
-# if no automake, don't bother testing for aclocal
-test -n "$NO_AUTOMAKE" || (aclocal --version) < /dev/null > /dev/null 2>&1 || {
-  echo
-  echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
-  echo "installed doesn't appear recent enough."
-  echo "You can get automake from ftp://ftp.gnu.org/pub/gnu/"
-  DIE=1
-}
-
-if test "$DIE" -eq 1; then
-  exit 1
-fi
-
-if test -z "$*"; then
-  echo "**Warning**: I am going to run \`configure' with no arguments."
-  echo "If you wish to pass any to it, please specify them on the"
-  echo \`$0\'" command line."
-  echo
-fi
-
-case $CC in
-xlc )
-  am_opt=--include-deps;;
-esac
-
-for coin in `find $srcdir -path $srcdir/CVS -prune -o -name configure.ac -print`
-do 
-  dr=`dirname $coin`
-  if test -f $dr/NO-AUTO-GEN; then
-    echo skipping $dr -- flagged as no auto-gen
-  else
-    echo processing $dr
-    ( cd $dr
-
-      aclocalinclude="$ACLOCAL_FLAGS"
-
-      if grep "^AM_GLIB_GNU_GETTEXT" configure.ac >/dev/null; then
-	echo "Creating $dr/aclocal.m4 ..."
-	test -r $dr/aclocal.m4 || touch $dr/aclocal.m4
-	echo "Running glib-gettextize...  Ignore non-fatal messages."
-	echo "no" | glib-gettextize --force --copy
-	echo "Making $dr/aclocal.m4 writable ..."
-	test -r $dr/aclocal.m4 && chmod u+w $dr/aclocal.m4
-      fi
-      if grep "^IT_PROG_INTLTOOL" configure.ac >/dev/null; then
-        echo "Running intltoolize..."
-	intltoolize --copy --force --automake
-      fi
-      if grep "^AM_PROG_XML_I18N_TOOLS" configure.ac >/dev/null; then
-        echo "Running xml-i18n-toolize..."
-	xml-i18n-toolize --copy --force --automake
-      fi
-      if grep "^LT_INIT" configure.ac >/dev/null; then
-	if test -z "$NO_LIBTOOLIZE" ; then 
-	  echo "Running libtoolize..."
-	  libtoolize --force --copy
+required_tools='autoconf autoheader automake aclocal glib-gettextize intltoolize libtoolize'
+for tool in $required_tools; do
+	if ! command -v "$tool" >/dev/null 2>&1; then
+		printf 'error: required build tool is missing: %s\n' "$tool" >&2
+		exit 1
 	fi
-      fi
-      echo "Running aclocal $aclocalinclude ..."
-      aclocal $aclocalinclude
-      if grep "^A[CM]_CONFIG_HEADER" configure.ac >/dev/null; then
-	echo "Running autoheader..."
-	autoheader
-      fi
-      echo "Running automake --gnu $am_opt ..."
-      automake --add-missing --copy --gnu $am_opt
-      echo "Running autoconf ..."
-      autoconf
-    )
-  fi
 done
 
-if test x$NOCONFIGURE = x; then
-  echo Running $srcdir/configure "$@" ...
-  $srcdir/configure "$@" \
-  && echo Now type \`make\' to compile. || exit 1
+if [ -n "${GNOME2_DIR:-}" ]; then
+	ACLOCAL_FLAGS="-I $GNOME2_DIR/share/aclocal ${ACLOCAL_FLAGS:-}"
+	LD_LIBRARY_PATH="$GNOME2_DIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+	PATH="$GNOME2_DIR/bin:$PATH"
+	export ACLOCAL_FLAGS LD_LIBRARY_PATH PATH
+fi
+
+printf 'processing %s\n' "$srcdir"
+printf 'Running glib-gettextize... Ignore non-fatal advisory messages.\n'
+printf 'no\n' | glib-gettextize --force --copy
+
+printf 'Running intltoolize...\n'
+intltoolize --copy --force --automake
+
+if [ -z "${NO_LIBTOOLIZE:-}" ]; then
+	printf 'Running libtoolize...\n'
+	libtoolize --force --copy
+fi
+
+printf 'Running aclocal %s...\n' "${ACLOCAL_FLAGS:-}"
+# ACLOCAL_FLAGS is intentionally a caller-provided list of command arguments.
+# shellcheck disable=SC2086
+aclocal ${ACLOCAL_FLAGS:-}
+
+printf 'Running autoheader...\n'
+autoheader
+
+printf 'Running automake --gnu...\n'
+automake --add-missing --copy --gnu
+
+# Automake emits trailing blanks in a handful of generated variable rules.
+# Normalize them so regeneration stays byte-for-byte clean in Git.
+for generated_makefile in Makefile.in */Makefile.in; do
+	if [ -f "$generated_makefile" ]; then
+		sed -i 's/[[:blank:]]\+$//' "$generated_makefile"
+	fi
+done
+
+printf 'Running autoconf...\n'
+autoconf
+
+if [ -z "${NOCONFIGURE:-}" ]; then
+	printf 'Running %s/configure...\n' "$srcdir"
+	"$srcdir/configure" "$@"
+	printf 'Configuration complete; run make to compile.\n'
 else
-  echo Skipping configure process.
+	printf 'Skipping configure because NOCONFIGURE is set.\n'
 fi

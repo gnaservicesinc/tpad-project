@@ -21,6 +21,17 @@
 #include "tpad_headers.h"
 
 extern GtkWidget *window;
-void set_title(){
-(cfg_show_full_path()) ? gtk_window_set_title(GTK_WINDOW(window),g_strescape(tpad_fp_get_current(),"\\\?\'\"")) : gtk_window_set_title(GTK_WINDOW(window),get_currentfile_basename());	
+void set_title(void)
+{
+	gchar *title = cfg_show_full_path() ? tpad_fp_get_current()
+	                                    : get_currentfile_basename();
+	gchar *escaped;
+
+	if (title == NULL)
+		return;
+
+	escaped = g_strescape(title, "\\\?\'\"");
+	gtk_window_set_title(GTK_WINDOW(window), escaped != NULL ? escaped : title);
+	g_free(escaped);
+	g_free(title);
 }

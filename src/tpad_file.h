@@ -55,8 +55,9 @@
 #define ERR 3
 #define REG 4
 int tpad_touch_check_file(char* fp);
-gchar *get_currentfile_basename();
-gchar *get_currentfile_dirname();
+/* The caller owns the returned path component. */
+gchar *get_currentfile_basename(void);
+gchar *get_currentfile_dirname(void);
 size_t tpad_get_file_size(char* filepath);
 gchar* getcRpath(void);
 gchar* clean_path(gchar *path);

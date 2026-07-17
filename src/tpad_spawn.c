@@ -23,32 +23,48 @@
 
 static gchar* path_self=NULL;
 
-void runn(){
+static gboolean spawn_tpad(const gchar *file)
+{
+	GError *error = NULL;
+	gchar *argv[3];
+	gboolean spawned;
+
+	if (path_self == NULL || *path_self == '\0') {
+		g_warning("Unable to start tpad: executable path is not set");
+		return FALSE;
+	}
+
+	argv[0] = path_self;
+	argv[1] = (file != NULL && *file != '\0') ? (gchar *) file : NULL;
+	argv[2] = NULL;
+
+	spawned = g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
+	                        NULL, NULL, NULL, &error);
+	if (!spawned) {
+		g_warning("Unable to start tpad: %s",
+		          error != NULL ? error->message : "unknown error");
+		g_clear_error(&error);
+	}
+
+	return spawned;
+}
+
+void runn(void){
 	new_thread_tpad(NULL);
 }
-void set_path_self_cleanup() {
-	path_self=(gchar*) NULL;
+void set_path_self_cleanup(void) {
+	g_clear_pointer(&path_self, g_free);
 }
 
 void set_path_self( gchar *c_self_path){
-		    path_self=g_strdup(c_self_path);	
+	g_free(path_self);
+	path_self=g_strdup(c_self_path);
 }
 
 void *tpad_spawn_command(void *ptr){
-	gchar * file_open_new_path = (gchar *) g_strdup((gchar*)ptr);
-	if(fork() == 0) {
-	execl("/bin/sh","sh","-c", (gchar*) g_strconcat(path_self," ",file_open_new_path,NULL), (gchar*) NULL);
-	pthread_exit( (void*) NULL);
-	}
-	pthread_exit( (void*) NULL);
+	spawn_tpad((const gchar *) ptr);
+	return NULL;
 }
 gint new_thread_tpad (gchar *file){
-	pthread_t thread=(pthread_t) 0;
-	gint  iThreadReturn= (gint) 0;
-	iThreadReturn = pthread_create(&thread,
-	                               NULL,
-	                               tpad_spawn_command,
-	                               (void*) file);
-	pthread_join(thread, NULL);
-	return(iThreadReturn);
+	return spawn_tpad(file) ? 0 : -1;
 }

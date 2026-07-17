@@ -47,9 +47,9 @@
 #define _TPAD_FP_STATE_FREE 3
 #endif
 
-void tpad_fp_init();
-void tpad_fp_set(gchar* fp);
-gchar* tpad_fp_get_current();
-void tpad_fp_cleanup();
+void tpad_fp_init(void);
+void tpad_fp_set(const gchar* fp);
+gchar* tpad_fp_get_current(void);
+void tpad_fp_cleanup(void);
 
 #endif

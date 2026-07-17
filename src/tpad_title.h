@@ -26,5 +26,5 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void set_title();
+void set_title(void);
 #endif

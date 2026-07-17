@@ -48,9 +48,9 @@
 #include <libintl.h>
 #include <glib/gi18n.h>
 #include <pthread.h>
-void runn();
-void set_path_self_cleanup();
+void runn(void);
+void set_path_self_cleanup(void);
 void set_path_self(gchar * c_path);
 void *tpad_spawn_command(void *ptr);
 gint new_thread_tpad (gchar *file);
-#endif 
+#endif

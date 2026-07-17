@@ -287,6 +287,19 @@ int mbedtls_internal_sha512_process( mbedtls_sha512_context *ctx,
     ctx->state[6] += G;
     ctx->state[7] += H;
 
+    /* Zeroise buffers and variables to clear sensitive data from memory. */
+    mbedtls_platform_zeroize( &A, sizeof( A ) );
+    mbedtls_platform_zeroize( &B, sizeof( B ) );
+    mbedtls_platform_zeroize( &C, sizeof( C ) );
+    mbedtls_platform_zeroize( &D, sizeof( D ) );
+    mbedtls_platform_zeroize( &E, sizeof( E ) );
+    mbedtls_platform_zeroize( &F, sizeof( F ) );
+    mbedtls_platform_zeroize( &G, sizeof( G ) );
+    mbedtls_platform_zeroize( &H, sizeof( H ) );
+    mbedtls_platform_zeroize( &W, sizeof( W ) );
+    mbedtls_platform_zeroize( &temp1, sizeof( temp1 ) );
+    mbedtls_platform_zeroize( &temp2, sizeof( temp2 ) );
+
     return( 0 );
 }
 
@@ -488,8 +501,7 @@ void mbedtls_sha512( const unsigned char *input,
 static const unsigned char sha512_test_buf[3][113] =
 {
     { "abc" },
-    { "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmn"
-      "hijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu" },
+    { "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu" },
     { "" }
 };
 

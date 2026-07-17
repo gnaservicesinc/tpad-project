@@ -2,17 +2,16 @@
 _Name=tpad
 _GenericName=tpad Text Editor
 _Comment=Edit text files
-Exec=tpad %U
+Exec=tpad %F
 Terminal=false
 Type=Application
 StartupNotify=true
 MimeType=text/plain;
 Icon=tpad
 Categories=GNOME;GTK;Utility;TextEditor;
-Actions=Window;Document;
+Actions=Window;
 _Keywords=Text;Plaintext;Write;
 
 [Desktop Action Window]
 _Name=Open a New Window
 Exec=tpad
-OnlyShowIn=Unity;

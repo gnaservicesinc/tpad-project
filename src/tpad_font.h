@@ -26,6 +26,6 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void select_font();
-void tpad_set_font( gchar *fontname);
+void select_font(void);
+void tpad_set_font(const gchar *fontname);
 #endif

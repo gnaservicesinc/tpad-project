@@ -27,29 +27,34 @@ extern unsigned int sdone;
 extern GtkWidget *findentry,*replaceentry;
 extern GtkTextIter match_start,match_end;
 
-int opt_find_replace(){
-    const gchar *old;
-    const gchar *new;
-	gchar* unknownContents;
-	unknownContents=NULL;
-	int hex;
+int opt_find_replace(void){
+	    const gchar *old;
+	    const gchar *new;
+		gchar *old_converted = NULL;
+		gchar *new_converted = NULL;
+		gchar *source_text;
 
-	if(doCOVT){
-		old=(const gchar *) g_strcompress(gtk_entry_get_text(GTK_ENTRY(findentry)));
-		new=(const gchar *) g_strcompress(gtk_entry_get_text(GTK_ENTRY(replaceentry)));
-	}
-	else {
-		new=( const gchar *)gtk_entry_get_text(GTK_ENTRY(replaceentry));
-		old=( const gchar *)gtk_entry_get_text(GTK_ENTRY(findentry));
+		if(doCOVT){
+			old_converted = g_strcompress(gtk_entry_get_text(GTK_ENTRY(findentry)));
+			new_converted = g_strcompress(gtk_entry_get_text(GTK_ENTRY(replaceentry)));
+			old = old_converted;
+			new = new_converted;
+		}
+		else {
+			new=( const gchar *)gtk_entry_get_text(GTK_ENTRY(replaceentry));
+			old=( const gchar *)gtk_entry_get_text(GTK_ENTRY(findentry));
+			}
+
+		if (old == NULL || old[0] == '\0') {
+			g_free(old_converted);
+			g_free(new_converted);
+			return 0;
 		}
 
-
-	GtkTextMark *  mark_start = (GtkTextMark *) gtk_text_mark_new ("mStart",TRUE);
-	GtkTextMark *  mark_end = (GtkTextMark *) gtk_text_mark_new ("mEnd",FALSE);
-	GtkTextIter start,end;
-	gchar *RevBuff;
-	gint failchck=0;
-	gint hadsele=0;
+		GtkTextMark *mark_start;
+		GtkTextMark *mark_end;
+		GtkTextIter start,end;
+		gint hadsele=0;
 
 	if(gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff))){
 		if(!gtk_text_buffer_get_selection_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end)) {
@@ -64,17 +69,24 @@ int opt_find_replace(){
 	hadsele=0;
 	}
 	
-	 content=tpad_replace_str((const char*)gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),&start,&end,FALSE),(const char*)old,(const char*)new); 
+		source_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),
+		                                         &start, &end, FALSE);
+		content = tpad_replace_str(source_text, old, new);
+		g_free(source_text);
+		g_free(old_converted);
+		g_free(new_converted);
 
-	if(content==NULL) return(0);
+		if(content==NULL) return(0);
 
 	gtk_text_buffer_begin_user_action(GTK_TEXT_BUFFER(mBuff));	
 	if(hadsele){
 
-			gtk_text_buffer_add_mark  (GTK_TEXT_BUFFER(mBuff),mark_start,&start);
-			gtk_text_buffer_add_mark  (GTK_TEXT_BUFFER(mBuff),mark_end,&end);
+			mark_start = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
+			                                         NULL, &start, TRUE);
+			mark_end = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
+			                                       NULL, &end, FALSE);
 			gtk_text_buffer_delete (GTK_TEXT_BUFFER(mBuff), &start, &end);
-	 		gtk_text_buffer_insert (GTK_TEXT_BUFFER(mBuff), &start, g_strdup(content), -1);
+			gtk_text_buffer_insert (GTK_TEXT_BUFFER(mBuff), &start, content, -1);
 			gtk_text_buffer_end_user_action (GTK_TEXT_BUFFER(mBuff));
 			gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff),&start);		
 					GtkTextIter mstart, mend;
@@ -95,6 +107,7 @@ int opt_find_replace(){
         gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff),&iter);  
 	}  
 	g_free(content);
+	content = NULL;
 	return(1);
 }
 
@@ -102,43 +115,63 @@ int opt_find_replace(){
 
 char *tpad_replace_str(const char *str, const char *old, const char *new)
 {
-	if(str == NULL || old == NULL || new == NULL) return((char *)str);
-
 	char *ret, *r;
 	const char *p, *q;
-	size_t oldlen = (size_t) strlen(old);
-	size_t count, retlen, newlen = (size_t) strlen(new);
+	size_t count = 0;
+	size_t delta;
+	size_t oldlen;
+	size_t newlen;
+	size_t retlen;
+	size_t strlen_value;
 
-	if(newlen >  PTRDIFF_MAX ||  oldlen > PTRDIFF_MAX) return(str); 
+	if (str == NULL || old == NULL || new == NULL)
+		return NULL;
 
-	int samesize = (oldlen == newlen);
+	oldlen = strlen(old);
+	newlen = strlen(new);
+	strlen_value = strlen(str);
 
-	if (!samesize) {
-		for (count = 0, p = str; (q = strstr(p, old)) != NULL; p = q + oldlen)
-			count++;
+	/* An empty needle never advances strstr(), so treat it as a no-op. */
+	if (oldlen == 0)
+		return g_strdup(str);
 
-		retlen = p - str + strlen(p) + count * (newlen - oldlen);
-	} else
-		retlen = strlen(str);
+	for (p = str; (q = strstr(p, old)) != NULL; p = q + oldlen) {
+		if (count == G_MAXSIZE)
+			return NULL;
+		count++;
+	}
 
-	if ( (ret = (char*) calloc(retlen + 1,sizeof(char)) ) == NULL) return NULL;
+	retlen = strlen_value;
+	if (newlen > oldlen) {
+		delta = newlen - oldlen;
+		if (count > (G_MAXSIZE - retlen) / delta)
+			return NULL;
+		retlen += count * delta;
+	} else if (oldlen > newlen) {
+		delta = oldlen - newlen;
+		if (count > G_MAXSIZE / delta || count * delta > retlen)
+			return NULL;
+		retlen -= count * delta;
+	}
+	if (retlen == G_MAXSIZE)
+		return NULL;
 
-	r = ret, p = str;
-	while (TRUE) {
-		if (!samesize && !count--)
-			break;
+	ret = g_try_malloc(retlen + 1);
+	if (ret == NULL)
+		return NULL;
 
-		if ((q = strstr(p, old)) == NULL)
-			break;
+	r = ret;
+	p = str;
+	while ((q = strstr(p, old)) != NULL) {
+		size_t prefix_length = (size_t) (q - p);
 
-		ptrdiff_t l = q - p;
-		memcpy(r, p, l);
-		r += l;
+		memcpy(r, p, prefix_length);
+		r += prefix_length;
 		memcpy(r, new, newlen);
 		r += newlen;
 		p = q + oldlen;
 	}
-	strcpy(r, p);
+	memcpy(r, p, strlen(p) + 1);
 
-	return( (char *) ret);
+	return ret;
 }

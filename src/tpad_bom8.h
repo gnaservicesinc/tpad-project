@@ -28,5 +28,9 @@
 #include "tpad_headers.h"
 
 gint tpad_string_has_bom8(gchar** string);
+gint tpad_string_has_bom8_len(const gchar *string, gsize length);
+gchar *tpad_utf8_bom_decode(const gchar *bytes, gsize length);
+gchar *tpad_utf8_bom_encode(const gchar *utf8, gsize length,
+	                         gsize *output_length);
 
 #endif

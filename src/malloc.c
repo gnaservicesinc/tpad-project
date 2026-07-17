@@ -1,4 +1,6 @@
 #include "malloc.h"
+#undef malloc
+#include <stdlib.h>
 
 void *rpl_malloc (size_t n){
 

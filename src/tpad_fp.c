@@ -22,31 +22,23 @@
 
 extern gchar* tpad_fp;
 extern int tpad_fp_state;
-static void* tpad_fp_calloc(size_t init_size);
-static void* tpad_fp_recalloc(size_t new_size);
 
 size_t cur = 0L;
 gchar* tpad_fp=NULL;
 int tpad_fp_state=_TPAD_FP_STATE_UNITIALIZED;
 
-gchar* tpad_fp_get_current(){
+gchar* tpad_fp_get_current(void){
 	return( (gchar *) g_strdup( (gchar *) tpad_fp) );
 }
 
-
-static void* tpad_fp_calloc(size_t init_size){
+void tpad_fp_cleanup(void){
+	g_clear_pointer(&tpad_fp, g_free);
 }
 
-
-static void* tpad_fp_recalloc(size_t new_size){
+void tpad_fp_init(void){
 }
-void tpad_fp_cleanup(){
-	//g_free(tpad_fp);
-	tpad_fp=NULL;
-}
-
-void tpad_fp_init(){
-}
-void tpad_fp_set(gchar* fp){
-	tpad_fp = (gchar *) g_strdup(fp);
+void tpad_fp_set(const gchar* fp){
+	gchar *replacement = g_strdup(fp);
+	g_free(tpad_fp);
+	tpad_fp = replacement;
 }

@@ -18,7 +18,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
-#ifndef _T_MAIN_H
-#define _T_MAIN_H
+#ifndef TPAD_ENTRY_H
+#define TPAD_ENTRY_H
 extern int main(int iargc,char* iargv[]);
-#endif
+int tpad_main(char *fchar);
+#endif /* TPAD_ENTRY_H */

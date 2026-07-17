@@ -26,7 +26,6 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-int toggle_spelling();
-void tpad_free_spelling();
-void *ttogle_spelling();
+int toggle_spelling(void);
+void tpad_free_spelling(void);
 #endif

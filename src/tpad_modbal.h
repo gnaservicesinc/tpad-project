@@ -26,9 +26,9 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-int tpad_modbal_check_armed();
-void tpad_modbal_set_zero();
-void tpad_modbal_set_one();
-void tpad_modbal_set_neg();
-int tpad_modbal_get();
+int tpad_modbal_check_armed(void);
+void tpad_modbal_set_zero(void);
+void tpad_modbal_set_one(void);
+void tpad_modbal_set_neg(void);
+int tpad_modbal_get(void);
 #endif

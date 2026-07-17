@@ -1,0 +1,59 @@
+# Tpad's Mbed TLS-derived code
+
+Tpad vendors a small, source-level subset of Mbed TLS.  The implementation
+files remain separate compilation units in `src/` and the public headers remain
+in `src/mbedtls/`; do not amalgamate them into Tpad source files.
+
+Upstream repository: <https://github.com/Mbed-TLS/mbedtls>
+
+## Provenance
+
+The baseline is the `mbedtls-2.16.3` tag, peeled commit
+`04a049bda1ceca48060b57bc4bcf5203ce591421`.  A byte-for-byte comparison
+against that tag was performed for the library sources and headers during the
+7.1.0.0 audit.  The intentional exceptions are:
+
+* `config.h` is Tpad's reduced/custom configuration. Its historical source is
+  retained in `config.h.orig.tar.xz`.
+* `check_config.h` contains earlier local/backported configuration checks.
+* `base64.c` and `mbedtls/base64.h` are byte-for-byte copies from the
+  `v2.16.12` tag, peeled commit
+  `cf4667126010c665341f9e50ef691b7ef8294188`.  This includes the constant-flow
+  Base64 implementation that replaced secret-dependent lookup-table access.
+* `md5.c` carries the zeroization hunk from upstream commit
+  `f21639fc2fe67a7e2ad6a70c7f1377c1b6a76053` and the self-test literal cleanup
+  from `70bdf8d1df2e6612f2a99fdecb6c8cbfe943ea30`.
+* `sha256.c` and `sha512.c` carry the zeroization hunks from upstream commit
+  `d5253bba324b2a31ad752f152ac424ccbf5dc00f`; `sha512.c` also carries the
+  self-test literal cleanup from
+  `70bdf8d1df2e6612f2a99fdecb6c8cbfe943ea30`.
+* `platform_util.c` omits headers and feature-selection code used only by the
+  disabled platform-time and threading modules; its zeroization implementation
+  remains the 2.16.3 implementation.
+
+The zeroization and constant-flow changes were released as security hardening
+in Mbed TLS 2.16.9 and 2.16.10, respectively.  Tpad intentionally backports
+only these relevant changes instead of mixing incompatible Mbed TLS release
+families.  Mbed TLS 4.x moved cryptographic implementation code to
+TF-PSA-Crypto and requires a deliberate API/build migration.
+
+Mbed TLS 2.x is no longer an upstream-maintained branch.  Re-audit this subset
+against a currently maintained upstream release before extending its use.
+MD5 is retained only as a user-requested checksum/display feature and must not
+be used for authentication, signatures, password storage, or other security
+decisions.
+
+## Updating
+
+1. Compare each candidate source and header with an exact signed upstream tag.
+2. Keep Mbed TLS-derived implementations in their own files and retain upstream
+   copyright and SPDX notices.
+3. Keep `config.h` limited to modules Tpad actually compiles and calls.
+4. If a source, header, or provenance file is added or removed, update
+   `src/Makefile.am`, regenerate `src/Makefile.in` with `./autogen.sh`, and
+   verify the file is present in `make dist` output.
+5. Run the upstream MD5, SHA-256, SHA-512, and Base64 self-tests plus Tpad's
+   binary-file streaming hash regression test under the configured sanitizers.
+
+The Mbed TLS-derived files are used under Apache-2.0.  The exact upstream
+Apache License 2.0 text is in `LICENSE` in this directory.

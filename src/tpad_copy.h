@@ -23,5 +23,5 @@
 #define  TPAD_COPY_H
 #include "tpad_headers.h"
 gint tpad_copy(char* source, char* dest);
-void* tpad_cp_remove_temp();
+void* tpad_cp_remove_temp(void);
 #endif

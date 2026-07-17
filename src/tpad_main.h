@@ -20,10 +20,10 @@
  ********************************************************************************/
 
 
-#ifndef _T_MAIN_H
-#define _T_MAIN_H
+#ifndef TPAD_MAIN_H
+#define TPAD_MAIN_H
 
 extern int tpad_main_impl(char* fchar);
 extern int tpad_main(char* fchar);
 
-#endif
+#endif /* TPAD_MAIN_H */

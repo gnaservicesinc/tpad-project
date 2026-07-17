@@ -7,4 +7,4 @@
 
 iconsdir =  ${datadir}/icons
 icons_DATA = tpad.png
-EXTRA_DIST = tpad.png
+EXTRA_DIST = tpad.png tpad_128.png

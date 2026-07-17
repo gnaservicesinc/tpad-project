@@ -33,76 +33,118 @@ GtkWidget *replaceentry;
 gboolean searchCase=FALSE;
 gboolean doCOVT=FALSE;
 GtkTextIter match_start,match_end;
+static gboolean find_match_found = FALSE;
+static GtkWidget *find_dialog_window = NULL;
 
-void do_find(GtkWidget *caller, GtkWidget *dialog){
-    const gchar *findwhat;
-	if(doCOVT)findwhat=g_strcompress(gtk_entry_get_text(GTK_ENTRY(findentry)));
-	else findwhat=gtk_entry_get_text(GTK_ENTRY(findentry));
-	
-    GtkTextIter iter;
-			GtkTextIter start,end;
-			gtk_text_buffer_get_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end);
-	if(searchCase){
-    if( gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff)) ) gtk_text_buffer_get_iter_at_mark (GTK_TEXT_BUFFER(mBuff), &iter, gtk_text_buffer_get_selection_bound (GTK_TEXT_BUFFER(mBuff)) );
-    else gtk_text_buffer_get_iter_at_mark (GTK_TEXT_BUFFER(mBuff), &iter, gtk_text_buffer_get_insert (GTK_TEXT_BUFFER(mBuff)) );
+static gboolean find_dialog_key_pressed(GtkWidget *dialog,
+	GdkEventKey *event, gpointer user_data)
+{
+	(void) user_data;
+	if (event->keyval != GDK_KEY_Escape)
+		return FALSE;
 
-    if (gtk_text_iter_forward_search (&iter, findwhat, GTK_TEXT_SEARCH_TEXT_ONLY, &match_start, &match_end, NULL)) {
-        gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),&match_end,0.0,FALSE,.5,.1);
-        gtk_text_buffer_select_range (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
-    }
-    else{	
-		
-        GtkTextIter insert = iter;
-        gtk_text_buffer_get_start_iter (GTK_TEXT_BUFFER(mBuff), &iter);
-        if (gtk_text_iter_forward_search (&iter, findwhat, GTK_TEXT_SEARCH_TEXT_ONLY, &match_start, &match_end, &insert))
-        {
-            gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),&match_end,0.0,FALSE,.5,.1);
-            gtk_text_buffer_select_range (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
-        }
-			sdone++;
-		
-    }
-  }
-else{
-    if( gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff)) ) gtk_text_buffer_get_iter_at_mark (GTK_TEXT_BUFFER(mBuff), &iter, gtk_text_buffer_get_selection_bound (GTK_TEXT_BUFFER(mBuff)) );
-    else gtk_text_buffer_get_iter_at_mark (GTK_TEXT_BUFFER(mBuff), &iter, gtk_text_buffer_get_insert (GTK_TEXT_BUFFER(mBuff)) );
+	gtk_widget_destroy(dialog);
+	return TRUE;
+}
 
-    if (gtk_text_iter_forward_search (&iter, findwhat, GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_start, &match_end, NULL)) {
-        gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),&match_end,0.0,FALSE,.5,.1);
-        gtk_text_buffer_select_range (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
-    }
-    else{
-        GtkTextIter insert = iter;
-        gtk_text_buffer_get_start_iter (GTK_TEXT_BUFFER(mBuff), &iter);
-        if (gtk_text_iter_forward_search (&iter, findwhat,GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_start, &match_end, &insert))
-        {
-            gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),&match_end,0.0,FALSE,.5,.1);
-            gtk_text_buffer_select_range (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
-        }
-			sdone++;
-		
-    }
-  }
+static void find_dialog_destroyed(GtkWidget *dialog, gpointer user_data)
+{
+	(void) dialog;
+	(void) user_data;
+	find_dialog_window = NULL;
+	findentry = NULL;
+	replaceentry = NULL;
+	find_match_found = FALSE;
+}
 
+void do_find(GtkWidget *caller, GtkWidget *dialog)
+{
+	const gchar *findwhat;
+	gchar *converted = NULL;
+	GtkTextSearchFlags flags;
+	GtkTextIter iter;
+
+	(void) caller;
+	(void) dialog;
+	find_match_found = FALSE;
+	if (findentry == NULL)
+		return;
+	if (doCOVT) {
+		converted = g_strcompress(gtk_entry_get_text(GTK_ENTRY(findentry)));
+		findwhat = converted;
+	} else {
+		findwhat = gtk_entry_get_text(GTK_ENTRY(findentry));
+	}
+	if (findwhat == NULL || *findwhat == '\0') {
+		g_free(converted);
+		return;
+	}
+	flags = searchCase ? GTK_TEXT_SEARCH_TEXT_ONLY
+	                   : GTK_TEXT_SEARCH_CASE_INSENSITIVE;
+
+	if (gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(mBuff)))
+		gtk_text_buffer_get_iter_at_mark(
+		        GTK_TEXT_BUFFER(mBuff), &iter,
+		        gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(mBuff)));
+	else
+		gtk_text_buffer_get_iter_at_mark(
+		        GTK_TEXT_BUFFER(mBuff), &iter,
+		        gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(mBuff)));
+
+	find_match_found = gtk_text_iter_forward_search(
+	        &iter, findwhat, flags, &match_start, &match_end, NULL);
+	if (!find_match_found) {
+		GtkTextIter limit = iter;
+
+		gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff), &iter);
+		find_match_found = gtk_text_iter_forward_search(
+		        &iter, findwhat, flags, &match_start, &match_end, &limit);
+		sdone++;
+	}
+	if (find_match_found) {
+		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(view), &match_end,
+		                             0.0, FALSE, .5, .1);
+		gtk_text_buffer_select_range(GTK_TEXT_BUFFER(mBuff),
+		                             &match_start, &match_end);
+	}
+	g_free(converted);
 }
 
 
 
 void do_replace(GtkWidget *caller, GtkWidget *dialog){	
+	gchar *replacement = NULL;
+	const gchar *replacement_text;
+
 	do_find(caller,dialog);
-	if(gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff))){
-        gtk_text_buffer_delete (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
-		if(doCOVT)gtk_text_buffer_insert (GTK_TEXT_BUFFER(mBuff), &match_start, g_strcompress(gtk_entry_get_text(GTK_ENTRY(replaceentry))), -1);
-		else gtk_text_buffer_insert (GTK_TEXT_BUFFER(mBuff), &match_start,gtk_entry_get_text(GTK_ENTRY(replaceentry)), -1);		
+	if (!find_match_found || replaceentry == NULL)
+		return;
+	if(doCOVT) {
+		replacement = g_strcompress(gtk_entry_get_text(GTK_ENTRY(replaceentry)));
+		replacement_text = replacement;
+	} else {
+		replacement_text = gtk_entry_get_text(GTK_ENTRY(replaceentry));
 	}
-		
+	if(gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff))){
+	        gtk_text_buffer_delete (GTK_TEXT_BUFFER(mBuff), &match_start, &match_end);
+			gtk_text_buffer_insert(GTK_TEXT_BUFFER(mBuff), &match_start,
+			                       replacement_text, -1);
+		}
+	g_free(replacement);
 }
 
 
 void do_find_replace(GtkWidget *caller, GtkWidget *dialog){
+	(void) caller;
+	(void) dialog;
 	opt_find_replace();
 }
-void replace_dialog(){
+void replace_dialog(void){
+	if (find_dialog_window != NULL) {
+		gtk_window_present(GTK_WINDOW(find_dialog_window));
+		return;
+	}
+
 	sdone=0;
     GtkWidget *dialog;
     GtkWidget *mainbox,*boxbutton,*findbox,*replacebox,*vseparator[3];
@@ -110,15 +152,17 @@ void replace_dialog(){
 	//GtkWidget *checkbutton;
 	GtkWidget *convtbutton;
 	
-    dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	    dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	find_dialog_window = dialog;
+	g_signal_connect(dialog, "destroy", G_CALLBACK(find_dialog_destroyed), NULL);
+	g_signal_connect(dialog, "key-press-event",
+	                 G_CALLBACK(find_dialog_key_pressed), NULL);
 	vseparator[0]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	vseparator[1]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	vseparator[2]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
     gtk_window_set_title(GTK_WINDOW(dialog),_FIND_FIND_AND_REPLACE);
     gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
     gtk_window_set_resizable (GTK_WINDOW(dialog),FALSE);
-
-    g_signal_connect(dialog,"destroy",G_CALLBACK(gtk_widget_destroy),NULL);
 
     mainbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     findbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
@@ -134,13 +178,19 @@ void replace_dialog(){
                         GTK_WIDGET (gtk_label_new(_SEARCH_FOR)), TRUE, TRUE, 1);
 	
 	//S_Clip=gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-	gchar *recived;
-	recived=NULL;
-	recived=gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	findentry = gtk_entry_new();
+		gchar *recived;
+		gchar *escaped = NULL;
+		recived=gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
+		findentry = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(findentry),65536);
 	gtk_entry_set_input_purpose (GTK_ENTRY(findentry),GTK_INPUT_PURPOSE_FREE_FORM);
-	if(recived) gtk_entry_set_text(GTK_ENTRY(findentry),g_strescape(recived,"\?\\\'\""));
+		if(recived) {
+			escaped = g_strescape(recived,"\?\\\'\"");
+			gtk_entry_set_text(GTK_ENTRY(findentry),
+			                   escaped != NULL ? escaped : recived);
+		}
+		g_free(escaped);
+		g_free(recived);
 
 	gtk_box_pack_start (GTK_BOX (findbox),
                         GTK_WIDGET (findentry), TRUE, TRUE, 1);	
@@ -189,7 +239,5 @@ void replace_dialog(){
     g_signal_connect(buttonfind,"clicked",G_CALLBACK(do_find), GTK_WINDOW(dialog));
     g_signal_connect(buttonreplace,"clicked",G_CALLBACK(do_replace),GTK_WINDOW(dialog));
     g_signal_connect(buttonfindreplace,"clicked",G_CALLBACK(do_find_replace),GTK_WINDOW(dialog));
-    g_signal_connect(dialog,"destroy",G_CALLBACK(gtk_widget_destroy),NULL);
-	
     gtk_widget_show_all(dialog);
 }

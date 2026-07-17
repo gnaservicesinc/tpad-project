@@ -8,5 +8,6 @@ compat \
 control \
 copyright \
 docs \
-menu \
-rules
+rules \
+source/format \
+source/options

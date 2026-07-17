@@ -26,6 +26,7 @@ extern gboolean doCOVT;
 
 
 		void h512_connector(GtkWidget *caller){
+	(void) caller;
 	gchar *clipboard_text = NULL;
 	gchar *recived = NULL;
 
@@ -46,6 +47,7 @@ extern gboolean doCOVT;
 	g_free(recived);
 	}
 		void h256_connector(GtkWidget *caller){
+	(void) caller;
 	gchar *clipboard_text = NULL;
 	gchar *recived = NULL;
 
@@ -66,6 +68,7 @@ extern gboolean doCOVT;
 	g_free(recived);
 	}
 		void hmd5_connector(GtkWidget *caller){
+	(void) caller;
 	gchar *clipboard_text = NULL;
 	gchar *recived = NULL;
 
@@ -86,6 +89,7 @@ extern gboolean doCOVT;
 	g_free(recived);
 	}
 	void base64_connector(GtkWidget *caller){
+	(void) caller;
 	gchar *clipboard_text = NULL;
 	gchar *recived = NULL;
 
@@ -106,6 +110,7 @@ extern gboolean doCOVT;
 	g_free(recived);
 	}
 		void fbase64_connector(GtkWidget *caller){
+	(void) caller;
 	gchar *clipboard_text = NULL;
 	gchar *recived = NULL;
 
@@ -126,29 +131,39 @@ extern gboolean doCOVT;
 	g_free(recived);
 	}
 		void base64_file_connector(GtkWidget *caller){
+	(void) caller;
 	char* recived= (char*) file2base64();
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
 	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+	g_free(recived);
 	}
 		void fbase64_file_connector(GtkWidget *caller){
+	(void) caller;
 	char* recived= (char*) filefrombase64();
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
 	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+	g_free(recived);
 	}
 
 		void h512_file_connector(GtkWidget *caller){
+	(void) caller;
 		char* recived= (char*) file2sha512();
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
 	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+	g_free(recived);
 
 	}
 		void h256_file_connector(GtkWidget *caller){
+	(void) caller;
 	char* recived= (char*) file2sha256();
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
 	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+	g_free(recived);
 	}
 		void hmd5_file_connector(GtkWidget *caller){
+	(void) caller;
 		char* recived= (char*) file2md5();
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
 	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+	g_free(recived);
 	}

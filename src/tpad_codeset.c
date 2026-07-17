@@ -20,39 +20,49 @@
  ********************************************************************************/
 #include "tpad_headers.h"
 
-static char* tp_codeset_converter(const gchar * String, GIConv converter, gsize length);
+static gchar *tp_codeset_converter(const gchar *string, gsize length,
+                                   const gchar *destination_codeset,
+                                   const gchar *source_codeset);
 
 
 
-gchar* tpad_codeset_convert_to_utf8_from_current_local( const gchar * StringToConvert, gsize length) {
-	
+gchar *tpad_codeset_convert_to_utf8_from_current_local(
+        const gchar *string, gsize length)
+{
+	const gchar *codeset;
 
-	GIConv converter = (GIConv) g_iconv_open("UTF-8", g_get_codeset());
-
-	return( tp_codeset_converter(StringToConvert, converter, length) );
-
-}
-
-gchar* tpad_codeset_convert_to_curent_local_from_utf8( const gchar * StringToConvert, gsize length) {
-
-	GIConv converter = (GIConv) g_iconv_open(g_get_codeset(),"UTF-8");
-	return( tp_codeset_converter(StringToConvert, converter, length) );
-
+	(void) g_get_charset(&codeset);
+	return tp_codeset_converter(string, length, "UTF-8", codeset);
 
 }
 
+gchar *tpad_codeset_convert_to_curent_local_from_utf8(
+        const gchar *string, gsize length)
+{
+	const gchar *codeset;
 
-static char* tp_codeset_converter(const gchar * String, GIConv converter, gsize length) {
-	gsize *bytes_written=0;
-        GError *err = NULL;
+	(void) g_get_charset(&codeset);
+	return tp_codeset_converter(string, length, codeset, "UTF-8");
 
-	static char* ConvertedString = NULL;
-	ConvertedString = (const char*)  g_convert_with_iconv( String, length,converter,NULL,bytes_written,&err);
+}
 
-	if (err != NULL){
-		gerror_warn(err->message,_CONVERT_FAILED,TRUE,TRUE);
-		g_error_free (err);	
+static gchar *tp_codeset_converter(const gchar *string, gsize length,
+                                   const gchar *destination_codeset,
+                                   const gchar *source_codeset)
+{
+	GError *error = NULL;
+	gchar *converted;
+
+	if (string == NULL)
+		return NULL;
+
+	converted = g_convert(string, length, destination_codeset,
+	                      source_codeset, NULL, NULL, &error);
+	if (converted == NULL) {
+		gerror_warn(error != NULL ? error->message : _CONVERT_FAILED,
+		            _CONVERT_FAILED, TRUE, FALSE);
+		g_clear_error(&error);
 	}
-	else return( ConvertedString );
 
+	return converted;
 }

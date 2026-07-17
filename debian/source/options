@@ -1,0 +1,4 @@
+tar-ignore = BUILDLOGS
+tar-ignore = *~
+tar-ignore = autom4te.cache
+tar-ignore = */.deps

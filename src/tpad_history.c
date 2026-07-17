@@ -22,16 +22,17 @@
 extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
 
-void do_undo(){
+void do_undo(void){
    if(gtk_source_buffer_can_undo(GTK_SOURCE_BUFFER(mBuff))) gtk_source_buffer_undo(GTK_SOURCE_BUFFER(mBuff));
 }
 
 
-void do_redo(){
+void do_redo(void){
   if(gtk_source_buffer_can_redo(GTK_SOURCE_BUFFER(mBuff)))  gtk_source_buffer_redo(GTK_SOURCE_BUFFER(mBuff));
 }
 
 void on_past (GtkWidget *caller){
+	(void) caller;
 	(cfg_line_wrap()) ? gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_WORD) : gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_NONE);
 
 	

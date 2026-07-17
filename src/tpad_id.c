@@ -19,59 +19,80 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-gchar* tpad_id_get_id() {
-/*
-	sd_id128_t id;
-	sd_id128_get_machine_app_specific(APP_ID_TPAD, &id);
-	assert(sd_id128_is_null(id));
-	gchar* rid = (gchar*) g_strdup_vprintf(SD_ID128_FORMAT_STR,SD_ID128_FORMAT_VAL(id));
 
-return( (gchar*) rid);
-*/
-#define BUFF_SIZE_MIN 1
-        sd_id128_t id;
-	sd_id128_get_machine_app_specific(APP_ID_TPAD,&id);
-
-int check=0;
-size_t buffer_size = (size_t) BUFF_SIZE_MIN;
-
-int inotdone=1;
-char* buff = (char*) NULL;
-char* LargerBuffer =NULL;
-
-while (inotdone)
+#ifndef HAVE_SD_ID128_GET_MACHINE_APP_SPECIFIC
+static int tpad_hmac_sha256(const unsigned char key[16],
+                            const unsigned char input[16],
+                            unsigned char output[32])
 {
-LargerBuffer = (char*) realloc(buff,buffer_size * sizeof(char));
+	mbedtls_sha256_context context;
+	unsigned char inner_pad[64];
+	unsigned char outer_pad[64];
+	unsigned char inner_hash[32];
+	size_t i;
+	int result = -1;
 
-if ( LargerBuffer != NULL){
-	buff = LargerBuffer;
+	memset(inner_pad, 0x36, sizeof(inner_pad));
+	memset(outer_pad, 0x5c, sizeof(outer_pad));
+	for (i = 0; i < 16; i++) {
+		inner_pad[i] ^= key[i];
+		outer_pad[i] ^= key[i];
+	}
+
+	mbedtls_sha256_init(&context);
+	if (mbedtls_sha256_starts_ret(&context, 0) != 0 ||
+	    mbedtls_sha256_update_ret(&context, inner_pad, sizeof(inner_pad)) != 0 ||
+	    mbedtls_sha256_update_ret(&context, input, 16) != 0 ||
+	    mbedtls_sha256_finish_ret(&context, inner_hash) != 0)
+		goto cleanup;
+
+	if (mbedtls_sha256_starts_ret(&context, 0) != 0 ||
+	    mbedtls_sha256_update_ret(&context, outer_pad, sizeof(outer_pad)) != 0 ||
+	    mbedtls_sha256_update_ret(&context, inner_hash, sizeof(inner_hash)) != 0 ||
+	    mbedtls_sha256_finish_ret(&context, output) != 0)
+		goto cleanup;
+
+	result = 0;
+
+cleanup:
+	mbedtls_sha256_free(&context);
+	memset(inner_hash, 0, sizeof(inner_hash));
+	memset(inner_pad, 0, sizeof(inner_pad));
+	memset(outer_pad, 0, sizeof(outer_pad));
+	return result;
 }
-	else {
-		free(buff);
-		exit(1);
-		}
 
-check = snprintf(buff,buffer_size,SD_ID128_FORMAT_STR,SD_ID128_FORMAT_VAL(id));
+static int tpad_get_app_specific_id(sd_id128_t *result)
+{
+	sd_id128_t machine;
+	sd_id128_t application = APP_ID_TPAD;
+	unsigned char digest[32];
 
-//check = g_vsnprintf(buff,buffer_size,SD_ID128_FORMAT_STR,SD_ID128_FORMAT_VAL(id));
+	if (sd_id128_get_machine(&machine) < 0 ||
+	    tpad_hmac_sha256(machine.bytes, application.bytes, digest) != 0)
+		return -1;
 
-if (check >=0 && check < buffer_size) {
-	inotdone = 0;
-	break;
+	memcpy(result->bytes, digest, sizeof(result->bytes));
+	result->bytes[6] = (result->bytes[6] & 0x0f) | 0x40;
+	result->bytes[8] = (result->bytes[8] & 0x3f) | 0x80;
+	memset(digest, 0, sizeof(digest));
+	return 0;
 }
-else if (check >= buffer_size){
-	buffer_size = check + 1;
-	continue;
+#else
+static int tpad_get_app_specific_id(sd_id128_t *result)
+{
+	return sd_id128_get_machine_app_specific(APP_ID_TPAD, result);
 }
+#endif
 
-else if (check < 0) {
-	fprintf(stderr,"FAILED -- Encoding Error!\nERROR DETECTED IN tpad_id.c \nsnprintf returned less than zero in function tpad_id_get_id().\nPlease file a bug report at https://bugs.launchpad.net/tpad-project/+filebug");	 exit(1);
-}
+gchar *tpad_id_get_id(void)
+{
+	sd_id128_t id = SD_ID128_NULL;
+	/* systemd 204 declares this API with a 33-byte buffer but no size macro. */
+	char formatted[33];
 
-else exit(1);
+	if (tpad_get_app_specific_id(&id) < 0)
+		return g_strdup("unavailable");
 
-}
-return (buff);
-//return (g_strdup(buff));
-
+	return g_strdup(sd_id128_to_string(id, formatted));
 }

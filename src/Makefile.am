@@ -2,26 +2,20 @@
 
 ## Created by Anjuta
 
-AM_CPPFLAGS = -O3\
+AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(localedir)"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\" \
-	$(TPAD_CFLAGS) -O3 -lpthread -lm
+	$(TPAD_CFLAGS) \
+	$(SYSTEMD_CFLAGS)
 
-AM_CFLAGS =\
-	 -Wall\
-	 -g0 \
-	 -O3 \
-	 -lm \
-	-lpthread
+AM_CFLAGS = -Wall -Wextra
 
 
 bin_PROGRAMS = tpad
 
 tpad_SOURCES = \
-	../autogen.sh \
 	def.h \
-	aes.c \
 	error_warn.c \
 	error_warn.h \
 	include.h \
@@ -85,8 +79,6 @@ tpad_SOURCES = \
 	tpad_new_file.h \
 	tpad_open_file.c \
 	tpad_open_file.h \
-	tpad_magic.c \
-	tpad_magic.h \
 	tpad_fp.c \
 	tpad_fp.h \
 	tpad_headers.h \
@@ -101,10 +93,6 @@ tpad_SOURCES = \
 	tpad_save.h \
 	tpad_tree.c \
 	tpad_tree.h \
-	tpad_watch.c \
-	tpad_watch.h \
-	tpad_modbal.h \
-	tpad_modbal.c \
 	tpad_spawn.c \
 	tpad_spawn.h \
 	tpad_string.c \
@@ -113,38 +101,43 @@ tpad_SOURCES = \
 	tpad_textstats.h \
 	tpad_hash.h \
 	tpad_hash.c \
-	threading.c \
 	mbedtls/check_config.h \
 	mbedtls/config.h \
+	mbedtls/base64.h \
+	mbedtls/platform.h \
 	mbedtls/md5.h \
 	mbedtls/sha256.h \
 	mbedtls/sha512.h \
-	mbedtls/threading.h \
-	mbedtls/timing.h \
-	mbedtls/version.h \
-	mbedtls/base64.h \
-	mbedtls/havege.h \
-	mbedtls/md.h \
-	mbedtls/aes.h \
-	mbedtls/md_internal.h \
-	mbedtls/aesni.h \
- 	mbedtls/platform.h \
 	mbedtls/platform_util.h \
 	mbedtls/platform_time.h \
-	havege.c \
-	sha512.c \
-	sha256.c \
-	md5.c \
 	base64.c \
-	timing.c \
-	version.c \
-	version_features.c \
-	platform_util.c \
-	platform.c  
+	md5.c \
+	sha256.c \
+	sha512.c \
+	platform_util.c
 
-tpad_CFLAGS = -D_XOPEN_SOURCE=600 -g0 -O3
+tpad_CFLAGS = \
+	-D_XOPEN_SOURCE=700 \
+	-std=gnu99 \
+	-Wall \
+	-Wextra \
+	-Werror \
+	-Wformat=2 \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wshadow \
+	-Wpointer-arith \
+	-Wwrite-strings
 
-tpad_LDFLAGS = -O3
-tpad_LDADD = $(TPAD_LIBS)\
-	-lpthread -lm
+tpad_LDADD = $(TPAD_LIBS) $(SYSTEMD_LIBS)
 
+EXTRA_DIST = \
+	mbedtls/LICENSE \
+	mbedtls/README.tpad \
+	mbedtls/config.h.orig.tar.xz \
+	tpad_watch.c \
+	tpad_watch.h \
+	tpad_modbal.c \
+	tpad_modbal.h \
+	tpad_magic.c \
+	tpad_magic.h

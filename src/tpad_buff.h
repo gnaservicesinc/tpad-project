@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
-/ ********************************************************************************/
+ ********************************************************************************/
 
 #ifndef TPAD_BBUFF_H
 #define  TPAD_BBUFF_H
@@ -27,9 +27,9 @@
 #endif
 #include "tpad_headers.h"
 
-unsigned int tpad_buff_add();
+unsigned int tpad_buff_add(void);
 GtkSourceView *tpad_buff_get_view(unsigned int key);
 GtkSourceBuffer  *tpad_buff_get_buff(unsigned int key);
-void set_buffer();
-gboolean tpad_clean_mbuff();
+void set_buffer(void);
+gboolean tpad_clean_mbuff(void);
 #endif

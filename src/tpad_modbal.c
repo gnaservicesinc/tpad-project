@@ -34,19 +34,19 @@ static void modbal_neg();
 static void modbal_zero();
 static int modbal_get();  
 /*
-void tpad_modbal_set_zero(){ modbal_zero();}
-void tpad_modbal_set_one(){ modbal_one();}
-void tpad_modbal_set_neg(){ modbal_neg();}
-int tpad_modbal_check_armed(){ return(modbal_armed());}
-int tpad_modbal_get(){ return(modbal_get());}
+void tpad_modbal_set_zero(void){ modbal_zero();}
+void tpad_modbal_set_one(void){ modbal_one();}
+void tpad_modbal_set_neg(void){ modbal_neg();}
+int tpad_modbal_check_armed(void){ return(modbal_armed());}
+int tpad_modbal_get(void){ return(modbal_get());}
 */
-void tpad_modbal_set_zero(){ int a=0;}
-void tpad_modbal_set_one(){ int a=0;}
-void tpad_modbal_set_neg(){ int a=0;}
-int tpad_modbal_check_armed(){ return(0);}
-int tpad_modbal_get(){ return(0);}
+void tpad_modbal_set_zero(void){ int a=0;}
+void tpad_modbal_set_one(void){ int a=0;}
+void tpad_modbal_set_neg(void){ int a=0;}
+int tpad_modbal_check_armed(void){ return(0);}
+int tpad_modbal_get(void){ return(0);}
 
-static int modbal_armed () {
+static int modbal_armed(void) {
 	int iRes=0;
 	  pthread_mutex_lock( &mutexA );
 	 while ( pthread_mutex_trylock(&mutexB) ){
@@ -62,7 +62,7 @@ static int modbal_armed () {
     	pthread_mutex_unlock(&mutexB);
 	return(iRes);
 }
-static void modbal_zero() {
+static void modbal_zero(void) {
 
 	  pthread_mutex_lock( &mutexA );
 	 while ( pthread_mutex_trylock(&mutexB) ){
@@ -76,7 +76,7 @@ static void modbal_zero() {
     	pthread_mutex_unlock(&mutexB);
 }
 
-static void modbal_one() {
+static void modbal_one(void) {
 	pthread_mutex_lock( &mutexA );
 	 while ( pthread_mutex_trylock(&mutexB) ){
 		pthread_mutex_unlock(&mutexA); 
@@ -89,7 +89,7 @@ static void modbal_one() {
     	pthread_mutex_unlock(&mutexB);
 }
 
-static void modbal_neg() {
+static void modbal_neg(void) {
 		  pthread_mutex_lock( &mutexA );
 	 while ( pthread_mutex_trylock(&mutexB) ){
 		pthread_mutex_unlock(&mutexA); 
@@ -102,7 +102,7 @@ static void modbal_neg() {
     	pthread_mutex_unlock(&mutexB);
 }
 
-static int modbal_get() {
+static int modbal_get(void) {
 	int iRets=0;
 	 pthread_mutex_lock( &mutexA );
 	 while ( pthread_mutex_trylock(&mutexB) ){

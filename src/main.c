@@ -21,15 +21,42 @@
  ******************************************************************************/
 ////////////////////////////////////////////////////////////////////////
 #include "tpad_headers.h"
-pthread_mutex_t ntpad_mutex     = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t  condition_var   = PTHREAD_COND_INITIALIZER;
-////////////////////////////////////////////////////////////////////////
 #ifdef G_OS_WIN32
 extern gchar *prefix;
 extern gchar *localedir;
 #endif
-// Forward declaration
-static void* ntpad(void *ptr);
+
+#ifndef G_OS_WIN32
+static int fork_tpad_window(const char *argument)
+{
+	gchar *path = argument != NULL ? clean_path((gchar *) argument) : NULL;
+	pid_t child;
+
+	if (argument != NULL && path == NULL) {
+		g_warning("Unable to convert file name to UTF-8: %s", argument);
+		return -1;
+	}
+
+	/* Fork while the launcher is still single-threaded and before GTK is
+	 * initialized.  This preserves tpad's historical non-blocking command
+	 * line behavior without the unsafe worker-thread-then-fork sequence. */
+	child = fork();
+	if (child < 0) {
+		g_warning("Unable to start tpad: %s", g_strerror(errno));
+		g_free(path);
+		return -1;
+	}
+
+	if (child > 0) {
+		g_free(path);
+		return 0;
+	}
+
+	int result = tpad_main(path);
+	g_free(path);
+	_exit(result == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+}
+#endif
 
 // Wrapper for tpad_main to avoid implicit declaration
 int tpad_main(char* fchar) {
@@ -41,6 +68,9 @@ int tpad_main(char* fchar) {
 ////////////////////////////////////////////////////////////////////////
 extern int main(int argc, char* argv[])
 {
+	/* Filename conversion and gettext both depend on the environment locale.
+	 * A process otherwise begins in the C locale, even when LC_ALL is set. */
+	(void) setlocale(LC_ALL, "");
 
 	////////////////////////////////////////////////////////////////////////
 	// Native Language Support Int
@@ -69,32 +99,14 @@ extern int main(int argc, char* argv[])
 	set_path_self(argv[0]);
 
 
-	// Fork off a thread to tpad_main for each argument passed and exit
-        // or fork off a thead with no arguments to tpad_main and exit.
-
-	// Declare an array of threads as well as a int for return code the size of argc plus one.
-
-	pthread_t thread[argc + 1];
-	gint  iThreadReturn[argc + 1];
-
-	if (argc > 1){
-		int i=0;
-		for (i = 1; i < argc; i += 1){
-		iThreadReturn[i] = pthread_create(&thread[i],
-	                               NULL,
-	                               ntpad,
-	                               (void*) clean_path(argv[i]) );
-		sleep(1);
-	pthread_detach(thread[i]);
-		}
-	}
-	else{
-		iThreadReturn[0] = pthread_create(&thread[0],
-	                               NULL,
-	                               ntpad,
-	                               (void*) "" );
-		sleep(1);
-	pthread_detach(thread[0]);
+#ifdef G_OS_WIN32
+	/* Windows has no fork().  Keep one window per file, with the first
+	 * window hosted by the original process. */
+	for (int i = 2; i < argc; i++) {
+		gchar *path = clean_path(argv[i]);
+		if (new_thread_tpad(path) != 0)
+			g_warning("Unable to open an additional tpad window");
+		g_free(path);
 	}
 
 	////////////////////////////////////////////////////////////////////////
@@ -102,23 +114,23 @@ extern int main(int argc, char* argv[])
 	////////////////////////////////////////////////////////////////////////
 
 
-	return (0);
-	////////////////////////////////////////////////////////////////////////
-}
+	gchar *path = argc > 1 ? clean_path(argv[1]) : NULL;
+	int result = tpad_main(path);
+	g_free(path);
+	return result;
+#else
+	int result = 0;
 
-static void* ntpad(void *ptr){
-
-   pthread_mutex_lock( &ntpad_mutex );
-
-	char* ptrargv = (char*) ptr;
-	if(fork() == 0) {
-	 tpad_main(ptrargv);
+	if (argc > 1) {
+		for (int i = 1; i < argc; i++) {
+			if (fork_tpad_window(argv[i]) != 0)
+				result = 1;
+		}
+	} else if (fork_tpad_window(NULL) != 0) {
+		result = 1;
 	}
-#ifdef G_OS_WIN32
-	g_free (prefix);
-	g_free (localedir);
-#endif
-	pthread_mutex_unlock( &ntpad_mutex );
 
-  	pthread_exit( (void*) NULL );
+	return result;
+#endif
+	////////////////////////////////////////////////////////////////////////
 }

@@ -22,7 +22,7 @@
 #include "tpad_headers.h"
 extern GtkWidget *window;
 
-void gerror_log(gchar *c_msg){
+void gerror_log(const gchar *c_msg){
 		
 		/* Disabled 
 			gchar *error_msg;
@@ -59,7 +59,7 @@ gint gerror_openguard_popup(gchar *c_fileName, gchar * foundFilePath) {
 		gtk_widget_destroy(GTK_WIDGET(ogDialog));
 	return(iret);
 }
-void gerror_popup(gchar *c_msg) {
+void gerror_popup(const gchar *c_msg) {
 		GtkWidget* errorDialog;
 		errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),GTK_DIALOG_MODAL,GTK_MESSAGE_ERROR,
 		                                     GTK_BUTTONS_OK,"ERROR!");
@@ -70,7 +70,8 @@ void gerror_popup(gchar *c_msg) {
 		gtk_widget_destroy(GTK_WIDGET(errorDialog));
 }
 
-void gerror_warn(gchar *c_msg, gchar *extra_information, gboolean slog, gboolean abort)
+void gerror_warn(const gchar *c_msg, const gchar *extra_information,
+                 gboolean slog, gboolean abort)
   {
 	    gchar *msg;
 	    msg=g_strconcat(c_msg,"\n",extra_information,NULL);

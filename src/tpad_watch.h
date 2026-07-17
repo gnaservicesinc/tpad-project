@@ -26,6 +26,6 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void tpad_watch_fname();
-void tpad_watch_exit();
+void tpad_watch_fname(void);
+void tpad_watch_exit(void);
 #endif

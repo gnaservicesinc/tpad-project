@@ -25,13 +25,6 @@ extern gboolean doCOVT;
 extern GtkWidget *window;
 extern GtkSourceView *view;
 
- #ifdef HAVE_LIBMAGIC
-void toggle_use_magic_settings(GtkWidget *caller){
-    cfg_set_use_magic ((int)gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
-	cfg_save();
-}
-#endif
-////////////////////////////////////////////////////////////////////
 void toggle_use_open_guard(GtkWidget *caller){
     cfg_set_use_open_guard ((int)gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
 	cfg_save();
@@ -45,8 +38,12 @@ void toggle_line_wrap(GtkWidget *caller){
 ////////////////////////////////////////////////////////////////////
 
 void toggle_show_full_path(GtkWidget *caller){
- (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller))) ? cfg_set_show_full_path(1) : cfg_set_show_full_path(0);	
-if(tpad_fp_get_current()) set_title();
+	gchar *current;
+
+	(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller))) ? cfg_set_show_full_path(1) : cfg_set_show_full_path(0);
+	current = tpad_fp_get_current();
+	if(current != NULL) set_title();
+	g_free(current);
 }
 ////////////////////////////////////////////////////////////////////
 #ifdef AUTO_TAB_TOGGLE

@@ -21,5 +21,5 @@
 #ifndef _TPAD_RELOAD_H
 #define _TPAD_RELOAD_H
 #include "tpad_headers.h"
-void* tpad_reload();
+void tpad_reload(void);
 #endif

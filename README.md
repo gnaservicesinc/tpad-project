@@ -1,61 +1,50 @@
-# tpad - Text Editor
+# Tpad
 
-tpad is a simple text editor built with GTK and GtkSourceView.
+Tpad is a small, fast text editor for plain text and source files. The current
+application uses GTK 3, GtkSourceView 3, and gtkspell3. Each command-line file
+opens in its own editor window.
 
-## GTK-4 Migration
+The File menu includes a Print action (`Ctrl+P`) that opens GTK's native system
+print dialog. Printer selection, print-to-file, page setup, ranges, and other
+options come from the desktop print service.
 
-This codebase has been updated to use GTK-4 and GtkSourceView-5 instead of the original GTK-3 and GtkSourceView-3. The migration involved several key changes:
+## Building
 
-1. Updated build system to use GTK-4 and GtkSourceView-5
-2. Updated UI creation to use GTK-4 APIs
-3. Updated event handling for GTK-4
-4. Updated container APIs to use GTK-4 methods
-5. Updated menu system to use GMenu and GtkPopoverMenu
-6. Updated spell checking to use libspelling instead of gtkspell3
+On Debian or Ubuntu, install the normal Autotools toolchain plus these project
+development packages:
 
-## Building tpad
+- `libgtk-3-dev`
+- `libgtksourceview-3.0-dev`
+- `libgtkspell3-3-dev`
+- `libsystemd-dev`
+- `gettext`, `intltool`, `libtool`, and `pkg-config`
 
-To build tpad, you need the following dependencies:
+Then build and test from the repository root:
 
-- GTK-4
-- GtkSourceView-5
-- libspelling-1 (for spell checking)
-- Other standard libraries (see configure.ac)
-
-### Build Steps
-
-```bash
-# Generate build files
+```sh
 ./autogen.sh
-
-# Configure the build
-./configure
-
-# Build the application
-make
-
-# Install (optional)
-sudo make install
+make -j"$(nproc)"
+make check
 ```
 
-## Known Issues
+`./autogen.sh` regenerates the Autotools files and runs `configure`. Use
+`NOCONFIGURE=1 ./autogen.sh` when only the generated build files are needed.
 
-The GTK-4 migration is a work in progress. Some features may not work correctly:
+Tpad keeps its small, embedded mbedTLS hashing subset as separate source and
+header files under `src/`; its provenance and license are documented in
+`src/mbedtls/README.tpad` and `src/mbedtls/LICENSE`.
 
-1. Some UI elements may not appear correctly due to GTK-4's different layout system
-2. The spell checking implementation using libspelling is new and may have some issues
-3. Package naming conventions for GTK-4 and related libraries may vary across different Ubuntu versions
+## Release testing and packaging
 
-## Package Naming Notes
+The repeatable clang-23 sanitizer, static-analyzer, Valgrind, fuzzing, GUI, and
+packaging procedure is in [RELEASE_TESTING.md](RELEASE_TESTING.md). Debian
+metadata is under `debian/`, and the strict Core 26 Snap recipe is
+`snap/snapcraft.yaml`.
 
-The configure.ac file includes fallback options for different package naming conventions:
-
-- GTK-4 may be named `gtk4` or `gtk-4.0` depending on the distribution
-- GTKSourceView-5 may be named `gtksourceview-5` or `gtksourceview-5.0`
-- libspelling may be named `libspelling-1` or `spelling-1`
-
-If you encounter build issues related to package names, you may need to adjust the package names in configure.ac to match your system.
+Report bugs at <https://bugs.launchpad.net/tpad-project/+filebug>.
 
 ## License
 
-tpad is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Tpad is distributed under the GNU General Public License, version 3 or later.
+See `COPYING` and `debian/copyright` for the complete licensing and bundled-code
+notices.

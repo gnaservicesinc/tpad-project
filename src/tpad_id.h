@@ -23,5 +23,5 @@
 #define _TPAD_ID_H
 
 #include "include.h"
-gchar* tpad_id_get_id();
+gchar *tpad_id_get_id(void);
 #endif

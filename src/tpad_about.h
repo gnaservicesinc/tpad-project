@@ -26,5 +26,5 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void show_about();
+void show_about(void);
 #endif

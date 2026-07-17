@@ -49,5 +49,5 @@
 #include <time.h>
 #include <errno.h>
 #include "tpad_headers.h"
-void new_file();
+void new_file(void);
 #endif

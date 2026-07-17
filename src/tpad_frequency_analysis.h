@@ -27,5 +27,5 @@
 #endif
 #include "tpad_headers.h"
 #define FA_TABLE_SIZE 1024
-int tpad_frequency_analysis();
+int tpad_frequency_analysis(void);
 #endif

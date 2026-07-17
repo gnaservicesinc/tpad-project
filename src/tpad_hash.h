@@ -26,18 +26,20 @@
 char *str2sha512(const char *str);
 char *str2sha256(const char *str);
 char *str2md5(const char *str);
-char *file2sha256();
-char *file2md5();
-char *file2base64();
-char *filefrombase64();
-char *file2sha512();
-char* tpad_hash_read_in_file(char* fp);
+char *file2sha256(void);
+char *file2md5(void);
+char *file2base64(void);
+char *filefrombase64(void);
+char *file2sha512(void);
+/* Returns a newly allocated SHA-512 hex digest, or a newly allocated error marker. */
+char *tpad_hash_file_sha512(const char *path);
+char *tpad_hash_read_in_file(const char *fp);
 char *str2base64(const char *str);
 char *strFrombase64(const char *str);
-char* tpad_hash_get_file();
-char *data_to_hex(void* pdata);
-char* tpad_hash_choose_file_and_get_contents();
-char *curTxtbuff2sha512();
-char *curFile2sha512();
-char *curBin2sha512();
+char *tpad_hash_get_file(void);
+char *data_to_hex(const void *pdata, size_t length);
+char *tpad_hash_choose_file_and_get_contents(void);
+char *curTxtbuff2sha512(void);
+char *curFile2sha512(void);
+char *curBin2sha512(void);
 #endif

@@ -19,284 +19,460 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-extern GtkWidget *window;
-#ifndef _Space_
-#define _Space_ 32
-#endif
 
+extern GtkWidget *window;
 extern GtkSourceBuffer *mBuff;
 
-char *curBin2sha512(){
-	char bbuffer[BUFSIZ];
-  	readlink("/proc/self/exe", bbuffer, BUFSIZ);
-	return ( (char *)str2sha512( tpad_hash_read_in_file (bbuffer) ) );
+typedef int (*TpadHashUpdate)(void *context,
+                              const unsigned char *data,
+                              size_t length);
+
+static char *tpad_hash_error(void);
+static gboolean tpad_hash_update_file(const char *path,
+                                      void *context,
+                                      TpadHashUpdate update);
+static int tpad_sha512_update(void *context,
+                              const unsigned char *data,
+                              size_t length);
+static int tpad_sha256_update(void *context,
+                              const unsigned char *data,
+                              size_t length);
+static int tpad_md5_update(void *context,
+                           const unsigned char *data,
+                           size_t length);
+static char *tpad_hash_file_sha256(const char *path);
+static char *tpad_hash_file_md5(const char *path);
+static char *tpad_base64_encode_bytes(const unsigned char *data, size_t length);
+static char *tpad_base64_decode_bytes(const unsigned char *data, size_t length);
+static gboolean tpad_choose_file_contents(gchar **contents, gsize *length);
+
+static char *tpad_hash_error(void)
+{
+	/* Public conversion helpers consistently return caller-owned strings. */
+	return g_strdup("--\n");
 }
 
-char *curTxtbuff2sha512(){
-	GtkTextIter start,end;
-	gtk_text_buffer_get_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end);
-	return ( (char *)str2sha512( gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),&start,&end,TRUE) ) );
+char *data_to_hex(const void *pdata, size_t length)
+{
+	static const char hex[] = "0123456789abcdef";
+	const unsigned char *data = (const unsigned char *) pdata;
+	char *out;
+	size_t n;
+
+	if (data == NULL || length > (G_MAXSIZE - 1) / 2)
+		return tpad_hash_error();
+
+	out = g_try_malloc(length * 2 + 1);
+	if (out == NULL)
+		return tpad_hash_error();
+
+	for (n = 0; n < length; n++) {
+		out[n * 2] = hex[data[n] >> 4];
+		out[n * 2 + 1] = hex[data[n] & 0x0f];
 	}
+	out[length * 2] = '\0';
 
-char *curFile2sha512(){
-
-	if (tpad_fp_get_current() != NULL){ return ( g_strdup((char *)str2sha512( tpad_hash_read_in_file (tpad_fp_get_current()) )) );
-	}
-	else return ("--\n'\0'");
-	}
-
-char *file2sha512(){
-	return ( (char *) g_strdup(str2sha512(tpad_hash_choose_file_and_get_contents())));
-
-}
-char *file2sha256(){
-	return ( (char *) g_strdup(str2sha256(tpad_hash_choose_file_and_get_contents())));
-}
-char *file2md5(){
-	return ( (char *) g_strdup(str2md5(tpad_hash_choose_file_and_get_contents())));
-}
-char *file2base64(){
-	return( (char *) g_strdup( str2base64((char *)tpad_hash_choose_file_and_get_contents())) );
-}
-char *filefrombase64(){
-	return( (char *) g_strdup(strFrombase64((char *) tpad_hash_choose_file_and_get_contents())) );
-}
-char *str2sha512(const char *str) {
-	if(str == NULL) return("--\n'\0'");
-
-	if(strlen(str) <=1) return("--\n'\0'");
-
-	// SHA-512 produces a 64-byte (512-bit) hash
-	unsigned char *ichr = (unsigned char*)malloc(64 * sizeof(unsigned char));
-	if (ichr == NULL) return("--\n'\0'");
-
-	mbedtls_sha512(str, strlen(str), ichr, 0);
-
-	char *result = g_strdup(data_to_hex(ichr));
-	free(ichr);
-	return result;
-}
-char *str2sha256(const char *str) {
-	if(str == NULL) return("--\n'\0'");
-	if(strlen(str) <=1) return("--\n\0");
-
-	// SHA-256 produces a 32-byte (256-bit) hash
-	unsigned char *ichr = (unsigned char*)malloc(32 * sizeof(unsigned char));
-	if (ichr == NULL) return("--\n'\0'");
-
-	mbedtls_sha256(str, strlen(str), ichr, 0);
-
-	char *result = g_strdup(data_to_hex(ichr));
-	free(ichr);
-	return result;
-}
-char *str2md5(const char *str) {
-	if(str == NULL) return("--\n'\0'");
-
-	if(strlen(str) <=1) return("--\n'\0'");
-
-	// MD5 produces a 16-byte (128-bit) hash
-	unsigned char *ichr = (unsigned char*)malloc(16 * sizeof(unsigned char));
-	if (ichr == NULL) return("--\n'\0'");
-
-	mbedtls_md5(str, strlen(str), ichr);
-
-	char *result = g_strdup(data_to_hex(ichr));
-	free(ichr);
-	return result;
+	return out;
 }
 
-char* tpad_hash_read_in_file(char* fp){
+char *str2sha512(const char *str)
+{
+	unsigned char digest[64];
+	size_t length;
 
- int fd = open(fp, O_RDONLY);
- if (fd == -1) return("--\n'\0'");
+	if (str == NULL)
+		return tpad_hash_error();
 
- FILE *pFile = fdopen(fd, "rb");
- if (pFile == NULL) {
-   close(fd);
-   return("--\n'\0'");
- }
+	length = strlen(str);
+	if (mbedtls_sha512_ret((const unsigned char *) str,
+	                       length, digest, 0) != 0)
+		return tpad_hash_error();
 
- unsigned int lSize;
- size_t result;
-
- fseek(pFile, 0, SEEK_END);
- lSize = ftell(pFile);
- rewind(pFile);
-
- char* buffer = (char*) calloc(lSize + 1, sizeof(char));
- if (buffer == NULL) {
-   fclose(pFile);
-   return("--\n'\0'");
- }
-
- result = fread(buffer, 1, lSize, pFile);
- if (result != lSize) {
-   free(buffer);
-   fclose(pFile);
-   return("--\n'\0'");
- }
-
- fclose(pFile);
- return (buffer);
+	return data_to_hex(digest, sizeof(digest));
 }
-char *strFrombase64(const char *str) {
-	if(str == NULL) return("--\n'\0'");
 
-	if(strlen(str) <=1) return("--\n'\0'");
+char *str2sha256(const char *str)
+{
+	unsigned char digest[32];
+	size_t length;
 
-	size_t ssize = strlen(str) + 1;
-	size_t dlen=0,olen=0;
-	int ret = 0;
+	if (str == NULL)
+		return tpad_hash_error();
 
-	// First call to get required buffer size
-	ret = mbedtls_base64_decode(NULL, 0, &dlen, str, ssize-1);
-	if (ret != MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL) {
-		return("--\n'\0'");
-	}
+	length = strlen(str);
+	if (mbedtls_sha256_ret((const unsigned char *) str,
+	                       length, digest, 0) != 0)
+		return tpad_hash_error();
 
-	// Allocate buffer with appropriate size
-	unsigned char *ichr = (unsigned char*)malloc((dlen * 3) * sizeof(unsigned char));
-	if (ichr == NULL) return("--\n'\0'");
-
-	// Actual decoding
-	ret = mbedtls_base64_decode(ichr, dlen, &olen, str, ssize-1);
-
-	char *result;
-	switch(ret) {
-		case MBEDTLS_ERR_BASE64_INVALID_CHARACTER:
-			free(ichr);
-			return(str2base64(str));
-
-		case MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL:
-			free(ichr);
-			return("Too much!\nSelect less / a smaller file and try again.\n");
-
-		case 0:
-			// Ensure null-termination
-			ichr[olen] = '\0';
-			result = g_strdup((char*)ichr);
-			free(ichr);
-			return result;
-
-		default:
-			free(ichr);
-			return("--\n");
-	}
+	return data_to_hex(digest, sizeof(digest));
 }
-char *str2base64(const char *str) {
-	if(str == NULL) return("--\n'\0'");
 
-	if(strlen(str) <=1) return("--\n'\0'");
+char *str2md5(const char *str)
+{
+	unsigned char digest[16];
+	size_t length;
 
-	size_t ssize = strlen(str) + 1;
+	if (str == NULL)
+		return tpad_hash_error();
 
-	size_t dlen=0, olen=0;
+	length = strlen(str);
+	if (mbedtls_md5_ret((const unsigned char *) str, length, digest) != 0)
+		return tpad_hash_error();
 
-	// First call to get required buffer size
-	int ret = mbedtls_base64_encode(NULL, ssize, &dlen, (const unsigned char*)str, ssize);
-	if (ret != MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL) {
-		return("--\n'\0'");
-	}
-
-	// Allocate buffer with appropriate size
-	unsigned char *ichr = (unsigned char*)malloc((dlen + 1) * sizeof(unsigned char));
-	if (ichr == NULL) return("--\n'\0'");
-
-	// Actual encoding
-	ret = mbedtls_base64_encode(ichr, dlen, &olen, (const unsigned char*)str, ssize);
-
-	char *result;
-	if(ret == 0) {
-		// Ensure null-termination
-		ichr[olen] = '\0';
-		result = g_strdup((char*)ichr);
-		free(ichr);
-		return result;
-	}
-
-	free(ichr);
-	if (ret == MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL) {
-		return("Too much!\nSelect less / a smaller file and try again.\n");
-	}
-
-	return("--\n");
+	return data_to_hex(digest, sizeof(digest));
 }
-char* tpad_hash_get_file(){
-    GtkWidget *dialog;
 
-    dialog = gtk_file_chooser_dialog_new("File hash to clipboard",GTK_WINDOW(window),
-                                         GTK_FILE_CHOOSER_ACTION_SAVE,
-                                         "Cancel",
-                                         GTK_RESPONSE_CANCEL,
-                                         "Hash File",
-                                         GTK_RESPONSE_ACCEPT,NULL);
-    gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER(dialog),TRUE);
-    gtk_file_chooser_set_show_hidden (GTK_FILE_CHOOSER(dialog),TRUE);
-    gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER(dialog),FALSE);
-	if(tpad_fp_get_current()){
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), (gchar*)get_currentfile_basename());
-        gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(dialog),(const gchar *)tpad_fp_get_current());
-	}
-		char *ptrStr=NULL;
+static gboolean tpad_hash_update_file(const char *path,
+                                      void *context,
+                                      TpadHashUpdate update)
+{
+	unsigned char buffer[16384];
+	ssize_t bytes_read;
+	int fd;
 
+	if (path == NULL || path[0] == '\0' || context == NULL || update == NULL)
+		return FALSE;
 
-	if(gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_CANCEL) {
-		return(NULL);
-	}
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		return FALSE;
 
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) ==  GTK_RESPONSE_ACCEPT)
-	{
-	ptrStr = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-	if(ptrStr == NULL) return("'\0'");
-
-	}
-
-
-
-	gtk_widget_destroy(GTK_WIDGET(dialog));
-	return(g_strdup(ptrStr));
-
-}
-char *data_to_hex(void *pdata) {
-	if(pdata == NULL) return("--\n");
-
-	unsigned char* data = (unsigned char*) pdata;
-
-	// For SHA-512: 64 bytes, SHA-256: 32 bytes, MD5: 16 bytes
-	// Determine the hash size based on the first few bytes
-	size_t hash_size = 0;
-
-	// Check if it's SHA-512 (64 bytes)
-	if (data[0] != 0 || data[63] != 0) {
-		hash_size = 64; // SHA-512
-	} else if (data[0] != 0 || data[31] != 0) {
-		hash_size = 32; // SHA-256
-	} else {
-		hash_size = 16; // MD5 or other
-	}
-
-	// Allocate buffer for hex output (each byte becomes 2 hex chars + null terminator)
-	char *out = (char*)malloc((hash_size * 2 + 1) * sizeof(char));
-	if (out == NULL) return("--\n");
-
-	// Convert to hex
-	for (int n = 0; n < hash_size; ++n) {
-		if ((unsigned int)data[n] <= 255) {
-			snprintf(&(out[n*2]), 3, "%02x", (unsigned int)data[n]);
+	for (;;) {
+		bytes_read = read(fd, buffer, sizeof(buffer));
+		if (bytes_read > 0) {
+			if (update(context, buffer, (size_t) bytes_read) != 0) {
+				close(fd);
+				return FALSE;
+			}
+			continue;
 		}
+		if (bytes_read == 0)
+			break;
+		if (errno == EINTR)
+			continue;
+
+		close(fd);
+		return FALSE;
 	}
 
-	// Ensure null termination
-	out[hash_size * 2] = '\0';
+	return close(fd) == 0;
+}
 
-	char *result = g_strdup(out);
-	free(out);
+static int tpad_sha512_update(void *context,
+                              const unsigned char *data,
+                              size_t length)
+{
+	return mbedtls_sha512_update_ret((mbedtls_sha512_context *) context,
+	                                 data, length);
+}
+
+static int tpad_sha256_update(void *context,
+                              const unsigned char *data,
+                              size_t length)
+{
+	return mbedtls_sha256_update_ret((mbedtls_sha256_context *) context,
+	                                 data, length);
+}
+
+static int tpad_md5_update(void *context,
+                           const unsigned char *data,
+                           size_t length)
+{
+	return mbedtls_md5_update_ret((mbedtls_md5_context *) context,
+	                              data, length);
+}
+
+char *tpad_hash_file_sha512(const char *path)
+{
+	mbedtls_sha512_context context;
+	unsigned char digest[64];
+	char *result = NULL;
+
+	mbedtls_sha512_init(&context);
+	if (mbedtls_sha512_starts_ret(&context, 0) == 0 &&
+	    tpad_hash_update_file(path, &context, tpad_sha512_update) &&
+	    mbedtls_sha512_finish_ret(&context, digest) == 0)
+		result = data_to_hex(digest, sizeof(digest));
+	mbedtls_sha512_free(&context);
+
+	return result != NULL ? result : tpad_hash_error();
+}
+
+static char *tpad_hash_file_sha256(const char *path)
+{
+	mbedtls_sha256_context context;
+	unsigned char digest[32];
+	char *result = NULL;
+
+	mbedtls_sha256_init(&context);
+	if (mbedtls_sha256_starts_ret(&context, 0) == 0 &&
+	    tpad_hash_update_file(path, &context, tpad_sha256_update) &&
+	    mbedtls_sha256_finish_ret(&context, digest) == 0)
+		result = data_to_hex(digest, sizeof(digest));
+	mbedtls_sha256_free(&context);
+
+	return result != NULL ? result : tpad_hash_error();
+}
+
+static char *tpad_hash_file_md5(const char *path)
+{
+	mbedtls_md5_context context;
+	unsigned char digest[16];
+	char *result = NULL;
+
+	mbedtls_md5_init(&context);
+	if (mbedtls_md5_starts_ret(&context) == 0 &&
+	    tpad_hash_update_file(path, &context, tpad_md5_update) &&
+	    mbedtls_md5_finish_ret(&context, digest) == 0)
+		result = data_to_hex(digest, sizeof(digest));
+	mbedtls_md5_free(&context);
+
+	return result != NULL ? result : tpad_hash_error();
+}
+
+char *curBin2sha512(void)
+{
+	return tpad_hash_file_sha512("/proc/self/exe");
+}
+
+char *curTxtbuff2sha512(void)
+{
+	GtkTextIter start, end;
+	gchar *text;
+	char *result;
+
+	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(mBuff), &start, &end);
+	text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),
+	                                &start, &end, TRUE);
+	result = str2sha512(text);
+	g_free(text);
 	return result;
 }
-char* tpad_hash_choose_file_and_get_contents(){
-	return(g_strdup(tpad_hash_read_in_file(tpad_hash_get_file())));
+
+char *curFile2sha512(void)
+{
+	gchar *path = tpad_fp_get_current();
+	char *result;
+
+	if (path == NULL)
+		return tpad_hash_error();
+
+	result = tpad_hash_file_sha512(path);
+	g_free(path);
+	return result;
 }
 
+char *tpad_hash_read_in_file(const char *fp)
+{
+	gchar *contents = NULL;
+	GError *error = NULL;
 
+	if (fp == NULL || fp[0] == '\0' ||
+	    !g_file_get_contents(fp, &contents, NULL, &error)) {
+		if (error != NULL)
+			g_error_free(error);
+		return tpad_hash_error();
+	}
 
+	return contents;
+}
+
+static char *tpad_base64_encode_bytes(const unsigned char *data, size_t length)
+{
+	unsigned char *encoded;
+	size_t required = 0;
+	size_t written = 0;
+	int status;
+
+	if (data == NULL && length != 0)
+		return tpad_hash_error();
+	if (length == 0)
+		return g_strdup("");
+
+	status = mbedtls_base64_encode(NULL, 0, &required, data, length);
+	if (status != MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL || required == 0 ||
+	    required == G_MAXSIZE)
+		return tpad_hash_error();
+
+	encoded = g_try_malloc(required);
+	if (encoded == NULL)
+		return tpad_hash_error();
+
+	status = mbedtls_base64_encode(encoded, required, &written, data, length);
+	if (status != 0) {
+		g_free(encoded);
+		return tpad_hash_error();
+	}
+	/* mbedtls includes room for and writes the terminator. */
+	encoded[written] = '\0';
+	return (char *) encoded;
+}
+
+static char *tpad_base64_decode_bytes(const unsigned char *data, size_t length)
+{
+	unsigned char *decoded;
+	size_t required = 0;
+	size_t written = 0;
+	int status;
+
+	if (data == NULL && length != 0)
+		return tpad_hash_error();
+	if (length == 0)
+		return g_strdup("");
+
+	status = mbedtls_base64_decode(NULL, 0, &required, data, length);
+	if (status != MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL)
+		return tpad_hash_error();
+	if (required == G_MAXSIZE)
+		return tpad_hash_error();
+
+	decoded = g_try_malloc(required + 1);
+	if (decoded == NULL)
+		return tpad_hash_error();
+
+	status = mbedtls_base64_decode(decoded, required, &written, data, length);
+	if (status != 0) {
+		g_free(decoded);
+		return tpad_hash_error();
+	}
+	decoded[written] = '\0';
+	return (char *) decoded;
+}
+
+char *strFrombase64(const char *str)
+{
+	if (str == NULL)
+		return tpad_hash_error();
+	return tpad_base64_decode_bytes((const unsigned char *) str, strlen(str));
+}
+
+char *str2base64(const char *str)
+{
+	if (str == NULL)
+		return tpad_hash_error();
+	return tpad_base64_encode_bytes((const unsigned char *) str, strlen(str));
+}
+
+char *tpad_hash_get_file(void)
+{
+	GtkWidget *dialog;
+	gchar *current_path;
+	gchar *selected_path = NULL;
+	gint response;
+
+	dialog = gtk_file_chooser_dialog_new("File hash to clipboard",
+	                                     GTK_WINDOW(window),
+	                                     GTK_FILE_CHOOSER_ACTION_OPEN,
+	                                     "Cancel", GTK_RESPONSE_CANCEL,
+	                                     "Select File", GTK_RESPONSE_ACCEPT,
+	                                     NULL);
+	gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), TRUE);
+	gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), TRUE);
+
+	current_path = tpad_fp_get_current();
+	if (current_path != NULL && current_path[0] != '\0')
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), current_path);
+	g_free(current_path);
+
+	response = gtk_dialog_run(GTK_DIALOG(dialog));
+	if (response == GTK_RESPONSE_ACCEPT)
+		selected_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+	gtk_widget_destroy(dialog);
+	return selected_path;
+}
+
+static gboolean tpad_choose_file_contents(gchar **contents, gsize *length)
+{
+	gchar *path;
+	GError *error = NULL;
+	gboolean success;
+
+	if (contents == NULL || length == NULL)
+		return FALSE;
+	*contents = NULL;
+	*length = 0;
+
+	path = tpad_hash_get_file();
+	if (path == NULL)
+		return FALSE;
+
+	success = g_file_get_contents(path, contents, length, &error);
+	g_free(path);
+	if (error != NULL)
+		g_error_free(error);
+
+	return success;
+}
+
+char *file2sha512(void)
+{
+	gchar *path = tpad_hash_get_file();
+	char *result;
+
+	if (path == NULL)
+		return tpad_hash_error();
+	result = tpad_hash_file_sha512(path);
+	g_free(path);
+	return result;
+}
+
+char *file2sha256(void)
+{
+	gchar *path = tpad_hash_get_file();
+	char *result;
+
+	if (path == NULL)
+		return tpad_hash_error();
+	result = tpad_hash_file_sha256(path);
+	g_free(path);
+	return result;
+}
+
+char *file2md5(void)
+{
+	gchar *path = tpad_hash_get_file();
+	char *result;
+
+	if (path == NULL)
+		return tpad_hash_error();
+	result = tpad_hash_file_md5(path);
+	g_free(path);
+	return result;
+}
+
+char *file2base64(void)
+{
+	gchar *contents;
+	gsize length;
+	char *result;
+
+	if (!tpad_choose_file_contents(&contents, &length))
+		return tpad_hash_error();
+	result = tpad_base64_encode_bytes((const unsigned char *) contents, length);
+	g_free(contents);
+	return result;
+}
+
+char *filefrombase64(void)
+{
+	gchar *contents;
+	gsize length;
+	char *result;
+
+	if (!tpad_choose_file_contents(&contents, &length))
+		return tpad_hash_error();
+	result = tpad_base64_decode_bytes((const unsigned char *) contents, length);
+	g_free(contents);
+	return result;
+}
+
+char *tpad_hash_choose_file_and_get_contents(void)
+{
+	gchar *contents;
+	gsize length;
+
+	if (!tpad_choose_file_contents(&contents, &length))
+		return NULL;
+	return contents;
+}

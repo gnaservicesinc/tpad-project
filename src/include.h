@@ -18,8 +18,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
-//#ifndef INCLUDE_H
-//#define INCLUDE_H
+#ifndef TPAD_INCLUDE_H
+#define TPAD_INCLUDE_H
 /////////////////////////////////////////////
 
 #include <stdio.h>
@@ -29,7 +29,9 @@
 #include <gtkspell-3.0/gtkspell/gtkspell.h>
 #include <gdk/gdkkeysyms.h>
 #include <glib/gprintf.h>
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtksourceview/gtksource.h>
+G_GNUC_END_IGNORE_DEPRECATIONS
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -40,7 +42,6 @@
 #include <sys/types.h>
 #include <libintl.h>
 #include <glib/gi18n.h>
-#include <pthread.h>
 //#include <math.h>
 #include <time.h>
 #include <limits.h>
@@ -140,18 +141,12 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <stddef.h>
-#include <uuid/uuid.h>
 #include <stdbool.h>
 #include <systemd/sd-id128.h>
-#include <math.h>
-#ifdef HAVE_LIBMAGIC
-//#include <magic.h>
-#endif
 #ifdef HAVE_LIBUNITY
 //	#include <unity.h>
 #endif
 
 
 /////////////////////////////////////////////
-//#endif
-
+#endif

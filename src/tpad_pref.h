@@ -22,5 +22,5 @@
 #define _TPAD_PREF_
 #include "include.h"
 void do_UI_pref_update(GtkWidget *caller, gpointer dialog);
-void show_ui_prefs ();
+void show_ui_prefs(void);
 #endif

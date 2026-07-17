@@ -25,15 +25,24 @@ extern GtkWidget *window;
 extern gboolean save_locked;
 extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
-void new_file(){
+extern gchar *origfile;
+extern int madetemp;
+void new_file(void){
 
     if(save_modified()) {
         gtk_source_buffer_begin_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff),"",-1);
         gtk_source_buffer_end_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
-        gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
-        gtk_window_set_title(GTK_WINDOW(window),_FALLBACK_SAVE_FILE_NAME);
-	save_locked=FALSE;
+	        gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
+		tpad_open_guard_cleanup();
+		madetemp = 0;
+		g_clear_pointer(&origfile, g_free);
+		tpad_fp_cleanup();
+		tpad_control_store_hash_of_current_file_set();
+		cfg_set_use_ut8bom(FALSE);
+		set_language();
+	        gtk_window_set_title(GTK_WINDOW(window),_FALLBACK_SAVE_FILE_NAME);
+		save_locked=FALSE;
     }
 
 }

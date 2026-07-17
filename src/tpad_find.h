@@ -27,7 +27,8 @@
 #endif
 #include "tpad_headers.h"
 void really_do_replace(GtkWidget *caller, GtkWidget *dialog);
-void do_replace();
+void do_replace(GtkWidget *caller, GtkWidget *dialog);
 void do_find(GtkWidget *caller, GtkWidget *dialog);
-void replace_dialog();
+void do_find_replace(GtkWidget *caller, GtkWidget *dialog);
+void replace_dialog(void);
 #endif

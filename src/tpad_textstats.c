@@ -21,6 +21,7 @@
 #include "tpad_headers.h"
 extern GtkSourceBuffer *mBuff;
 void get_text_stats(GtkWidget *caller){
+	(void) caller;
 //	ui_unity_set_count();
 	char buf_line_count[G_ASCII_DTOSTR_BUF_SIZE];
 	char buf_char_count[G_ASCII_DTOSTR_BUF_SIZE];
@@ -51,10 +52,6 @@ void get_text_stats(GtkWidget *caller){
     gtk_window_set_title(GTK_WINDOW(dialog),_WORD_COUNT);
     gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
     gtk_window_set_resizable (GTK_WINDOW(dialog),FALSE);
-
-    g_signal_connect(dialog,"destroy",G_CALLBACK(gtk_widget_destroy),NULL);
-
-
 
     mainbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     charCountbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
@@ -91,7 +88,5 @@ void get_text_stats(GtkWidget *caller){
 	gtk_box_pack_start (GTK_BOX (lineCountbox),
 	                    GTK_WIDGET(vseparator[3]),TRUE,TRUE,1);
 
-    g_signal_connect(dialog,"destroy",G_CALLBACK(gtk_widget_destroy),NULL);
-	
     gtk_widget_show_all(dialog);
 }

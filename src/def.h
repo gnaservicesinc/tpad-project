@@ -301,6 +301,9 @@
 #ifndef _CAN_NOT_READ_FILE
 #define _CAN_NOT_READ_FILE gettext("Reading file failed!")
 #endif
+#ifndef _BINARY_FILE_UNSUPPORTED
+#define _BINARY_FILE_UNSUPPORTED gettext("Binary files containing NUL bytes are not supported.")
+#endif
 #ifndef _CONVERT_FAILED
 #define _CONVERT_FAILED gettext("Conversion to UTF-8 FAILED! Is this a text document?")
 #endif
@@ -318,6 +321,15 @@
 #endif
 #ifndef _SAVE_FILE_AS_MNEMONIC
 #define _SAVE_FILE_AS_MNEMONIC gettext("S_ave File As...")
+#endif
+#ifndef _PRINT_MNEMONIC
+#define _PRINT_MNEMONIC gettext("_Print...")
+#endif
+#ifndef _PRINT_FAILED
+#define _PRINT_FAILED gettext("Printing failed")
+#endif
+#ifndef _PRINT_FAILED_UNKNOWN
+#define _PRINT_FAILED_UNKNOWN gettext("The system print service did not provide additional details.")
 #endif
 #ifndef _QUIT_MNEMONIC
 #define _QUIT_MNEMONIC gettext("_Quit")

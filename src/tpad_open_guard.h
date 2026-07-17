@@ -23,6 +23,7 @@
 #ifndef _TPAD_OPEN_GUARD_
 #define _TPAD_OPEN_GUARD_
 #include "tpad_headers.h"
-int tpad_open_guard_check_ok();
-void* tpad_open_guard_remove_temp();
+int tpad_open_guard_check_path(const gchar *current);
+gboolean tpad_open_guard_track_path(const gchar *current);
+void tpad_open_guard_cleanup(void);
 #endif

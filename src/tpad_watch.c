@@ -22,6 +22,8 @@
 #include <pthread.h>
 #include <sched.h>
 
+#define TPAD_SHA512_HEX_LENGTH 128U
+
 // Replace deprecated pthread_yield with sched_yield
 #define pthread_yield() sched_yield()
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
@@ -55,8 +57,8 @@ int itog=0;
 int iiit=1;
 pthread_t rCurrent;
 int iexit=0;
-unsigned char M_HASH_SLOT_ONE[64];
-unsigned char M_HASH_SLOT_TWO[64];
+unsigned char M_HASH_SLOT_ONE[TPAD_SHA512_HEX_LENGTH + 1U];
+unsigned char M_HASH_SLOT_TWO[TPAD_SHA512_HEX_LENGTH + 1U];
 static void tpad_watch_copy_two_to_one();
 static void tpad_watch_copy_one_to_two();
 static void *tpad_watch_sig(void *arg);
@@ -71,6 +73,7 @@ static void tpad_watch_free_two();
 static void copy_to_one(void* sString);
 static void copy_to_two(void* sString);
 static void tpad_watch_copy_thid(pthread_t ThisThread);
+static gboolean tpad_watch_hash_is_valid(const unsigned char *hash);
 
 
 static void tpad_watch_copy_thid(pthread_t ThisThread){
@@ -94,7 +97,8 @@ static void copy_to_one(void* sString){
 		sleep(WATCH_STALL_TIME);
 		pthread_mutex_lock(&mutex1);
 	}
-	memcpy( (void*) M_HASH_SLOT_ONE, (void*) sString, 64);
+	memcpy( (void*) M_HASH_SLOT_ONE, (void*) sString,
+	        sizeof(M_HASH_SLOT_ONE));
 	pthread_mutex_unlock(&mutex1);
     	pthread_mutex_unlock(&mutex2);
 }
@@ -106,17 +110,36 @@ static void copy_to_two(void* sString){
 		sleep(WATCH_STALL_TIME);
 		pthread_mutex_lock(&mutex1b);
 	}
-	memcpy( (void*) M_HASH_SLOT_TWO, (void*) sString, 64);
+	memcpy( (void*) M_HASH_SLOT_TWO, (void*) sString,
+	        sizeof(M_HASH_SLOT_TWO));
 	pthread_mutex_unlock(&mutex1b);
     	pthread_mutex_unlock(&mutex2b);
 }
 static void tpad_watch_file_to_one(char* fpath){
-	if( fpath != NULL && strlen(fpath) > 2) copy_to_one((void*)tpad_watch_file_hash_get(fpath));
+	unsigned char *hash;
+
+	if (fpath == NULL || strlen(fpath) <= 2)
+		return;
+	hash = tpad_watch_file_hash_get(fpath);
+	if (tpad_watch_hash_is_valid(hash))
+		copy_to_one(hash);
+	else
+		tpad_watch_free_one();
+	g_free(hash);
 }
 static void tpad_watch_file_to_two(char* fpath){
-	if( fpath != NULL && strlen(fpath) > 2) copy_to_two((void*)tpad_watch_file_hash_get(fpath));
+	unsigned char *hash;
+
+	if (fpath == NULL || strlen(fpath) <= 2)
+		return;
+	hash = tpad_watch_file_hash_get(fpath);
+	if (tpad_watch_hash_is_valid(hash))
+		copy_to_two(hash);
+	else
+		tpad_watch_free_two();
+	g_free(hash);
 }
-static void tpad_watch_free_one(){
+static void tpad_watch_free_one(void){
 	pthread_mutex_lock( &mutex1 );
 	 while ( pthread_mutex_trylock(&mutex2) ){
 		pthread_mutex_unlock(&mutex1);
@@ -124,11 +147,11 @@ static void tpad_watch_free_one(){
 		sleep(WATCH_STALL_TIME);
 		pthread_mutex_lock(&mutex1);
 	}
-	memset( (void*) M_HASH_SLOT_ONE, 0, 64);
+	memset( (void*) M_HASH_SLOT_ONE, 0, sizeof(M_HASH_SLOT_ONE));
 	pthread_mutex_unlock(&mutex1);
     	pthread_mutex_unlock(&mutex2);
 }
-static void tpad_watch_free_two(){
+static void tpad_watch_free_two(void){
 	pthread_mutex_lock( &mutex1b );
 	 while ( pthread_mutex_trylock(&mutex2b) ){
 		pthread_mutex_unlock(&mutex1b);
@@ -136,18 +159,18 @@ static void tpad_watch_free_two(){
 		sleep(WATCH_STALL_TIME);
 		pthread_mutex_lock(&mutex1b);
 	}
-	memset( (void*) M_HASH_SLOT_TWO, 0, 64);
+	memset( (void*) M_HASH_SLOT_TWO, 0, sizeof(M_HASH_SLOT_TWO));
 	pthread_mutex_unlock(&mutex1b);
     	pthread_mutex_unlock(&mutex2b);
 }
 
-static void tpad_watch_copy_two_to_one(){
+static void tpad_watch_copy_two_to_one(void){
 	copy_to_one(M_HASH_SLOT_TWO);
 }
-static void tpad_watch_copy_one_to_two(){
+static void tpad_watch_copy_one_to_two(void){
 	copy_to_two(M_HASH_SLOT_ONE);
 }
-static void tpad_watch_free_two_and_one(){
+static void tpad_watch_free_two_and_one(void){
 	tpad_watch_free_one();
 	tpad_watch_free_two();
 }
@@ -158,13 +181,13 @@ static void tpad_watch_check_file_init(char* fpath){
 
 }
 static unsigned char* tpad_watch_file_hash_get(char file[]){
+	return (unsigned char *) tpad_hash_file_sha512(file);
 
-	if(file == NULL) return("--\n");
-	if(strlen(file) <= 2 || strlen(file) > FILENAME_MAX ) return("--\n");
-	if(access(file, R_OK ) == -1) return("--\n");
+}
 
-	return ((unsigned char*) str2sha512(tpad_hash_read_in_file(file)));
-
+static gboolean tpad_watch_hash_is_valid(const unsigned char *hash){
+	return hash != NULL &&
+	       strlen((const char *) hash) == TPAD_SHA512_HEX_LENGTH;
 }
 
 static  void *tpad_watch_threadproc(void *arg){
@@ -229,8 +252,13 @@ do{
 
 
 	if(!tpad_modbal_check_armed()){
+	unsigned char *current_hash = tpad_watch_file_hash_get(fpath);
+	gboolean hash_changed = !tpad_watch_hash_is_valid(current_hash) ||
+	                        memcmp(M_HASH_SLOT_ONE, current_hash,
+	                               sizeof(M_HASH_SLOT_ONE)) != 0;
+	g_free(current_hash);
 
-	if (memcmp( (void*) M_HASH_SLOT_ONE, (void*) tpad_watch_file_hash_get(fpath), 64) != 0){
+	if (hash_changed){
 		fprintf(stdout,"FILE CHANGED!\n");
 		fflush(stdout);
 		if(iexit) {
@@ -303,7 +331,7 @@ return(NULL);
 
 }
 
-void tpad_watch_exit(){
+void tpad_watch_exit(void){
 
 // Disabled for now //
 /*
@@ -314,7 +342,7 @@ void tpad_watch_exit(){
 */
 }
 
-void tpad_watch_fname(){
+void tpad_watch_fname(void){
 // Disabled for now //
 /*
 	pthread_t thread;

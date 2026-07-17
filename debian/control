@@ -2,16 +2,27 @@ Source: tpad
 Section: editors
 Priority: optional
 Maintainer: Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>
-Build-Depends: debhelper (>= 12.0.0), autoconf, icu-devtools, fontconfig, locales, dh-translations, m4, autogen, automake, autotools-dev, intltool-debian, dh-autoreconf, libgtksourceview-3.0-dev, uuid-dev, libuuid1, libgtkspell3-3-dev, libgtk-3-dev, libgdk-pixbuf2.0-dev, libglib2.0-dev, libatk1.0-dev, libgucharmap-2-90-dev, gucharmap, libpixman-1-dev, libcairo-gobject2, dictionaries-common-dev, dh-exec, dh-buildinfo, devscripts, config-package-dev, apt-utils, build-essential, fakeroot, base-files, base-passwd, bash, bsdutils, coreutils, dash, debianutils, diffutils, libsystemd-dev, libsystemd0, dpkg, e2fsprogs, findutils, grep, gzip, hostname, libc-bin, login, mount, ncurses-base, ncurses-bin, perl-base, sed, tar, util-linux, make, dpkg-dev, apt-utils, libpthread-stubs0-dev, cdbs
-Standards-Version: 4.1.1
-#Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/tpad.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/tpad.git;a=summary
-#Package-List: tpad
-#Package-Type: deb
+Build-Depends:
+ debhelper (>= 9),
+ autoconf,
+ automake,
+ gettext,
+ intltool,
+ libtool,
+ pkg-config,
+ libgtk-3-dev,
+ libgtkspell3-3-dev,
+ libgtksourceview-3.0-dev,
+ libsystemd-dev | libsystemd-id128-dev
+Standards-Version: 4.7.3
+Homepage: https://launchpad.net/tpad-project
+Vcs-Git: https://git.launchpad.net/tpad-project
+Vcs-Browser: https://git.launchpad.net/tpad-project
 
 Package: tpad
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libgtkspell3-3-0
-Description: Simple text editor
- A simple, easy to use, fast text editor.
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: lightweight GTK text editor
+ Tpad is a small, fast GTK 3 editor for plain text and source files. It
+ provides syntax highlighting, spelling support, hashing tools, and native
+ system printing while keeping a traditional multi-window interface.

@@ -26,6 +26,6 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void quit_program();
-void force_quit_program();
+void quit_program(void);
+void force_quit_program(void);
 #endif

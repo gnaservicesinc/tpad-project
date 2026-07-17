@@ -1,10 +1,44 @@
-tpad (7.0.0.3-2) plucky; urgency=critical
+tpad (7.1.0.0) stonking; urgency=high
 
-  * Updated for Ubuntu Plucky
-  * Fixed deprecated function calls
-  * Updated build dependencies
+  * Add GTK system printing and print integration coverage.
+  * Migrate strict Snap packaging to Core 26 and refresh dependencies.
+  * Refresh and harden the separate Mbed TLS hashing sources.
+  * Fix memory, encoding, file-safety, and release-audit findings.
+  * Add repeatable LLVM 23, Valgrind, fuzzing, GUI, and packaging tools.
+  * Restore Debhelper 9 and pkg-config compatibility for Trusty and Xenial.
+  * Keep the core tests compatible with Trusty's GLib 2.40 API.
 
- -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sat, 15 Jun 2024 12:00:00 -0400
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Fri, 17 Jul 2026 16:51:33 -0400
+
+tpad (7.0.1.0-1) stonking; urgency=high
+
+  * Added fixes for each distribution series, now builds cleanly on all of them.
+  * Version bump to 7.0.1.0
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Thu, 16 Jul 2026 02:47:31 -0400
+
+tpad (7.0.0.6-1) stonking; urgency=high
+
+  * Restore builds with GCC's implicit-function-declaration error enabled.
+  * Replace obsolete Ubuntu build dependencies and support split systemd.
+  * Replace removed CDBS autotools rules with the debhelper sequencer.
+  * Remove generated build state containing developer-specific paths.
+  * Prevent shell injection when opening files in another tpad window.
+  * Fix out-of-bounds hash and BOM reads and hash complete binary files.
+  * Save files atomically and repair open-guard backup handling.
+  * Fix find-and-replace overflow, Base64, word-count, and startup bugs.
+  * Restore detached zero-, single-, and multi-file launcher behavior.
+  * Preserve external-change checks when Save As targets the open file.
+  * Fix GTK 3 callback signatures, font selection, spelling, and undo bugs.
+  * Refresh generated Autotools files and make distcheck pass again.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Wed, 15 Jul 2026 02:47:31 -0400
+
+tpad (7.0.0.5-1) plucky; urgency=critical
+
+  * Fixed reported security issue Time-of-check time-of-use filesystem race condition
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sat, 14 May 2025 12:00:00 -0400
 
 tpad (6.5.1.4-3gna1) cosmic; urgency=critical
 

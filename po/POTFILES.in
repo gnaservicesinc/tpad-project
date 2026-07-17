@@ -1,11 +1,11 @@
 # List of source files containing translatable strings.
+[type: gettext/ini]script/tpad.desktop.in
 src/error_warn.c
 src/main.c
 src/malloc.c
 src/md5.c
 src/sha256.c
 src/sha512.c
-src/threading.c
 src/tpad_about.c
 src/tpad_buff.c
 src/tpad_config.c
@@ -18,7 +18,6 @@ src/tpad_hash.c
 src/tpad_hconnect.c
 src/tpad_history.c
 src/tpad_lang.c
-src/tpad_lock.c
 src/tpad_magic.c
 src/tpad_modbal.c
 src/tpad_new_file.c
@@ -57,7 +56,6 @@ src/tpad_hconnect.h
 src/tpad_headers.h
 src/tpad_history.h
 src/tpad_lang.h
-src/tpad_lock.h
 src/tpad_logo.h
 src/tpad_magic.h
 src/tpad_modbal.h

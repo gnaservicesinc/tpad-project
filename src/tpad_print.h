@@ -33,6 +33,8 @@
 //#include <wchar.h>
 #include <glib/gprintf.h>
 #define HASH_PRINT_COUNT 52
-void print(gchar *s);
+void tpad_print_document(void);
+gboolean tpad_print_export_for_test(const gchar *filename);
+void print(const gchar *s);
 void print_title(gchar* str);
 #endif

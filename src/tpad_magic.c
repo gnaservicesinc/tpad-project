@@ -22,6 +22,7 @@
 
 
 int check_magic(gchar* file) {
+	(void) file;
 
 return(1);/*
 		#ifdef HAVE_LIBMAGIC
@@ -61,6 +62,8 @@ return(1);/*
 }
 
 gint tpad_magic_test (gchar file_mime_string[], gchar check_mime_string[]){
+	(void) file_mime_string;
+	(void) check_mime_string;
 return(1);	
 /*
 #ifdef HAVE_LIBMAGIC
@@ -77,6 +80,5 @@ return(1);
 #endif
 */
 }
-
 
 

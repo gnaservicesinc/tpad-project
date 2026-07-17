@@ -19,18 +19,21 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-static void* reload_current_file();
-void* tpad_reload(){
- 	reload_current_file();
-} 
+void tpad_reload(void)
+{
+	gchar *current = tpad_fp_get_current();
 
+	if (current == NULL)
+		return;
+	g_free(current);
 
+	if (!save_modified())
+		return;
 
+	/* Saving may have changed the current path through Save As. */
+	current = tpad_fp_get_current();
+	if (current != NULL)
+		show_file(current);
 
-static void* reload_current_file(){
-	if (tpad_fp_get_current() != NULL){	
-		if(save_modified()) {
-			show_file(tpad_fp_get_current());
-		}
-	} 
+	g_free(current);
 }

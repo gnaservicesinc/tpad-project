@@ -20,6 +20,11 @@
  ********************************************************************************/
 #include "tpad_headers.h"
 
+gboolean tpad_string_is_text_data(const gchar *data, gsize length)
+{
+	return data != NULL && memchr(data, '\0', length) == NULL;
+}
+
 int str_size(char* string){
 /*
  mbstate_t t;
@@ -29,68 +34,20 @@ int str_size(char* string){
 */
 return(strlen(string));
 }
-void clear_uchar_array(unsigned char* first, ...){
-  /*
-	Usage: clear_char_array(anArray,..., NULL);
-	--> ALWAYS END LIST WITH NULL
-	--> Pass asmany arrays as you like, all will be cleared.
-	--> REQUIRES #include <stdarg.h> 	
-  */
-  unsigned char* str;
-  va_list vl;
-  str=first;
-  va_start(vl,first);
-
-  do {
-    if(str) memset(&str[0], 0, sizeof(str));
-
-    str=(unsigned char*) va_arg(vl,unsigned char*);
-  } while (str!=NULL);
-
-  va_end(vl);
-}
-
-void clear_char_array(gchar first[], ...){
-  /*
-	Usage: clear_char_array(anArray,..., NULL);
-	--> ALWAYS END LIST WITH NULL
-	--> Pass asmany arrays as you like, all will be cleared.
-	--> REQUIRES #include <stdarg.h> 	
-  */
-  gchar* str;
-  va_list vl;
-  str=first;
-  va_start(vl,first);
-
-  do {
-    if(str) memset(&str[0], 0, sizeof(str));
-
-    str=(gchar*) va_arg(vl,gchar*);
-  } while (str!=NULL);
-
-  va_end(vl);
-}
-
-gboolean is_separator (gchar cChar){
-	static const gchar *token = " -.,;:#+*][{}^'?!\"Â£$%&/\\()=|<>\n\t\r";
-	gint i=0;
-	for ( i = 0; i < strlen (token); i++ ){
-		 if ( token[i] == cChar ) return TRUE;
-	}
-	return FALSE;
-}
-
 gint gtk_text_buffer_get_word_count (GtkTextBuffer *buffer){
-	GtkTextIter start, end;
-	gchar *cstring=NULL;
-	gint i, leng, icount;
-	gtk_text_buffer_get_bounds (buffer, &start, &end);
-	cstring = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
-	leng = strlen (cstring);
-	for ( i = (icount = 1) - 1; i < leng; i++ ){
-	if ( is_separator (cstring[i]) && !is_separator (i ? cstring[i - 1] : 'h') )icount++;
+	GtkTextIter iter;
+	gint count = 0;
+
+	if (buffer == NULL)
+		return 0;
+
+	gtk_text_buffer_get_start_iter(buffer, &iter);
+	while (!gtk_text_iter_is_end(&iter)) {
+		if (gtk_text_iter_starts_word(&iter))
+			count++;
+		if (!gtk_text_iter_forward_char(&iter))
+			break;
 	}
-	if ( is_separator (cstring[i - 1]) )  icount--;
-	g_free (cstring);
-	return icount;
+
+	return count;
 }

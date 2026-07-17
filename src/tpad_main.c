@@ -26,7 +26,6 @@ extern gboolean save_locked;
 extern GtkWidget *window;
 extern gchar* origfile;
 extern GtkSourceView *view;
-extern gchar path_temp_file[];
 extern int setModified;
 extern int madetemp;
 extern gboolean disable_file_watch;
@@ -62,23 +61,9 @@ extern int tpad_main_impl(char* fchar)
 	////////////////////////////////////////////////////////////////////////
 	/* GTK INIT */
 	////////////////////////////////////////////////////////////////////////
-	//gtk_init(&argc,&argv);
-	#if GTK_CHECK_VERSION(3,96,0)
-	// For GTK 4.0 and newer
-	gtk_init();
-	#else
-	// For GTK 3.x
+	/* tpad is built against GTK 3.  GTK 4 is not source-compatible with the
+	 * widgets and main-loop APIs used by the application. */
 	gtk_init(NULL,NULL);
-	#endif
-
-	// Initialize CSS provider for GTK 3.x
-	GtkCssProvider *provider = gtk_css_provider_new();
-	GdkDisplay *display = gdk_display_get_default();
-	GdkScreen *screen = gdk_display_get_default_screen(display);
-	gtk_style_context_add_provider_for_screen(screen,
-		GTK_STYLE_PROVIDER(provider),
-		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	g_object_unref(provider);
 	////////////////////////////////////////////////////////////////////////
 	/* CONFIG Setup */
 	////////////////////////////////////////////////////////////////////////
@@ -91,9 +76,10 @@ extern int tpad_main_impl(char* fchar)
 	tpad_fp_init();
 	gtk_widget_show_all(GTK_WIDGET(tpad_new_ui()));
 	new_file();
-	show_file(g_strdup(fchar));
+	if (fchar != NULL && *fchar != '\0')
+		show_file(fchar);
 	if(cfg_spell()) toggle_spelling();
-	printf("\nOpening file:\t%s.\ntpad License and Copyright Notice:\n\nCopyright (C) 2014, 2015, 2016, 2017, 2018 Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>\n\ntpad is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\ntpad is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>.\n", fchar);
+	printf("\nOpening file:\t%s.\ntpad License and Copyright Notice:\n\nCopyright (C) 2012-2026 Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>\n\ntpad is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\ntpad is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>.\n", fchar != NULL ? fchar : "");
 	////////////////////////////////////////////////////////////////////////
 	/* GTK MAIN */
 	////////////////////////////////////////////////////////////////////////

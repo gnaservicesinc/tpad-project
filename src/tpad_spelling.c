@@ -19,7 +19,6 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-pthread_mutex_t spellingmutex = PTHREAD_MUTEX_INITIALIZER;
 extern int spell_state;
 extern gboolean spell_disabled;
 extern GtkSpellChecker* doc_spelling;
@@ -31,51 +30,55 @@ gboolean spelling_init  = (gboolean) FALSE;
 GtkSpellChecker* doc_spelling;
 
 
-int toggle_spelling () {
-	int rc;
-	pthread_t thread;
-	if( (rc=pthread_create( &thread, NULL, ttogle_spelling, NULL)) ){
-    	return(1);
-	}
-	else {
-	 pthread_join( thread, NULL);
-	 return(0);
-	}
-}
+int toggle_spelling(void) {
+	GError *error = NULL;
+	gboolean enabled;
 
-
-void *ttogle_spelling(){
-if (pthread_mutex_lock( &spellingmutex ) == 0) {
-if(!spelling_init && !spell_disabled) {
-	spelling_init  = (gboolean) TRUE;
-	GError *errSP = NULL; 
-	doc_spelling = gtk_spell_checker_new ();
-	g_object_ref_sink (doc_spelling);
-	if (! gtk_spell_checker_set_language (doc_spelling, _SPELL_LANG, &errSP)) {
-		if (errSP != NULL){
-			spell_disabled=TRUE;
+	/* GtkSpell and every widget it touches must stay on GTK's main thread.
+	 * The former worker was joined immediately, so it provided no concurrency. */
+	if (!spelling_init && !spell_disabled) {
+		doc_spelling = gtk_spell_checker_new();
+		if (doc_spelling == NULL) {
+			spell_disabled = TRUE;
+			return 1;
+		}
+		g_object_ref_sink(doc_spelling);
+		if (!gtk_spell_checker_set_language(doc_spelling, _SPELL_LANG,
+		                                    &error)) {
+			spell_disabled = TRUE;
 			cfg_set_show_spelling(FALSE);
 			cfg_save();
-			gerror_warn(_SPELLING_FAILED_INIT,errSP->message, (gboolean) TRUE, (gboolean) FALSE); 
-		}	
-	}
-	gtk_spell_checker_attach(doc_spelling, GTK_TEXT_VIEW (view));
-	gtk_spell_checker_detach (doc_spelling);
+			gerror_warn(_SPELLING_FAILED_INIT,
+			            error != NULL ? error->message : _SPELL_LANG,
+			            TRUE, FALSE);
+			g_clear_error(&error);
+			g_clear_object(&doc_spelling);
+			if (spelling != NULL)
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(spelling),
+				                               FALSE);
+			return 1;
+		}
+		spelling_init = TRUE;
 	}
 
-if (!spell_disabled) {
-	cfg_set_show_spelling((int)gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(spelling)));
+	if (spell_disabled || doc_spelling == NULL || view == NULL)
+		return 1;
+
+	enabled = spelling != NULL
+	          ? gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(spelling))
+	          : cfg_spell();
+	cfg_set_show_spelling(enabled);
 	cfg_save();
-	
-	if(doc_spelling && view && !spell_disabled)
-		(cfg_spell()) ? gtk_spell_checker_attach(doc_spelling, GTK_TEXT_VIEW (view)) : gtk_spell_checker_detach (doc_spelling);
-	}
-pthread_mutex_unlock( &spellingmutex );
-	}
-pthread_exit ( (void*) NULL);	
+
+	if (enabled)
+		gtk_spell_checker_attach(doc_spelling, GTK_TEXT_VIEW(view));
+	else
+		gtk_spell_checker_detach(doc_spelling);
+
+	return 0;
 }
 
-void tpad_free_spelling() {
+void tpad_free_spelling(void) {
 if (!spell_disabled && spelling_init && doc_spelling) {
 
 	//If Spell Checking is enabled, detach it
@@ -85,13 +88,13 @@ if (!spell_disabled && spelling_init && doc_spelling) {
 
 	if(doc_spelling) {
 		g_object_unref (doc_spelling);
+		doc_spelling = NULL;
 	}	
 	//Do not permit further use of spelling system 
 	spell_disabled = TRUE;	
+	spelling_init = FALSE;
 	
 	
 }
 }
 
-
- 

@@ -27,5 +27,5 @@
 #endif
 #include "tpad_headers.h"
 char *tpad_replace_str(const char *str, const char *old, const char *new);
-int opt_find_replace();
+int opt_find_replace(void);
 #endif

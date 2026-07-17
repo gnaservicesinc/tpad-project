@@ -24,9 +24,9 @@
 #ifndef _TPAD_SAVE_
 #define _TPAD_SAVE_
 #include "include.h"
-gint save_modified();
-void save_as();
-void save_file();
-gint save_watched();
-gint tpad_save_ondisk_change_detected();
+gint save_modified(void);
+gboolean save_as(void);
+gboolean save_file(void);
+gint save_watched(void);
+gint tpad_save_ondisk_change_detected(void);
 #endif

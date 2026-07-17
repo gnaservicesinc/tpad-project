@@ -26,7 +26,7 @@
 #  include <config.h>
 #endif
 
-void do_redo();
-void do_undo();
+void do_redo(void);
+void do_undo(void);
 void on_past (GtkWidget *caller);
 #endif

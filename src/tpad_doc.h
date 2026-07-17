@@ -39,8 +39,8 @@
 
 #include "include.h"
 gint mod_doc(int method);
-void low_caps_document();
-void up_caps_document();
-void rev_document();
-void hex_document();
+void low_caps_document(void);
+void up_caps_document(void);
+void rev_document(void);
+void hex_document(void);
 #endif
