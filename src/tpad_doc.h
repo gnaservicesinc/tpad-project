@@ -31,9 +31,6 @@
 #ifndef _METHOD_MAX
 #define _METHOD_MAX 2
 #endif
-#ifndef _METHOD_HEX
-#define _METHOD_HEX 3
-#endif
 #ifndef _TPAD_DOC_
 #define _TPAD_DOC_
 
@@ -42,5 +39,4 @@ gint mod_doc(int method);
 void low_caps_document(void);
 void up_caps_document(void);
 void rev_document(void);
-void hex_document(void);
 #endif

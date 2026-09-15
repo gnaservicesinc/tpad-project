@@ -25,6 +25,34 @@ gboolean tpad_string_is_text_data(const gchar *data, gsize length)
 	return data != NULL && memchr(data, '\0', length) == NULL;
 }
 
+gchar *tpad_string_format_drop_paths(const gchar *const *paths, gsize length)
+{
+	GString *formatted = g_string_new(NULL);
+	gboolean have_path = FALSE;
+
+	if (paths == NULL)
+		return g_string_free(formatted, FALSE);
+
+	for (gsize index = 0; index < length; index++) {
+		const gchar *cursor;
+
+		if (paths[index] == NULL)
+			continue;
+		if (have_path)
+			g_string_append_c(formatted, ' ');
+		g_string_append_c(formatted, '"');
+		for (cursor = paths[index]; *cursor != '\0'; cursor++) {
+			if (*cursor == '\\' || *cursor == '"')
+				g_string_append_c(formatted, '\\');
+			g_string_append_c(formatted, *cursor);
+		}
+		g_string_append_c(formatted, '"');
+		have_path = TRUE;
+	}
+
+	return g_string_free(formatted, FALSE);
+}
+
 int str_size(char* string){
 /*
  mbstate_t t;
@@ -32,7 +60,7 @@ int str_size(char* string){
  memset (&t, '\0', sizeof (t));
  return(mbsrtowcs (NULL,(const char **) &scopy, strlen (scopy), &t));
 */
-return(strlen(string));
+return string != NULL ? (int) strlen(string) : 0;
 }
 gint gtk_text_buffer_get_word_count (GtkTextBuffer *buffer){
 	GtkTextIter iter;

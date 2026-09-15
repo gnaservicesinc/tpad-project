@@ -19,82 +19,74 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
-extern int spell_state;
-extern gboolean spell_disabled;
-extern GtkSpellChecker* doc_spelling;
+extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
-extern gboolean spelling_init;
-extern GtkWidget *spelling;
-gboolean spell_disabled = (gboolean) FALSE;
-gboolean spelling_init  = (gboolean) FALSE;
-GtkSpellChecker* doc_spelling;
 
+static SpellingChecker *spell_checker;
+static SpellingTextBufferAdapter *spell_adapter;
 
-int toggle_spelling(void) {
-	GError *error = NULL;
-	gboolean enabled;
+static gboolean initialize_spelling(void)
+{
+	GMenuModel *menu;
 
-	/* GtkSpell and every widget it touches must stay on GTK's main thread.
-	 * The former worker was joined immediately, so it provided no concurrency. */
-	if (!spelling_init && !spell_disabled) {
-		doc_spelling = gtk_spell_checker_new();
-		if (doc_spelling == NULL) {
-			spell_disabled = TRUE;
-			return 1;
-		}
-		g_object_ref_sink(doc_spelling);
-		if (!gtk_spell_checker_set_language(doc_spelling, _SPELL_LANG,
-		                                    &error)) {
-			spell_disabled = TRUE;
-			cfg_set_show_spelling(FALSE);
-			cfg_save();
-			gerror_warn(_SPELLING_FAILED_INIT,
-			            error != NULL ? error->message : _SPELL_LANG,
-			            TRUE, FALSE);
-			g_clear_error(&error);
-			g_clear_object(&doc_spelling);
-			if (spelling != NULL)
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(spelling),
-				                               FALSE);
-			return 1;
-		}
-		spelling_init = TRUE;
+	if (spell_adapter != NULL)
+		return TRUE;
+	if (mBuff == NULL || view == NULL)
+		return FALSE;
+
+	spelling_init();
+	spell_checker = spelling_checker_new(NULL, _SPELL_LANG);
+	if (spell_checker == NULL ||
+	    spelling_checker_get_language(spell_checker) == NULL)
+		goto failed;
+
+	spell_adapter = spelling_text_buffer_adapter_new(mBuff, spell_checker);
+	if (spell_adapter == NULL)
+		goto failed;
+
+	menu = spelling_text_buffer_adapter_get_menu_model(spell_adapter);
+	gtk_text_view_set_extra_menu(GTK_TEXT_VIEW(view), menu);
+	gtk_widget_insert_action_group(GTK_WIDGET(view), "spelling",
+	                               G_ACTION_GROUP(spell_adapter));
+	return TRUE;
+
+failed:
+	g_clear_object(&spell_adapter);
+	g_clear_object(&spell_checker);
+	return FALSE;
+}
+
+int tpad_set_spelling(gboolean enabled)
+{
+	if (!enabled) {
+		if (spell_adapter != NULL)
+			spelling_text_buffer_adapter_set_enabled(spell_adapter, FALSE);
+		cfg_set_show_spelling(FALSE);
+		cfg_save();
+		return 0;
 	}
 
-	if (spell_disabled || doc_spelling == NULL || view == NULL)
+	if (!initialize_spelling()) {
+		cfg_set_show_spelling(FALSE);
+		cfg_save();
+		gerror_warn(_SPELLING_FAILED_INIT, _SPELL_LANG, TRUE, FALSE);
 		return 1;
+	}
 
-	enabled = spelling != NULL
-	          ? gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(spelling))
-	          : cfg_spell();
-	cfg_set_show_spelling(enabled);
+	spelling_text_buffer_adapter_set_enabled(spell_adapter, TRUE);
+	cfg_set_show_spelling(TRUE);
 	cfg_save();
-
-	if (enabled)
-		gtk_spell_checker_attach(doc_spelling, GTK_TEXT_VIEW(view));
-	else
-		gtk_spell_checker_detach(doc_spelling);
-
 	return 0;
 }
 
-void tpad_free_spelling(void) {
-if (!spell_disabled && spelling_init && doc_spelling) {
-
-	//If Spell Checking is enabled, detach it
-	if(cfg_spell()) {
-		if(doc_spelling) gtk_spell_checker_detach (doc_spelling);
-	}	
-
-	if(doc_spelling) {
-		g_object_unref (doc_spelling);
-		doc_spelling = NULL;
-	}	
-	//Do not permit further use of spelling system 
-	spell_disabled = TRUE;	
-	spelling_init = FALSE;
-	
-	
+void tpad_free_spelling(void)
+{
+	if (view != NULL) {
+		gtk_text_view_set_extra_menu(GTK_TEXT_VIEW(view), NULL);
+		gtk_widget_insert_action_group(GTK_WIDGET(view), "spelling", NULL);
+	}
+	if (spell_adapter != NULL)
+		spelling_text_buffer_adapter_set_enabled(spell_adapter, FALSE);
+	g_clear_object(&spell_adapter);
+	g_clear_object(&spell_checker);
 }
-}
-

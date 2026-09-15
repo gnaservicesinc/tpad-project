@@ -35,19 +35,27 @@ int tpad_touch_check_file(char* fp)
 	int fd;
 	int result = -1;
 
-	path = clean_path(fp);
+	path = tpad_filename_from_utf8(fp);
 	if (path == NULL || *path == '\0') {
 		g_free(path);
 		return -1;
 	}
 
-	fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0666);
+	fd = g_open(path, O_WRONLY | O_CREAT | O_EXCL, 0666);
 	if (fd >= 0) {
 		(void) fcntl(fd, F_SETFD, FD_CLOEXEC);
 		result = close(fd) == 0 ? 1 : -1;
-	} else if (errno == EEXIST && stat(path, &status) == 0 &&
-	           S_ISREG(status.st_mode)) {
-		result = 0;
+	} else if (errno == EEXIST) {
+		/* Inspect an opened object, not a pathname that can be exchanged
+		 * between an existence check and stat().  O_NONBLOCK avoids hanging
+		 * if an attacker substitutes a FIFO or another special file. */
+		fd = g_open(path, O_RDONLY | O_NONBLOCK, 0);
+		if (fd >= 0) {
+			(void) fcntl(fd, F_SETFD, FD_CLOEXEC);
+			if (fstat(fd, &status) == 0 && S_ISREG(status.st_mode))
+				result = 0;
+			(void) close(fd);
+		}
 	}
 
 	g_free(path);
@@ -110,25 +118,20 @@ void tpad_copy_file_name_to_clipboard(GtkWidget *caller){
 	gchar *current = tpad_fp_get_current();
 
 	(void) caller;
-	if (current != NULL){
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-		                       current, -1);
-		gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
+	if (current != NULL)
+		tpad_clipboard_set_text(current);
 	g_free(current);
 }
 
-gchar *clean_path(gchar *path){
+gchar *tpad_filename_to_utf8(const gchar *path)
+{
 	GError *error = NULL;
-	const gchar *codeset;
 	gchar *converted;
 
 	if (path == NULL)
 		return NULL;
 
-	(void) g_get_charset(&codeset);
-	converted = g_convert(path, -1, "UTF-8", codeset, NULL, NULL,
-	                      &error);
+	converted = g_filename_to_utf8(path, -1, NULL, NULL, &error);
 	if (converted == NULL) {
 		if (error != NULL) {
 			print(error->message);
@@ -138,6 +141,28 @@ gchar *clean_path(gchar *path){
 	}
 
 	return converted;
+}
+
+gchar *tpad_filename_from_utf8(const gchar *path)
+{
+	GError *error = NULL;
+	gchar *converted;
+
+	if (path == NULL)
+		return NULL;
+	converted = g_filename_from_utf8(path, -1, NULL, NULL, &error);
+	if (converted == NULL) {
+		if (error != NULL) {
+			print(error->message);
+			g_error_free(error);
+		}
+		return NULL;
+	}
+	return converted;
+}
+
+gchar *clean_path(gchar *path){
+	return tpad_filename_to_utf8(path);
 }
 
 gchar* link_resolve(gchar* file)
@@ -235,8 +260,8 @@ gchar* getcRpath(void){
  gchar* check_file(gchar *afile)
 {
 	/* File-type dispatch below was disabled long ago.  Keep the active
-	 * behavior, but return one owned, validated conversion. */
-	return clean_path(afile);
+	 * behavior and the caller's internal UTF-8 path representation. */
+	return g_strdup(afile);
 		/* Bypassing */
 	/* Removed Code Start
 switch(get_file_type(file))

@@ -22,13 +22,22 @@
  ********************************************************************************/
 #include "tpad_headers.h"
 
+extern gchar *origfile;
+extern int madetemp;
+
 gchar *path_temp_file = NULL;
 
 static gint check_guard_file(const gchar *current, const gchar *candidate)
 {
-	if (candidate != NULL && g_file_test(candidate, G_FILE_TEST_EXISTS))
-		return gerror_openguard_popup((gchar *) current,
-		                              (gchar *) candidate);
+	if (candidate != NULL && g_file_test(candidate, G_FILE_TEST_EXISTS)) {
+		gchar *display_candidate = tpad_filename_to_utf8(candidate);
+		gint result = gerror_openguard_popup(
+			(gchar *) current,
+			display_candidate != NULL ? display_candidate : (gchar *) candidate);
+
+		g_free(display_candidate);
+		return result;
+	}
 	return 1;
 }
 
@@ -40,6 +49,7 @@ void tpad_open_guard_cleanup(void)
 
 int tpad_open_guard_check_path(const gchar *current)
 {
+	gchar *filename;
 	gchar *directory;
 	gchar *basename;
 	gchar *tpad_backup;
@@ -51,9 +61,12 @@ int tpad_open_guard_check_path(const gchar *current)
 	if (current == NULL || *current == '\0')
 		return 1;
 
-	directory = g_path_get_dirname(current);
-	basename = g_path_get_basename(current);
-	tpad_backup = g_strconcat(current, "~", NULL);
+	filename = tpad_filename_from_utf8(current);
+	if (filename == NULL)
+		return 0;
+	directory = g_path_get_dirname(filename);
+	basename = g_path_get_basename(filename);
+	tpad_backup = g_strconcat(filename, "~", NULL);
 	vim_swap = g_strdup_printf("%s/.%s.swp", directory, basename);
 	office_lock = g_strdup_printf("%s/.~lock.%s#", directory, basename);
 	emacs_backup = g_strdup_printf("%s/#%s#", directory, basename);
@@ -73,17 +86,61 @@ int tpad_open_guard_check_path(const gchar *current)
 	g_free(tpad_backup);
 	g_free(basename);
 	g_free(directory);
+	g_free(filename);
 	return proceed;
 }
 
 gboolean tpad_open_guard_track_path(const gchar *current)
 {
+	gchar *filename;
+	gboolean tracked;
+
 	if (current == NULL || *current == '\0')
 		return FALSE;
 
 	tpad_open_guard_cleanup();
-	path_temp_file = g_strconcat(current, "~", NULL);
-	if (g_file_test(path_temp_file, G_FILE_TEST_EXISTS))
+	filename = tpad_filename_from_utf8(current);
+	if (filename == NULL)
 		return FALSE;
-	return tpad_copy((char *) current, path_temp_file) == 0;
+	path_temp_file = g_strconcat(filename, "~", NULL);
+	if (g_file_test(path_temp_file, G_FILE_TEST_EXISTS)) {
+		g_clear_pointer(&path_temp_file, g_free);
+		g_free(filename);
+		return FALSE;
+	}
+	tracked = tpad_copy(filename, path_temp_file) == 0;
+	if (!tracked)
+		g_clear_pointer(&path_temp_file, g_free);
+	g_free(filename);
+	return tracked;
+}
+
+gboolean tpad_open_guard_apply_enabled(gboolean enabled,
+	const gchar *current)
+{
+	/* Make the setting a runtime state transition, not merely a value that
+	 * will be consulted the next time a document is opened. */
+	if (enabled && current != NULL && *current != '\0' && madetemp &&
+	    g_strcmp0(origfile, current) == 0 && path_temp_file != NULL &&
+	    g_file_test(path_temp_file, G_FILE_TEST_EXISTS))
+		return TRUE;
+
+	tpad_open_guard_cleanup();
+	madetemp = 0;
+	g_clear_pointer(&origfile, g_free);
+
+	/* An untitled document has nothing to guard yet, but the preference can
+	 * remain enabled and will be applied when the document gets a path. */
+	if (!enabled || current == NULL || *current == '\0')
+		return enabled;
+
+	if (!tpad_open_guard_check_path(current) ||
+	    !tpad_open_guard_track_path(current)) {
+		tpad_open_guard_cleanup();
+		return FALSE;
+	}
+
+	madetemp = 1;
+	origfile = g_strdup(current);
+	return TRUE;
 }

@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="/icons">
+    <file alias="tpad.png">../../icon/tpad.png</file>
+    <file alias="tpad-16.png">../../icon/tpad_16.png</file>
+    <file alias="tpad-24.png">../../icon/tpad_24.png</file>
+    <file alias="tpad-32.png">../../icon/tpad_32.png</file>
+    <file alias="tpad-64.png">../../icon/tpad_64.png</file>
+    <file alias="tpad-128.png">../../icon/tpad_128.png</file>
+  </qresource>
+</RCC>

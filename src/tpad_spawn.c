@@ -26,6 +26,7 @@ static gchar* path_self=NULL;
 static gboolean spawn_tpad(const gchar *file)
 {
 	GError *error = NULL;
+	gchar *filename = NULL;
 	gchar *argv[3];
 	gboolean spawned;
 
@@ -34,8 +35,13 @@ static gboolean spawn_tpad(const gchar *file)
 		return FALSE;
 	}
 
+	if (file != NULL && *file != '\0') {
+		filename = tpad_filename_from_utf8(file);
+		if (filename == NULL)
+			return FALSE;
+	}
 	argv[0] = path_self;
-	argv[1] = (file != NULL && *file != '\0') ? (gchar *) file : NULL;
+	argv[1] = filename;
 	argv[2] = NULL;
 
 	spawned = g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
@@ -45,6 +51,7 @@ static gboolean spawn_tpad(const gchar *file)
 		          error != NULL ? error->message : "unknown error");
 		g_clear_error(&error);
 	}
+	g_free(filename);
 
 	return spawned;
 }

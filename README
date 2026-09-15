@@ -1,21 +1,35 @@
 # Tpad
 
-Tpad is a small, fast text editor for plain text and source files. The current
-application uses GTK 3, GtkSourceView 3, and gtkspell3. Each command-line file
-opens in its own editor window.
+Tpad is a small, fast text editor for plain text and source files. It provides
+a GTK 4 frontend for current Linux systems, a GTK 3 compatibility frontend for
+older Ubuntu releases, and a Qt 6 frontend for macOS, Windows, and Linux. Each
+command-line file opens in its own editor window.
 
-The File menu includes a Print action (`Ctrl+P`) that opens GTK's native system
-print dialog. Printer selection, print-to-file, page setup, ranges, and other
-options come from the desktop print service.
+The File menu includes a Print action (`Ctrl+P`) that opens the frontend's
+native system print dialog. Printer selection, print-to-file, page setup,
+ranges, and other options come from the platform print service.
+
+Tpad keeps a frontend-independent recent-file history in `~/.tpad.recent`.
+Successful opens and saves move a file to the top of File → Open Recent.
+Recording is enabled by default; Preferences can disable it or set a maximum
+from 0 to 1,000,000 entries (default 100, with 0 meaning unlimited). Disabling
+history stops updates and disables Open Recent without deleting the list.
+
+Frequency Analysis examines the current selection, or the whole document when
+nothing is selected, in a scrollable Unicode table containing Character, Code
+point, Count, and Percent columns.
 
 ## Building
 
-On Debian or Ubuntu, install the normal Autotools toolchain plus these project
-development packages:
+The complete prerequisites and commands for GTK, macOS Qt 6.11.1, Windows
+Qt 6.11.1, shared deployment, and static Qt kits are in `BUILDING.md`.
 
-- `libgtk-3-dev`
-- `libgtksourceview-3.0-dev`
-- `libgtkspell3-3-dev`
+For the GTK 4 build on Debian or Ubuntu, install the normal
+Autotools toolchain plus these project development packages:
+
+- `libgtk-4-dev` (GTK 4.10 or newer)
+- `libgtksourceview-5-dev`
+- `libspelling-1-dev`
 - `libsystemd-dev`
 - `gettext`, `intltool`, `libtool`, and `pkg-config`
 
@@ -29,6 +43,23 @@ make check
 
 `./autogen.sh` regenerates the Autotools files and runs `configure`. Use
 `NOCONFIGURE=1 ./autogen.sh` when only the generated build files are needed.
+When the GTK 4 stack is unavailable, configure falls back to GTK 3. Install
+`libgtk-3-dev`, `libgtksourceview-3.0-dev`, and `libgtkspell3-3-dev`, then run
+`./autogen.sh --gtk3` to select that compatibility frontend explicitly.
+
+The cross-platform frontend uses CMake. Qt is the default on macOS and
+Windows; this explicit form selects a Qt 6.11.1 installation:
+
+```sh
+cmake -S . -B build-qt \
+  -DTPAD_USE_QT=ON \
+  -DTPAD_QT_PATH=/opt/Qt/6.11.1/macos \
+  -DTPAD_QT_STATIC=OFF
+cmake --build build-qt --parallel
+```
+
+Use a platform-appropriate Qt path. Static linking requires a separately
+built static Qt kit; setting the option alone cannot convert a shared kit.
 
 Tpad keeps its small, embedded mbedTLS hashing subset as separate source and
 header files under `src/`; its provenance and license are documented in
@@ -38,7 +69,7 @@ header files under `src/`; its provenance and license are documented in
 
 The repeatable clang-23 sanitizer, static-analyzer, Valgrind, fuzzing, GUI, and
 packaging procedure is in `RELEASE_TESTING.md`. Debian metadata is under
-`debian/`, and the strict Core 26 Snap recipe is `snap/snapcraft.yaml`.
+`debian/`, and the strict Core 24 Snap recipe is `snap/snapcraft.yaml`.
 
 Report bugs at <https://bugs.launchpad.net/tpad-project/+filebug>.
 

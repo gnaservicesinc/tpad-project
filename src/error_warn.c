@@ -20,6 +20,7 @@
  ********************************************************************************/
 
 #include "tpad_headers.h"
+#include "tpad_gtk.h"
 extern GtkWidget *window;
 
 void gerror_log(const gchar *c_msg){
@@ -39,35 +40,30 @@ void gerror_log(const gchar *c_msg){
 	g_free(error_msg);
 			
 }
-gint gerror_openguard_popup(gchar *c_fileName, gchar * foundFilePath) {
-		GtkWidget* ogDialog;
-		gint iret=0;
-		ogDialog = gtk_message_dialog_new(GTK_WINDOW(window),GTK_DIALOG_MODAL,GTK_MESSAGE_INFO,
-		                                     GTK_BUTTONS_YES_NO,_FILE_MAY_BE_ALREADY_OPEN);
-		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(ogDialog),  _FILE_MAY_BE_ALREADY_OPEN_DETAIL, c_fileName,foundFilePath);	
-	int result = (int) gtk_dialog_run(GTK_DIALOG(ogDialog));
+gint gerror_openguard_popup(gchar *c_fileName, gchar *foundFilePath)
+{
+	const gchar *buttons[] = { _NO, _YES, NULL };
+	gchar *detail;
+	int response;
 
-	switch (result)
-  {
-	  case GTK_RESPONSE_YES:
-		  iret=1;
-		  break;
-		  default:
-		  iret=0;
-		 break;
-  }
-		gtk_widget_destroy(GTK_WIDGET(ogDialog));
-	return(iret);
+	detail = g_strdup_printf(_FILE_MAY_BE_ALREADY_OPEN_DETAIL,
+				 c_fileName, foundFilePath);
+	response = tpad_alert_choose(
+		window != NULL ? GTK_WINDOW(window) : NULL,
+		_FILE_MAY_BE_ALREADY_OPEN, detail, buttons, 1, 0);
+	g_free(detail);
+	return response == 1 ? 1 : 0;
 }
-void gerror_popup(const gchar *c_msg) {
-		GtkWidget* errorDialog;
-		errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),GTK_DIALOG_MODAL,GTK_MESSAGE_ERROR,
-		                                     GTK_BUTTONS_OK,"ERROR!");
-		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(errorDialog),
-		                                         _ERROR_MSG,
-		                                         c_msg);
-		gtk_dialog_run(GTK_DIALOG(errorDialog)); 
-		gtk_widget_destroy(GTK_WIDGET(errorDialog));
+
+void gerror_popup(const gchar *c_msg)
+{
+	const gchar *buttons[] = { gettext("OK"), NULL };
+	gchar *detail;
+
+	detail = g_strdup_printf(_ERROR_MSG, c_msg != NULL ? c_msg : "");
+	(void) tpad_alert_choose(window != NULL ? GTK_WINDOW(window) : NULL,
+				 "ERROR!", detail, buttons, 0, 0);
+	g_free(detail);
 }
 
 void gerror_warn(const gchar *c_msg, const gchar *extra_information,

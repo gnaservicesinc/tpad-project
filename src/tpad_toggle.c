@@ -22,56 +22,58 @@
 
 extern gboolean searchCase;
 extern gboolean doCOVT;
-extern GtkWidget *window;
 extern GtkSourceView *view;
 
-void toggle_use_open_guard(GtkWidget *caller){
-    cfg_set_use_open_guard ((int)gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
+gboolean tpad_set_use_open_guard(gboolean enabled){
+	gchar *current = tpad_fp_get_current();
+	gboolean applied = tpad_open_guard_apply_enabled(enabled, current);
+
+	cfg_set_use_open_guard((int) applied);
 	cfg_save();
+	g_free(current);
+	return applied;
 }
 ////////////////////////////////////////////////////////////////////
-void toggle_line_wrap(GtkWidget *caller){
-	(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller))) ? gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_WORD) : gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_NONE);
-	(gtk_text_view_get_wrap_mode (GTK_TEXT_VIEW (view))) ? cfg_set_show_line_wrap(1) : cfg_set_show_line_wrap(0);
+void tpad_set_line_wrap(gboolean enabled){
+	if (view != NULL)
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(view),
+		                            enabled ? GTK_WRAP_WORD : GTK_WRAP_NONE);
+	cfg_set_show_line_wrap((int) enabled);
 	cfg_save();
 }
 ////////////////////////////////////////////////////////////////////
 
-void toggle_show_full_path(GtkWidget *caller){
+void tpad_set_show_full_path(gboolean enabled){
 	gchar *current;
 
-	(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller))) ? cfg_set_show_full_path(1) : cfg_set_show_full_path(0);
+	cfg_set_show_full_path((int) enabled);
 	current = tpad_fp_get_current();
-	if(current != NULL) set_title();
+	if (current != NULL)
+		set_title();
 	g_free(current);
+	cfg_save();
 }
 ////////////////////////////////////////////////////////////////////
 #ifdef AUTO_TAB_TOGGLE
 
-void toggle_auto_tab(GtkWidget *caller){
-	gboolean state=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller));
-	gtk_source_view_set_auto_indent(GTK_SOURCE_VIEW(view),(gboolean)state);
-	cfg_set_auto_tab((int) state);
+void tpad_set_auto_tab(gboolean enabled){
+	if (view != NULL)
+		gtk_source_view_set_auto_indent(view, enabled);
+	cfg_set_auto_tab((int) enabled);
 	cfg_save();
 }
 #endif
 void toggle_covt (GtkWidget *caller){
-doCOVT=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller));
+doCOVT=gtk_check_button_get_active(GTK_CHECK_BUTTON(caller));
 }
 
 void toggle_case_sarch (GtkWidget *caller){
- searchCase=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller));
+ searchCase=gtk_check_button_get_active(GTK_CHECK_BUTTON(caller));
 }
 
-void toggle_linenumber(GtkWidget *caller){
-	gboolean state=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller));
-	gtk_source_view_set_show_line_numbers (view,(gboolean)state);
-	cfg_set_show_line((int) state);
-	cfg_save();
-}
-
-
-void toggle_keep_above(GtkWidget *caller){
-	gtk_window_set_keep_above (GTK_WINDOW(window),gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
+void tpad_set_line_numbers(gboolean enabled){
+	if (view != NULL)
+		gtk_source_view_set_show_line_numbers(view, enabled);
+	cfg_set_show_line((int) enabled);
 	cfg_save();
 }

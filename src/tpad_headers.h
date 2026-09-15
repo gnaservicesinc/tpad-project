@@ -18,6 +18,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
+#ifdef TPAD_USE_GTK3
+
+#include "gtk3/tpad_headers.h"
+
+#else
+
 #ifndef _TPAD_HEADERS_H
 #define _TPAD_HEADERS_H
 
@@ -37,6 +43,7 @@ extern gchar *content;
 
 #include "malloc.h"
 #include "tpad_logo.h"
+#include "tpad_gtk.h"
 #include "main.h"
 #include "tpad_main.h"
 #include "tpad_string.h"
@@ -70,6 +77,7 @@ extern gchar *content;
 #include "tpad_hconnect.h"
 #include "tpad_doc.h"
 #include "tpad_open_guard.h"
+#include "tpad_recent.h"
 #include "tpad_fp.h"
 #include "tpad_hash.h"
 #include "tpad_tree.h"
@@ -87,4 +95,6 @@ extern gchar *content;
 #include "mbedtls/sha256.h"
 #include "mbedtls/sha512.h"
 #include "mbedtls/base64.h"
+#endif
+
 #endif

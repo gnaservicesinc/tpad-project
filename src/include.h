@@ -22,16 +22,18 @@
 #define TPAD_INCLUDE_H
 /////////////////////////////////////////////
 
+#include "tpad_backend.h"
+
+#if !defined(TPAD_USE_GTK)
+# error "The legacy C sources and GTK headers are not part of a Qt build"
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gtkspell-3.0/gtkspell/gtkspell.h>
-#include <gdk/gdkkeysyms.h>
 #include <glib/gprintf.h>
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtksourceview/gtksource.h>
-G_GNUC_END_IGNORE_DEPRECATIONS
+#include <libspelling.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

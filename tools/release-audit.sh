@@ -211,7 +211,7 @@ run_valgrind() {
 	fi
 	for suppression in \
 		/usr/share/glib-2.0/valgrind/glib.supp \
-		/usr/share/gtk-3.0/valgrind/gtk.supp; do
+		/usr/share/gtk-4.0/valgrind/gtk.supp; do
 		if [[ ! -r $suppression ]]; then
 			printf 'error: required Valgrind suppression is missing: %s\n' \
 				"$suppression" >&2
@@ -238,7 +238,7 @@ run_valgrind() {
 		--trace-children=no
 		--error-exitcode=101
 		--suppressions=/usr/share/glib-2.0/valgrind/glib.supp
-		--suppressions=/usr/share/gtk-3.0/valgrind/gtk.supp
+		--suppressions=/usr/share/gtk-4.0/valgrind/gtk.supp
 	)
 	run_gui valgrind env \
 		NO_AT_BRIDGE=1 G_SLICE=always-malloc G_DEBUG=gc-friendly \
@@ -270,11 +270,11 @@ run_fuzz() {
 	local -a package_libraries
 
 	build_dir=$(configure_build fuzz '-O1 -g3' '')
-	read -r -a package_cflags <<< "$(pkg-config --cflags gtk+-3.0 gtksourceview-3.0 gtkspell3-3.0 glib-2.0 libsystemd)"
-	read -r -a package_libraries <<< "$(pkg-config --libs gtk+-3.0 gtksourceview-3.0 gtkspell3-3.0 glib-2.0 libsystemd)"
+	read -r -a package_cflags <<< "$(pkg-config --cflags gtk4 gtksourceview-5 libspelling-1 glib-2.0 libsystemd)"
+	read -r -a package_libraries <<< "$(pkg-config --libs gtk4 gtksourceview-5 libspelling-1 glib-2.0 libsystemd)"
 	fuzz_binary="$build_dir/fuzz_core"
 
-	/usr/bin/clang-23 -std=gnu99 -O1 -g3 \
+	/usr/bin/clang-23 -std=gnu11 -O1 -g3 \
 		-fno-omit-frame-pointer \
 		-fsanitize=fuzzer,address,undefined \
 		-fsanitize-coverage=trace-cmp,indirect-calls \
@@ -323,8 +323,8 @@ run_extras() {
 	while IFS= read -r source_file; do
 		cppcheck_sources+=("$repo_dir/src/$source_file")
 	done < <(awk '
-		/^tpad_SOURCES =/ { sources = 1; next }
-		sources && /^[[:space:]]*$/ { exit }
+		/^tpad_SOURCES [+:]?=/ { sources = 1 }
+		sources && /^tpad_CFLAGS =/ { exit }
 		sources {
 			gsub(/\\/, "")
 			for (field = 1; field <= NF; field++)
@@ -332,9 +332,10 @@ run_extras() {
 		}
 	' "$repo_dir/src/Makefile.am")
 	cppcheck --enable=warning,performance,portability \
-		--inconclusive --std=c99 --suppress=missingIncludeSystem \
+		--inconclusive --std=c11 --suppress=missingIncludeSystem \
 		--suppress=unusedFunction --error-exitcode=1 --library=posix \
 		-D'GTK_CHECK_VERSION(a,b,c)=1' \
+		-D'G_GUINT64_FORMAT="llu"' \
 		-DHAVE_CONFIG_H=1 -I"$build_dir" -I"$repo_dir/src" \
 		"${cppcheck_sources[@]}" 2>&1 |
 		tee "$audit_output/cppcheck.log" || status=1

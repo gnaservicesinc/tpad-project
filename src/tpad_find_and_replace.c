@@ -28,150 +28,126 @@ extern GtkWidget *findentry,*replaceentry;
 extern GtkTextIter match_start,match_end;
 
 int opt_find_replace(void){
-	    const gchar *old;
-	    const gchar *new;
-		gchar *old_converted = NULL;
-		gchar *new_converted = NULL;
-		gchar *source_text;
+	const gchar *old;
+	const gchar *new;
+	gchar *old_converted = NULL;
+	gchar *new_converted = NULL;
+	gchar *source_text;
+	GtkTextMark *mark_start;
+	GtkTextMark *mark_end;
+	GtkTextIter start;
+	GtkTextIter end;
+	GtkTextIter marked_start;
+	GtkTextIter marked_end;
+	GtkTextIter iter;
+	gboolean had_selection;
 
-		if(doCOVT){
-			old_converted = g_strcompress(gtk_entry_get_text(GTK_ENTRY(findentry)));
-			new_converted = g_strcompress(gtk_entry_get_text(GTK_ENTRY(replaceentry)));
-			old = old_converted;
-			new = new_converted;
-		}
-		else {
-			new=( const gchar *)gtk_entry_get_text(GTK_ENTRY(replaceentry));
-			old=( const gchar *)gtk_entry_get_text(GTK_ENTRY(findentry));
-			}
+	if (findentry == NULL || replaceentry == NULL)
+		return 0;
 
-		if (old == NULL || old[0] == '\0') {
-			g_free(old_converted);
-			g_free(new_converted);
-			return 0;
-		}
-
-		GtkTextMark *mark_start;
-		GtkTextMark *mark_end;
-		GtkTextIter start,end;
-		gint hadsele=0;
-
-	if(gtk_text_buffer_get_has_selection (GTK_TEXT_BUFFER(mBuff))){
-		if(!gtk_text_buffer_get_selection_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end)) {
-			gtk_text_buffer_get_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end);
-			hadsele=0;
-			}
-		else hadsele=1;
-		
+	if (doCOVT) {
+		old_converted = g_strcompress(gtk_editable_get_text(
+			GTK_EDITABLE(findentry)));
+		new_converted = g_strcompress(gtk_editable_get_text(
+			GTK_EDITABLE(replaceentry)));
+		old = old_converted;
+		new = new_converted;
+	} else {
+		new = gtk_editable_get_text(GTK_EDITABLE(replaceentry));
+		old = gtk_editable_get_text(GTK_EDITABLE(findentry));
 	}
-	else{
-	 gtk_text_buffer_get_bounds( GTK_TEXT_BUFFER(mBuff),&start,&end);
-	hadsele=0;
-	}
-	
-		source_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),
-		                                         &start, &end, FALSE);
-		content = tpad_replace_str(source_text, old, new);
-		g_free(source_text);
+
+	if (old == NULL || old[0] == '\0') {
 		g_free(old_converted);
 		g_free(new_converted);
-
-		if(content==NULL) return(0);
-
-	gtk_text_buffer_begin_user_action(GTK_TEXT_BUFFER(mBuff));	
-	if(hadsele){
-
-			mark_start = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
-			                                         NULL, &start, TRUE);
-			mark_end = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
-			                                       NULL, &end, FALSE);
-			gtk_text_buffer_delete (GTK_TEXT_BUFFER(mBuff), &start, &end);
-			gtk_text_buffer_insert (GTK_TEXT_BUFFER(mBuff), &start, content, -1);
-			gtk_text_buffer_end_user_action (GTK_TEXT_BUFFER(mBuff));
-			gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff),&start);		
-					GtkTextIter mstart, mend;
-			gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(mBuff),&mstart,mark_start);
-			gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(mBuff),&mend,mark_end);
-			gtk_text_buffer_select_range (GTK_TEXT_BUFFER(mBuff), &mstart, &mend);
-			gtk_text_buffer_delete_mark (GTK_TEXT_BUFFER(mBuff), mark_start);
-			gtk_text_buffer_delete_mark (GTK_TEXT_BUFFER(mBuff), mark_end);
+		return 0;
 	}
-	else{
 
-	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff),content,-1);
-	gtk_text_buffer_end_user_action (GTK_TEXT_BUFFER(mBuff));
-	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),TRUE);
+	had_selection = gtk_text_buffer_get_selection_bounds(
+		GTK_TEXT_BUFFER(mBuff), &start, &end);
+	if (!had_selection)
+		gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(mBuff), &start, &end);
 
-        GtkTextIter iter;
-        gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff),&iter);
-        gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff),&iter);  
-	}  
+	source_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(mBuff),
+	                                       &start, &end, FALSE);
+	content = tpad_replace_str_full(source_text, old, new, searchCase);
+	g_free(source_text);
+	g_free(old_converted);
+	g_free(new_converted);
+	if (content == NULL)
+		return 0;
+
+	gtk_text_buffer_begin_user_action(GTK_TEXT_BUFFER(mBuff));
+	if (had_selection) {
+		mark_start = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
+		                                         NULL, &start, TRUE);
+		mark_end = gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(mBuff),
+		                                       NULL, &end, FALSE);
+		gtk_text_buffer_delete(GTK_TEXT_BUFFER(mBuff), &start, &end);
+		gtk_text_buffer_insert(GTK_TEXT_BUFFER(mBuff), &start, content, -1);
+		gtk_text_buffer_end_user_action(GTK_TEXT_BUFFER(mBuff));
+		gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff), &start);
+		gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(mBuff),
+		                                 &marked_start, mark_start);
+		gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(mBuff),
+		                                 &marked_end, mark_end);
+		gtk_text_buffer_select_range(GTK_TEXT_BUFFER(mBuff),
+		                             &marked_start, &marked_end);
+		gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(mBuff), mark_start);
+		gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(mBuff), mark_end);
+	} else {
+		/* GtkTextBuffer::set-text starts an irreversible action in GTK 4,
+		 * which cannot be nested inside this undoable user action.  Replace
+		 * the existing range explicitly so Replace All remains one undo step. */
+		gtk_text_buffer_delete(GTK_TEXT_BUFFER(mBuff), &start, &end);
+		gtk_text_buffer_insert(GTK_TEXT_BUFFER(mBuff), &start, content, -1);
+		gtk_text_buffer_end_user_action(GTK_TEXT_BUFFER(mBuff));
+		gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff), TRUE);
+		gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff), &iter);
+		gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff), &iter);
+	}
 	g_free(content);
 	content = NULL;
-	return(1);
+	return 1;
 }
 
 
 
-char *tpad_replace_str(const char *str, const char *old, const char *new)
+char *tpad_replace_str_full(const char *str, const char *old, const char *new,
+                           gboolean case_sensitive)
 {
-	char *ret, *r;
-	const char *p, *q;
-	size_t count = 0;
-	size_t delta;
-	size_t oldlen;
-	size_t newlen;
-	size_t retlen;
-	size_t strlen_value;
+	GError *error = NULL;
+	GRegex *regex;
+	GRegexCompileFlags flags = G_REGEX_OPTIMIZE;
+	gchar *escaped;
+	gchar *result;
 
 	if (str == NULL || old == NULL || new == NULL)
 		return NULL;
-
-	oldlen = strlen(old);
-	newlen = strlen(new);
-	strlen_value = strlen(str);
-
-	/* An empty needle never advances strstr(), so treat it as a no-op. */
-	if (oldlen == 0)
+	if (old[0] == '\0')
 		return g_strdup(str);
 
-	for (p = str; (q = strstr(p, old)) != NULL; p = q + oldlen) {
-		if (count == G_MAXSIZE)
-			return NULL;
-		count++;
-	}
-
-	retlen = strlen_value;
-	if (newlen > oldlen) {
-		delta = newlen - oldlen;
-		if (count > (G_MAXSIZE - retlen) / delta)
-			return NULL;
-		retlen += count * delta;
-	} else if (oldlen > newlen) {
-		delta = oldlen - newlen;
-		if (count > G_MAXSIZE / delta || count * delta > retlen)
-			return NULL;
-		retlen -= count * delta;
-	}
-	if (retlen == G_MAXSIZE)
+	if (!case_sensitive)
+		flags = (GRegexCompileFlags) (flags | G_REGEX_CASELESS);
+	escaped = g_regex_escape_string(old, -1);
+	regex = g_regex_new(escaped, flags, 0, &error);
+	g_free(escaped);
+	if (regex == NULL) {
+		g_clear_error(&error);
 		return NULL;
-
-	ret = g_try_malloc(retlen + 1);
-	if (ret == NULL)
-		return NULL;
-
-	r = ret;
-	p = str;
-	while ((q = strstr(p, old)) != NULL) {
-		size_t prefix_length = (size_t) (q - p);
-
-		memcpy(r, p, prefix_length);
-		r += prefix_length;
-		memcpy(r, new, newlen);
-		r += newlen;
-		p = q + oldlen;
 	}
-	memcpy(r, p, strlen(p) + 1);
 
-	return ret;
+	result = g_regex_replace_literal(regex, str, -1, 0, new, 0, &error);
+	g_regex_unref(regex);
+	if (error != NULL) {
+		g_clear_error(&error);
+		g_free(result);
+		return NULL;
+	}
+	return result;
+}
+
+char *tpad_replace_str(const char *str, const char *old, const char *new)
+{
+	return tpad_replace_str_full(str, old, new, TRUE);
 }

@@ -20,6 +20,21 @@
  ********************************************************************************/
 #include "tpad_headers.h"
 extern GtkSourceBuffer *mBuff;
+extern GtkWidget *window;
+
+static void attach_stat_row(GtkGrid *grid, gint row, const gchar *heading,
+	const gchar *value)
+{
+	GtkWidget *heading_label = gtk_label_new(heading);
+	GtkWidget *value_label = gtk_label_new(value);
+
+	gtk_label_set_xalign(GTK_LABEL(heading_label), 0.0f);
+	gtk_label_set_xalign(GTK_LABEL(value_label), 1.0f);
+	gtk_widget_set_hexpand(heading_label, TRUE);
+	gtk_grid_attach(grid, heading_label, 0, row, 1, 1);
+	gtk_grid_attach(grid, value_label, 1, row, 1, 1);
+}
+
 void get_text_stats(GtkWidget *caller){
 	(void) caller;
 //	ui_unity_set_count();
@@ -41,52 +56,24 @@ void get_text_stats(GtkWidget *caller){
 	cline_count=g_ascii_dtostr(buf_line_count,
 	                           sizeof(buf_line_count),
 	                           gtk_text_buffer_get_line_count (GTK_TEXT_BUFFER(mBuff)) );
-	    GtkWidget *dialog;
-    GtkWidget *mainbox,*wordCountbox,*charCountbox,*lineCountbox,*vseparator[4];
-	
-    dialog=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	vseparator[0]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	vseparator[1]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	vseparator[2]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	vseparator[3]=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-    gtk_window_set_title(GTK_WINDOW(dialog),_WORD_COUNT);
-    gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
-    gtk_window_set_resizable (GTK_WINDOW(dialog),FALSE);
+	GtkWidget *dialog = gtk_window_new();
+	GtkWidget *grid = gtk_grid_new();
 
-    mainbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    charCountbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    lineCountbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    wordCountbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
- 
-
-    gtk_container_add(GTK_CONTAINER(dialog),mainbox);
-	gtk_container_add(GTK_CONTAINER(mainbox),wordCountbox);
-    gtk_container_add(GTK_CONTAINER(mainbox),charCountbox);
-    gtk_container_add(GTK_CONTAINER(mainbox),lineCountbox);	
-
-
-
-	gtk_box_pack_start (GTK_BOX (wordCountbox),
-	                     GTK_WIDGET (gtk_label_new(_WORD_COUNT_HEADING)), TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (wordCountbox),
-	                    GTK_WIDGET(vseparator[1]),TRUE,TRUE,1);
-	gtk_box_pack_start (GTK_BOX (wordCountbox),
-                        GTK_WIDGET (gtk_label_new(cword_count)), TRUE, TRUE, 1);
-	
-    gtk_box_pack_start (GTK_BOX (charCountbox),
-                        GTK_WIDGET (gtk_label_new(_CHAR_COUNT_HEADING)), TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (charCountbox),
-                        GTK_WIDGET (gtk_label_new(cchar_count)), TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (charCountbox),
-	                    GTK_WIDGET(vseparator[2]),TRUE,TRUE,1);
-
-	gtk_box_pack_start (GTK_BOX (lineCountbox),
-	                    GTK_WIDGET (gtk_label_new(_LINE_COUNT_HEADING)), TRUE, TRUE, 1);
-	gtk_box_pack_start (GTK_BOX (lineCountbox),
-	                    GTK_WIDGET (gtk_label_new(cline_count)), TRUE, TRUE, 1);
-
-	gtk_box_pack_start (GTK_BOX (lineCountbox),
-	                    GTK_WIDGET(vseparator[3]),TRUE,TRUE,1);
-
-    gtk_widget_show_all(dialog);
+	gtk_window_set_title(GTK_WINDOW(dialog),_WORD_COUNT);
+	gtk_window_set_resizable(GTK_WINDOW(dialog),FALSE);
+	if (window != NULL && GTK_IS_WINDOW(window)) {
+		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
+		gtk_window_set_destroy_with_parent(GTK_WINDOW(dialog), TRUE);
+	}
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 18);
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 6);
+	gtk_widget_set_margin_start(grid, 12);
+	gtk_widget_set_margin_end(grid, 12);
+	gtk_widget_set_margin_top(grid, 12);
+	gtk_widget_set_margin_bottom(grid, 12);
+	attach_stat_row(GTK_GRID(grid), 0, _WORD_COUNT_HEADING, cword_count);
+	attach_stat_row(GTK_GRID(grid), 1, _CHAR_COUNT_HEADING, cchar_count);
+	attach_stat_row(GTK_GRID(grid), 2, _LINE_COUNT_HEADING, cline_count);
+	gtk_window_set_child(GTK_WINDOW(dialog),grid);
+	gtk_window_present(GTK_WINDOW(dialog));
 }

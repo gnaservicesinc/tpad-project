@@ -26,13 +26,12 @@
 #  include <config.h>
 #endif
 #include "tpad_headers.h"
-void toggle_line_wrap(GtkWidget *caller);
-void toggle_linenumber(GtkWidget *caller);
-void toggle_use_open_guard(GtkWidget *caller);
-void toggle_show_full_path(GtkWidget *caller);
-void toggle_keep_above(GtkWidget *caller);
+void tpad_set_line_wrap(gboolean enabled);
+void tpad_set_line_numbers(gboolean enabled);
+gboolean tpad_set_use_open_guard(gboolean enabled);
+void tpad_set_show_full_path(gboolean enabled);
 #ifdef AUTO_TAB_TOGGLE
-void toggle_auto_tab(GtkWidget *caller);
+void tpad_set_auto_tab(gboolean enabled);
 #endif
 void toggle_covt (GtkWidget *caller);
 void toggle_case_sarch (GtkWidget *caller);

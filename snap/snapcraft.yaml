@@ -1,7 +1,7 @@
-name: tpad
+name: tpad-text-editor
 title: Tpad
-base: core26
-version: '7.1.0.0'
+base: core24
+version: '7.3.0.6'
 summary: Simple text editor
 description: |
   A simple, easy to use, fast text editor.
@@ -15,67 +15,53 @@ icon: icon/tpad_128.png
 
 grade: stable
 confinement: strict
-assumes:
-  - snapd2.55
 
-# The cups content plug causes the print service to be installed when needed.
-# It complements the safe, auto-connected cups interface used by the app.
-plugs:
-  install-cups-runtime:
-    interface: content
-    content: foo
-    default-provider: cups
-    target: $SNAP_DATA/cups
+platforms:
+  amd64:
+  arm64:
+  armhf:
+  riscv64:
+
+layout:
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/enchant-2:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/enchant-2
 
 apps:
   tpad:
     command: usr/bin/tpad
     desktop: usr/share/applications/tpad.desktop
-    command-chain:
-      - command-chain/desktop-launch
-    environment:
-      GTK_USE_PORTAL: '1'
-      SNAP_DESKTOP_RUNTIME: $SNAP
     extensions:
-      - gpu
+      - gnome
+    environment:
+      # Tpad has no media or 3D content. Avoid incompatible optional media
+      # modules and GPU-driver probing inside confinement.
+      GTK_MEDIA: none
+      GSK_RENDERER: cairo
+    # The confined application omits its GtkApplication ID and exports no
+    # GTK action interfaces. A D-Bus slot is unnecessary and forces Snap
+    # Store manual review.
     plugs:
       - cups
-      - desktop
-      - desktop-legacy
-      - gsettings
       - home
-      - opengl
-      - wayland
-      - x11
 
 parts:
-  # Snapcraft's GNOME extension does not yet support core26. Use Canonical's
-  # desktop launcher with this snap as its runtime until that support lands.
-  desktop-integration:
-    plugin: make
-    source: https://github.com/snapcore/snapcraft-desktop-integration.git
-    source-type: git
-    source-commit: ba67c3d6a9a26029808671d8265ed1d32200e418
-    source-subdir: gnome
-    make-parameters:
-      - PLATFORM_PLUG=desktop
-      - WITH_GRAPHICS=false
-
   tpad:
     plugin: autotools
     source: .
     autotools-configure-parameters:
       - --prefix=/usr
     build-packages:
+      - autoconf
+      - automake
       - intltool
-      - libgtk-3-dev
-      - libgtkspell3-3-dev
-      - libgtksourceview-3.0-dev
-      - libsystemd-dev
-      - pkgconf
+      - libgtk-4-dev
+      - libgtksourceview-5-dev
+      - libspelling-1-dev
+      - libtool
+    override-build: |
+      autoreconf --force --install
+      craftctl default
     stage-packages:
-      - libgtk-3-0t64
-      - libgtkspell3-3-0
-      - libgtksourceview-3.0-1
-      - libsystemd0
-      - xdg-user-dirs
+      - hunspell-en-us
+      - libgtksourceview-5-0
+      - libspelling-1-1

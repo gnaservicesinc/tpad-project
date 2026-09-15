@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tpad\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 15:27-0400\n"
+"POT-Creation-Date: 2026-07-17 21:54-0400\n"
 "PO-Revision-Date: 2018-02-06 23:29-0500\n"
 "Last-Translator: Andrew Smith (GNA SERVICES INC) <andresmi@icloud.com>\n"
 "Language-Team: \n"
@@ -37,79 +37,135 @@ msgstr ""
 msgid "Open a New Window"
 msgstr ""
 
-#: ../src/def.h:200
+#: ../src/tpad_frequency_analysis.c:123
+msgid "There are no non-whitespace characters to analyze."
+msgstr ""
+
+#: ../src/tpad_frequency_analysis.c:126 ../src/tpad_frequency_analysis.c:142
+#: ../src/tpad_ui.c:376
+msgid "Frequency Analysis"
+msgstr ""
+
+#: ../src/tpad_frequency_analysis.c:144
+msgid "_Close"
+msgstr ""
+
+#: ../src/tpad_frequency_analysis.c:180
+msgid "Character"
+msgstr ""
+
+#: ../src/tpad_frequency_analysis.c:182
+msgid "Code point"
+msgstr ""
+
+#: ../src/tpad_frequency_analysis.c:184
+#, fuzzy
+msgid "Count"
+msgstr "Word Count"
+
+#: ../src/tpad_frequency_analysis.c:186
+msgid "Percent"
+msgstr ""
+
+#: ../src/tpad_ui.c:142
+#, fuzzy
+msgid "Recent files are disabled"
+msgstr "Reading file failed!"
+
+#: ../src/tpad_ui.c:156
+msgid "No Recent Files"
+msgstr ""
+
+#: ../src/tpad_ui.c:313
+msgid "Open _Recent"
+msgstr ""
+
+#: ../src/def.h:204
 msgid "Choose Font"
 msgstr "Choose Font"
 
-#: ../src/def.h:203
+#: ../src/def.h:207
 msgid "Show Line Numbers"
 msgstr "Show Line Numbers"
 
-#: ../src/def.h:206
+#: ../src/def.h:210
 msgid "Show Language"
 msgstr "Show Language"
 
-#: ../src/def.h:209
+#: ../src/def.h:213
 msgid "Auto Indent"
 msgstr "Auto Indent"
 
-#: ../src/def.h:212
+#: ../src/def.h:216
 msgid "Spell Check"
 msgstr "Spell Check"
 
-#: ../src/def.h:215
+#: ../src/def.h:219
 msgid "Show Full File Path"
 msgstr "Show Full File Path"
 
-#: ../src/def.h:218
+#: ../src/def.h:222
 msgid "Display UI Settings"
 msgstr "Display UI Settings"
 
-#: ../src/def.h:221
+#: ../src/def.h:225
 msgid "Default Window Width"
 msgstr "Default Window Width"
 
-#: ../src/def.h:224
+#: ../src/def.h:228
 msgid "Default Window Height"
 msgstr "Default Window Height"
 
-#: ../src/def.h:227
+#: ../src/def.h:231
 msgid "Set Maximum Undo Level (0 For Unlimited) :"
 msgstr "Set Maximum Undo Level (0 For Unlimited) :"
 
-#: ../src/def.h:230
+#: ../src/def.h:234
+msgid "Remember recently opened files"
+msgstr ""
+
+#: ../src/def.h:237
+#, fuzzy
+msgid "Maximum recent files (0 for unlimited):"
+msgstr "Set Maximum Undo Level (0 For Unlimited) :"
+
+#: ../src/def.h:240
 msgid "Find / Find & Replace Text"
 msgstr "Find / Find & Replace Text"
 
-#: ../src/def.h:236
+#: ../src/def.h:246
 msgid "Search Text For:"
 msgstr "Search Text For:"
 
-#: ../src/def.h:239
+#: ../src/def.h:243
+msgid "Match Case"
+msgstr "Match Case"
+
+#: ../src/def.h:249
 msgid "Error!"
 msgstr "Error!"
 
-#: ../src/def.h:242
+#: ../src/def.h:252
 msgid "Replace Text With:"
 msgstr "Replace Text With:"
 
-#: ../src/def.h:245
+#: ../src/def.h:255
 msgid "Find"
 msgstr "Find"
 
-#: ../src/def.h:248
+#: ../src/def.h:258
 msgid "Help"
 msgstr "Help"
 
-#: ../src/def.h:251
+#: ../src/def.h:261
 msgid "About"
 msgstr "About"
 
-#: ../src/def.h:254
+#: ../src/def.h:264
 msgid "Replace"
 msgstr "Replace"
 
-#: ../src/def.h:257
+#: ../src/def.h:267
 msgid ""
 "Text was modified!\n"
 "Save it?"
@@ -117,23 +173,23 @@ msgstr ""
 "Text was modified!\n"
 "Save it?"
 
-#: ../src/def.h:260
+#: ../src/def.h:270
 msgid "Reload & Drop any Unsaved Changes"
 msgstr ""
 
-#: ../src/def.h:263
+#: ../src/def.h:273
 msgid "Yes"
 msgstr ""
 
-#: ../src/def.h:266
+#: ../src/def.h:276
 msgid "No"
 msgstr ""
 
-#: ../src/def.h:269
+#: ../src/def.h:279
 msgid "Cancel"
 msgstr ""
 
-#: ../src/def.h:272
+#: ../src/def.h:282
 msgid ""
 "WARNING!\n"
 "The on disk content of the open file was modified while the file was open!\n"
@@ -141,174 +197,174 @@ msgid ""
 "Save the file using a different, unique, file name to avoid this risk.\n"
 msgstr ""
 
-#: ../src/def.h:275
+#: ../src/def.h:285
 #, fuzzy
 msgid "Save File Anyway"
 msgstr "Save File"
 
-#: ../src/def.h:278
+#: ../src/def.h:288
 #, fuzzy
 msgid "Do a Save As... instead"
 msgstr "Save As..."
 
 # This used to set the spell checking locale specifier (i.e. "en", or "en_US"). If unsure, set to NULL, and tpad will attempt to use the default system locale.
-#: ../src/def.h:281
+#: ../src/def.h:291
 msgid "en_US"
 msgstr "en_US"
 
-#: ../src/def.h:284
+#: ../src/def.h:294
 msgid "Keep Window Above"
 msgstr "Keep Window Above"
 
-#: ../src/def.h:287
+#: ../src/def.h:297
 msgid "Wrap Lines"
 msgstr "Wrap Lines"
 
-#: ../src/def.h:290
-msgid "Use Temp and  Check For (lock/tmp/swp)"
-msgstr "Use Temp and  Check For (lock/tmp/swp)"
+#: ../src/def.h:300
+msgid "Guard Against Concurrent Editing"
+msgstr "Guard Against Concurrent Editing"
 
-#: ../src/def.h:293
+#: ../src/def.h:303
 msgid "Use Libmagic"
 msgstr "Use Libmagic"
 
-#: ../src/def.h:296
+#: ../src/def.h:306
 msgid "That simple, fast, and user friendly text editor you love."
 msgstr "That simple, fast, and user friendly text editor you love."
 
-#: ../src/def.h:299
+#: ../src/def.h:309
 msgid "translator-credits"
 msgstr "Andrew Smith (GNA SERVICES INC)"
 
-#: ../src/def.h:302
+#: ../src/def.h:312
 msgid "Reading file failed!"
 msgstr "Reading file failed!"
 
-#: ../src/def.h:305
+#: ../src/def.h:315
 msgid "Binary files containing NUL bytes are not supported."
 msgstr ""
 
-#: ../src/def.h:308
+#: ../src/def.h:318
 msgid "Conversion to UTF-8 FAILED! Is this a text document?"
 msgstr "Conversion to UTF-8 FAILED! Is this a text document?"
 
-#: ../src/def.h:311
+#: ../src/def.h:321
 msgid "_File"
 msgstr "_File"
 
-#: ../src/def.h:314
+#: ../src/def.h:324
 msgid "_New File"
 msgstr "_New File"
 
-#: ../src/def.h:317
+#: ../src/def.h:327
 msgid "_Save File"
 msgstr "_Save File"
 
-#: ../src/def.h:320
+#: ../src/def.h:330
 msgid "_Open File"
 msgstr "_Open File"
 
-#: ../src/def.h:323
+#: ../src/def.h:333
 msgid "S_ave File As..."
 msgstr "S_ave File As..."
 
-#: ../src/def.h:326
+#: ../src/def.h:336
 msgid "_Print..."
 msgstr ""
 
-#: ../src/def.h:329
+#: ../src/def.h:339
 msgid "Printing failed"
 msgstr ""
 
-#: ../src/def.h:332
+#: ../src/def.h:342
 msgid "The system print service did not provide additional details."
 msgstr ""
 
-#: ../src/def.h:335
+#: ../src/def.h:345
 msgid "_Quit"
 msgstr "_Quit"
 
-#: ../src/def.h:338
+#: ../src/def.h:348
 msgid "Edit"
 msgstr "Edit"
 
-#: ../src/def.h:341
+#: ../src/def.h:351
 msgid "F_ind"
 msgstr "F_ind"
 
-#: ../src/def.h:344
+#: ../src/def.h:354
 msgid "Re_place"
 msgstr "Re_place"
 
-#: ../src/def.h:347
+#: ../src/def.h:357
 msgid "_Undo"
 msgstr "_Undo"
 
-#: ../src/def.h:350
+#: ../src/def.h:360
 msgid "_Redo"
 msgstr "_Redo"
 
-#: ../src/def.h:353
+#: ../src/def.h:363
 msgid "Reload"
 msgstr "Reload"
 
-#: ../src/def.h:356
+#: ../src/def.h:366
 msgid "R_eload"
 msgstr "R_eload"
 
-#: ../src/def.h:359
+#: ../src/def.h:369
 msgid "Settings"
 msgstr "Settings"
 
-#: ../src/def.h:362
+#: ../src/def.h:372
 msgid "Se_lect Font"
 msgstr "Se_lect Font"
 
-#: ../src/def.h:365
+#: ../src/def.h:375
 msgid "_Preferences"
 msgstr "_Preferences"
 
-#: ../src/def.h:368
+#: ../src/def.h:378
 msgid "Copy F_ile Path"
 msgstr "Copy F_ile Path"
 
-#: ../src/def.h:371
+#: ../src/def.h:381
 msgid "WARNING: Saving File Failed! Unable to write to file: "
 msgstr "WARNING: Saving File Failed! Unable to write to file: "
 
-#: ../src/def.h:374
+#: ../src/def.h:384
 msgid "Save File"
 msgstr "Save File"
 
-#: ../src/def.h:377
+#: ../src/def.h:387
 msgid "Thread could not be created"
 msgstr "Thread could not be created"
 
-#: ../src/def.h:380
+#: ../src/def.h:390
 msgid "Word Count"
 msgstr "Word Count"
 
-#: ../src/def.h:383
+#: ../src/def.h:393
 msgid "Word Count:"
 msgstr "Word Count:"
 
-#: ../src/def.h:386
+#: ../src/def.h:396
 msgid "Char Count:"
 msgstr "Char Count:"
 
-#: ../src/def.h:389
+#: ../src/def.h:399
 msgid "Line Count:"
 msgstr "Line Count:"
 
-#: ../src/def.h:392
+#: ../src/def.h:402
 msgid "Reverse"
 msgstr "Reverse"
 
-#: ../src/def.h:395
+#: ../src/def.h:405
 msgid "To upper case "
 msgstr "To upper case "
 
-#: ../src/def.h:398
+#: ../src/def.h:408
 msgid ""
 "Config file is invalid.\n"
 "Failed to remove bad config file.\n"
@@ -318,7 +374,7 @@ msgstr ""
 "Failed to remove bad config file.\n"
 "Please manually remove it."
 
-#: ../src/def.h:401
+#: ../src/def.h:411
 msgid ""
 "Spell-checking is not working correctly. I have turned it off.\n"
 "Technical information about the error:\n"
@@ -328,11 +384,11 @@ msgid ""
 "Error Message:\t"
 msgstr ""
 
-#: ../src/def.h:404
+#: ../src/def.h:414
 msgid "Config file is invalid."
 msgstr "Config file is invalid."
 
-#: ../src/def.h:407
+#: ../src/def.h:417
 msgid ""
 "Successfully removed bad config file.\n"
 "A new config file will be created.\n"
@@ -342,7 +398,7 @@ msgstr ""
 "A new config file will be created.\n"
 "Press ok and tpad will restart..."
 
-#: ../src/def.h:410
+#: ../src/def.h:420
 msgid ""
 "Error settings value out of range, change dropped.\n"
 "The change will not be saved.\n"
@@ -354,7 +410,7 @@ msgstr ""
 " However, you REALLY should save your work and exit tpad right now. Please "
 "report bug"
 
-#: ../src/def.h:413
+#: ../src/def.h:423
 msgid ""
 "Error! The default window size must have a height of 50 or more and a width "
 "of 25 or more."
@@ -362,15 +418,15 @@ msgstr ""
 "Error! The default window size must have a height of 50 or more and a width "
 "of 25 or more."
 
-#: ../src/def.h:416
+#: ../src/def.h:426
 msgid "To lower case"
 msgstr "To lower case"
 
-#: ../src/def.h:419
-msgid "File may alread be open in tpad or another program!"
-msgstr "File may alread be open in tpad or another program!"
+#: ../src/def.h:429
+msgid "File may already be open in tpad or another program!"
+msgstr "File may already be open in tpad or another program!"
 
-#: ../src/def.h:422
+#: ../src/def.h:432
 #, c-format
 msgid ""
 "Do you still want to open the file?\n"
@@ -407,19 +463,19 @@ msgstr ""
 "\n"
 "Path to tmp or swp file:%s\n"
 
-#: ../src/def.h:425
+#: ../src/def.h:435
 msgid ""
-"Error invalid method. An error has occurred! Please save you work and exit "
+"Error invalid method. An error has occurred! Please save your work and exit "
 "tpad. Please report a bug!"
 msgstr ""
-"Error invalid method. An error has occurred! Please save you work and exit "
+"Error invalid method. An error has occurred! Please save your work and exit "
 "tpad. Please report a bug!"
 
-#: ../src/def.h:428
-msgid "File Is Not  A Text File -- BAD MAGIC"
-msgstr "File Is Not  A Text File -- BAD MAGIC"
+#: ../src/def.h:438
+msgid "File Is Not A Text File -- BAD MAGIC"
+msgstr "File Is Not A Text File -- BAD MAGIC"
 
-#: ../src/def.h:431
+#: ../src/def.h:441
 msgid ""
 "Oh-No! I was unable to initialize magic the magic library\n"
 "Skipping magic!"
@@ -427,7 +483,7 @@ msgstr ""
 "Oh-No! I was unable to initialize magic the magic library\n"
 "Skipping magic!"
 
-#: ../src/def.h:434
+#: ../src/def.h:444
 msgid ""
 "Uh-oh! I can not load the magic database\n"
 "Skipping!"
@@ -435,99 +491,99 @@ msgstr ""
 "Uh-oh! I can not load the magic database\n"
 "Skipping!"
 
-#: ../src/def.h:437
+#: ../src/def.h:447
 msgid ""
 "Document text changes have failed!\n"
-"\tcoult not convert the new content to UTF-8.\n"
+"\tcould not convert the new content to UTF-8.\n"
 msgstr ""
 "Document text changes have failed!\n"
-"\tcoult not convert the new content to UTF-8.\n"
+"\tcould not convert the new content to UTF-8.\n"
 
-#: ../src/def.h:440
+#: ../src/def.h:450
 msgid "Quit"
 msgstr "Quit"
 
-#: ../src/def.h:443
+#: ../src/def.h:453
 msgid "Redo"
 msgstr "Redo"
 
-#: ../src/def.h:446
+#: ../src/def.h:456
 msgid "Undo"
 msgstr "Undo"
 
-#: ../src/def.h:449
+#: ../src/def.h:459
 msgid "Save As..."
 msgstr "Save As..."
 
-#: ../src/def.h:452
+#: ../src/def.h:462
 msgid "Save"
 msgstr "Save"
 
-#: ../src/def.h:455
+#: ../src/def.h:465
 msgid "Open"
 msgstr "Open"
 
-#: ../src/def.h:458
+#: ../src/def.h:468
 msgid "New"
 msgstr "New"
 
-#: ../src/def.h:461
+#: ../src/def.h:471
 msgid "DejaVu Sans Mono 12"
 msgstr "DejaVu Sans Mono 12"
 
-#: ../src/def.h:464
+#: ../src/def.h:474
 msgid "Hash Selection To Clipboard [SHA-512]"
 msgstr "Hash Selection To Clipboard [SHA-512]"
 
-#: ../src/def.h:467
+#: ../src/def.h:477
 msgid "Hash Selection To Clipboard [SHA-256]"
 msgstr "Hash Selection To Clipboard [SHA-256]"
 
-#: ../src/def.h:470
+#: ../src/def.h:480
 msgid "Hash Selection To Clipboard [MD5]"
 msgstr "Hash Selection To Clipboard [MD5]"
 
-#: ../src/def.h:473
+#: ../src/def.h:483
 msgid "Hash"
 msgstr "Hash"
 
-#: ../src/def.h:476
+#: ../src/def.h:486
 msgid "Disable experimental file watching"
 msgstr "Disable experimental file watching"
 
-#: ../src/def.h:479
+#: ../src/def.h:489
 msgid "Hash File To Clipboard [SHA-512]..."
 msgstr "Hash File To Clipboard [SHA-512]..."
 
-#: ../src/def.h:482
+#: ../src/def.h:492
 msgid "Hash File To Clipboard [SHA-256]..."
 msgstr "Hash File To Clipboard [SHA-256]..."
 
-#: ../src/def.h:485 ../src/def.h:500 ../src/def.h:503
+#: ../src/def.h:495 ../src/def.h:510 ../src/def.h:513
 msgid "Hash File To Clipboard [MD5]..."
 msgstr "Hash File To Clipboard [MD5]..."
 
-#: ../src/def.h:506
+#: ../src/def.h:516
 msgid "Experimental File Watching Toggled"
 msgstr "Experimental File Watching Toggled"
 
-#: ../src/def.h:509
+#: ../src/def.h:519
 msgid "Convert Selection To Clipboard [TO BASE 64]"
 msgstr "Convert Selection To Clipboard [TO BASE 64]"
 
-#: ../src/def.h:512
+#: ../src/def.h:522
 msgid "Convert File To Clipboard [TO BASE 64]..."
 msgstr "Convert File To Clipboard [TO BASE 64]..."
 
-#: ../src/def.h:515
+#: ../src/def.h:525
 msgid "Convert Selection To Clipboard [FROM BASE 64]"
 msgstr "Convert Selection To Clipboard [FROM BASE 64]"
 
-#: ../src/def.h:518
+#: ../src/def.h:528
 msgid "Convert File To Clipboard [FROM BASE 64]..."
 msgstr "Convert File To Clipboard [FROM BASE 64]..."
 
-#: ../src/def.h:521
+#: ../src/def.h:531
 msgid ""
 "You should save any work and EXIT tpad after enabling or disabling this "
 "feature. Failure to do so may result in problems. You have been warned."
@@ -536,8 +592,8 @@ msgstr ""
 "feature. Failure to do so may result in problems. You have been warned."
 
 #: ../src/error_warn.h:24
-msgid "Error Deatils:"
-msgstr "Error Deatils:"
+msgid "Error Details:"
+msgstr "Error Details:"
 
 #: ../src/error_warn.h:25
 #, fuzzy, c-format

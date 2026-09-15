@@ -9,7 +9,7 @@ if (( $# == 0 )); then
 	exit 2
 fi
 
-for tool in timeout xvfb-run xdotool grep cp rm; do
+for tool in timeout xvfb-run xdotool grep cmp cp rm; do
 	if ! command -v "$tool" >/dev/null 2>&1; then
 		printf 'error: %s is required for the GUI workflow test\n' "$tool" >&2
 		exit 1
@@ -39,6 +39,9 @@ timeout 180s xvfb-run -a bash -c '
 	export LC_ALL=C.UTF-8
 	export GDK_SCALE=1
 	export TPAD_CONFIG_FILE="$test_dir/tpad.cfg"
+	export TPAD_RECENT_FILE="$test_dir/tpad.recent"
+	export GDK_DEBUG=no-portals
+	export G_DEBUG="${G_DEBUG:-fatal-criticals}"
 
 	wait_for_window() {
 		local search_kind=$1
@@ -130,6 +133,28 @@ timeout 180s xvfb-run -a bash -c '
 		exit 1
 	fi
 	printf "Open, Find / Replace, and Save workflow passed.\n"
+
+	# GtkTextBuffer::set-text cannot be nested in an undoable user action in
+	# GTK 4. Exercise all whole-document transformations and verify each one
+	# remains a single reversible edit.
+	transform_snapshot="$test_dir/pre-transform-snapshot.txt"
+	cp -- "$fixture" "$transform_snapshot"
+	for shortcut in ctrl+r ctrl+u ctrl+l; do
+		send_key_to_window "$main_window" "$shortcut"
+		sleep 0.1
+		send_key_to_window "$main_window" ctrl+z
+		sleep 0.1
+	done
+	send_key_to_window "$main_window" ctrl+s
+	for ((attempt = 0; attempt < 100; attempt++)); do
+		cmp -s -- "$fixture" "$transform_snapshot" && break
+		sleep 0.1
+	done
+	if ! cmp -s -- "$fixture" "$transform_snapshot"; then
+		printf "error: document transformations were not fully undoable\n" >&2
+		exit 1
+	fi
+	printf "Document transformation and undo workflow passed.\n"
 
 	# Exercise the real Preferences action twice. The conventional Ctrl+comma
 	# accelerator avoids fragile assumptions about menu geometry.

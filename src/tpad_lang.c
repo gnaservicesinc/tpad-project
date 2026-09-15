@@ -24,9 +24,9 @@ extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
 
 
-void toggle_show_lang(GtkWidget *caller){
-    cfg_set_show_lang((int)gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
-	gtk_source_buffer_set_highlight_matching_brackets (mBuff, gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(caller)));
+void tpad_set_language_highlighting(gboolean enabled){
+	cfg_set_show_lang((int) enabled);
+	gtk_source_buffer_set_highlight_matching_brackets(mBuff, enabled);
 	set_language();
 	cfg_save();
 }
@@ -61,9 +61,12 @@ void set_language(void){
 		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(mBuff),NULL);
 		gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(mBuff),FALSE); 
 	     }
-	if(cfg_undo() >= 1 && cfg_undo() <= UNDO_MAX) gtk_source_buffer_set_max_undo_levels ((GtkSourceBuffer *)mBuff,(gint)cfg_undo());
+	if (cfg_undo() >= 0 && cfg_undo() <= UNDO_MAX)
+		gtk_text_buffer_set_max_undo_levels(GTK_TEXT_BUFFER(mBuff),
+		                                    (guint) cfg_undo());
 	else {
-		gtk_source_buffer_set_max_undo_levels ((GtkSourceBuffer *)mBuff,(gint)-1);
+		/* GTK 4 uses zero, rather than -1, for unlimited undo. */
+		gtk_text_buffer_set_max_undo_levels(GTK_TEXT_BUFFER(mBuff), 0);
 		cfg_set_undo(0);
 	}
 		(cfg_line_wrap()) ? gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_WORD) : gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (view),GTK_WRAP_NONE);

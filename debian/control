@@ -10,9 +10,10 @@ Build-Depends:
  intltool,
  libtool,
  pkg-config,
- libgtk-3-dev,
- libgtkspell3-3-dev,
- libgtksourceview-3.0-dev,
+ libgtk-4-dev (>= 4.10) | libgtk-3-dev,
+ libgtksourceview-5-dev | libgtksourceview-3.0-dev,
+ libspelling-1-dev | libgtkspell3-3-dev,
+ libspelling-1-dev | libgtksourceview-3.0-dev,
  libsystemd-dev | libsystemd-id128-dev
 Standards-Version: 4.7.3
 Homepage: https://launchpad.net/tpad-project
@@ -23,6 +24,6 @@ Package: tpad
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: lightweight GTK text editor
- Tpad is a small, fast GTK 3 editor for plain text and source files. It
+ Tpad is a small, fast GTK editor for plain text and source files. It
  provides syntax highlighting, spelling support, hashing tools, and native
  system printing while keeping a traditional multi-window interface.

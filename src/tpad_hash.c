@@ -127,13 +127,18 @@ static gboolean tpad_hash_update_file(const char *path,
                                       TpadHashUpdate update)
 {
 	unsigned char buffer[16384];
+	gchar *filename;
 	ssize_t bytes_read;
 	int fd;
 
 	if (path == NULL || path[0] == '\0' || context == NULL || update == NULL)
 		return FALSE;
 
-	fd = open(path, O_RDONLY);
+	filename = tpad_filename_from_utf8(path);
+	if (filename == NULL)
+		return FALSE;
+	fd = open(filename, O_RDONLY);
+	g_free(filename);
 	if (fd < 0)
 		return FALSE;
 
@@ -265,14 +270,18 @@ char *curFile2sha512(void)
 char *tpad_hash_read_in_file(const char *fp)
 {
 	gchar *contents = NULL;
+	gchar *filename;
 	GError *error = NULL;
 
-	if (fp == NULL || fp[0] == '\0' ||
-	    !g_file_get_contents(fp, &contents, NULL, &error)) {
+	filename = tpad_filename_from_utf8(fp);
+	if (filename == NULL ||
+	    !g_file_get_contents(filename, &contents, NULL, &error)) {
 		if (error != NULL)
 			g_error_free(error);
+		g_free(filename);
 		return tpad_hash_error();
 	}
+	g_free(filename);
 
 	return contents;
 }
@@ -355,36 +364,35 @@ char *str2base64(const char *str)
 
 char *tpad_hash_get_file(void)
 {
-	GtkWidget *dialog;
+	GFile *file;
 	gchar *current_path;
 	gchar *selected_path = NULL;
-	gint response;
-
-	dialog = gtk_file_chooser_dialog_new("File hash to clipboard",
-	                                     GTK_WINDOW(window),
-	                                     GTK_FILE_CHOOSER_ACTION_OPEN,
-	                                     "Cancel", GTK_RESPONSE_CANCEL,
-	                                     "Select File", GTK_RESPONSE_ACCEPT,
-	                                     NULL);
-	gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), TRUE);
-	gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), TRUE);
 
 	current_path = tpad_fp_get_current();
-	if (current_path != NULL && current_path[0] != '\0')
-		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), current_path);
+	file = tpad_file_dialog_open(GTK_WINDOW(window),
+	                             gettext("File hash to clipboard"),
+	                             current_path);
 	g_free(current_path);
+	if (file != NULL) {
+		gchar *filename = g_file_get_path(file);
 
-	response = gtk_dialog_run(GTK_DIALOG(dialog));
-	if (response == GTK_RESPONSE_ACCEPT)
-		selected_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-
-	gtk_widget_destroy(dialog);
+		g_object_unref(file);
+		if (filename != NULL) {
+			selected_path = tpad_filename_to_utf8(filename);
+			g_free(filename);
+		}
+		if (selected_path == NULL)
+			gerror_warn(_CAN_NOT_READ_FILE,
+			            gettext("Only local files can be selected."),
+			            TRUE, FALSE);
+	}
 	return selected_path;
 }
 
 static gboolean tpad_choose_file_contents(gchar **contents, gsize *length)
 {
 	gchar *path;
+	gchar *filename;
 	GError *error = NULL;
 	gboolean success;
 
@@ -396,9 +404,13 @@ static gboolean tpad_choose_file_contents(gchar **contents, gsize *length)
 	path = tpad_hash_get_file();
 	if (path == NULL)
 		return FALSE;
-
-	success = g_file_get_contents(path, contents, length, &error);
+	filename = tpad_filename_from_utf8(path);
 	g_free(path);
+	if (filename == NULL)
+		return FALSE;
+
+	success = g_file_get_contents(filename, contents, length, &error);
+	g_free(filename);
 	if (error != NULL)
 		g_error_free(error);
 

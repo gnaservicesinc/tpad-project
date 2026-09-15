@@ -37,17 +37,11 @@
 #ifndef  _XOPEN_SOURCE_EXTENDED
 #define _XOPEN_SOURCE_EXTENDED
 #endif
-#ifndef __USE_FILE_OFFSET64
-#define __USE_FILE_OFFSET64
-#endif
 #ifndef _FILE_OFFSET_BITS 
 #define _FILE_OFFSET_BITS 64
 #endif
 #ifndef _FORTIFY_SOURCE
-#define _FORTIFY_SOURCE 2
-#endif
-#ifndef __USE_FORTIFY_LEVEL
-#define __USE_FORTIFY_LEVEL 2
+#define _FORTIFY_SOURCE 3
 #endif
 #if __STDC_VERSION__ < 199901L
 	# if __GNUC__ >= 2
@@ -67,7 +61,7 @@
 //	END OF SECTION ONE.   	
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-#ifndef  TPAD_STACKS_MAX
+#ifndef _TPAD_STACKS_MAX
 #define _TPAD_STACKS_MAX 9999
 #endif
 #ifndef UNDO_MAX
@@ -170,20 +164,24 @@
      #define POS_BOM8 5
  #endif
 
-  #ifndef AUTO_TAB_TOGGLE
-    #ifdef POS_AUTO_TAB  
-      #define POS_AUTO_TAB 6
-    #endif
+#ifdef AUTO_TAB_TOGGLE
+  #ifndef POS_AUTO_TAB
+    #define POS_AUTO_TAB 6
   #endif
+#endif
 
 #ifndef POS_USE_OPEN_GUARD
   #define POS_USE_OPEN_GUARD 7
 #endif 
 
+#ifndef POS_RECENT_FILES
+  #define POS_RECENT_FILES 8
+#endif
+
 //UPDATE THIS IF YOU ADD MORE
 
 #ifndef POS_CFG_MAX_USED_VALUE
-  #define POS_CFG_MAX_USED_VALUE 7
+  #define POS_CFG_MAX_USED_VALUE 8
 #endif
 //
 
@@ -226,14 +224,23 @@
 #ifndef _UNDO_LEVEL
 #define _UNDO_LEVEL gettext("Set Maximum Undo Level (0 For Unlimited) :")
 #endif
+#ifndef _REMEMBER_RECENT_FILES
+#define _REMEMBER_RECENT_FILES gettext("Remember recently opened files")
+#endif
+#ifndef _RECENT_FILES_LIMIT
+#define _RECENT_FILES_LIMIT gettext("Maximum recent files (0 for unlimited):")
+#endif
 #ifndef _FIND_FIND_AND_REPLACE
 #define _FIND_FIND_AND_REPLACE gettext("Find / Find & Replace Text")
 #endif
 #ifndef _FIND_AND_REPLACE
-#define _FIND_AND_REPLACE gettext(_FIND_FIND_AND_REPLACE)
+#define _FIND_AND_REPLACE _FIND_FIND_AND_REPLACE
 #endif
-#ifndef _SEARCH
+#ifndef _SEARCH_FOR
 #define _SEARCH_FOR gettext("Search Text For:")
+#endif
+#ifndef _MATCH_CASE
+#define _MATCH_CASE gettext("Match Case")
 #endif
 #ifndef _ERROR_POPUP_TITLE
 #define _ERROR_POPUP_TITLE gettext("Error!")
@@ -287,7 +294,7 @@
 #define _LINE_WP gettext("Wrap Lines")
 #endif
 #ifndef _CHECK_ON_OPEN
-#define _CHECK_ON_OPEN gettext("Use Temp and  Check For (lock/tmp/swp)")
+#define _CHECK_ON_OPEN gettext("Guard Against Concurrent Editing")
 #endif
 #ifndef _SETTINGS_USE_MAGIC
 #define _SETTINGS_USE_MAGIC gettext("Use Libmagic")
@@ -398,7 +405,7 @@
 #define _BAD_CFG_REPLACE_FAIL gettext("Config file is invalid.\nFailed to remove bad config file.\nPlease manually remove it.")
 #endif
 #ifndef _SPELLING_FAILED_INIT
-#define _SPELLING_FAILED_INIT gettext("Spell-checking is not working correctly. I have turned it off.\nTechnical information about the error:\n\nFailed to initialize spell checking.\ngtk_spell_checker_set_language returned with error\nError Message:\t")
+#define _SPELLING_FAILED_INIT gettext("Spell-checking is not working correctly. I have turned it off.\nTechnical information about the error:\n\nFailed to initialize spell checking.\nRequested language:\t")
 #endif
 #ifndef _CFG_FILE_INVALID
 #define _CFG_FILE_INVALID gettext("Config file is invalid.")
@@ -416,16 +423,16 @@
 #define _MAKE_LOWERCASE gettext("To lower case")
 #endif
 #ifndef _FILE_MAY_BE_ALREADY_OPEN
-#define _FILE_MAY_BE_ALREADY_OPEN gettext("File may alread be open in tpad or another program!")
+#define _FILE_MAY_BE_ALREADY_OPEN gettext("File may already be open in tpad or another program!")
 #endif
 #ifndef _FILE_MAY_BE_ALREADY_OPEN_DETAIL
 #define _FILE_MAY_BE_ALREADY_OPEN_DETAIL gettext("Do you still want to open the file?\n------------------------------------\n\nDescription - File has a swap or temp file.\nPossible Causes --\n\n\t*File might be in-use already.\n\t*tpad or another program crashed or exited improperly while using this file.\n\t*other unknown reasons\n\nDetails --\n\nFile path:%s\n\nPath to tmp or swp file:%s\n")
 #endif
 #ifndef _ERROR_MOD_DOC_METHOD_VAL
-#define _ERROR_MOD_DOC_METHOD_VAL gettext("Error invalid method. An error has occurred! Please save you work and exit tpad. Please report a bug!") 
+#define _ERROR_MOD_DOC_METHOD_VAL gettext("Error invalid method. An error has occurred! Please save your work and exit tpad. Please report a bug!")
 #endif
 #ifndef _ERROR_MAGIC_BAD
-#define _ERROR_MAGIC_BAD gettext("File Is Not  A Text File -- BAD MAGIC")
+#define _ERROR_MAGIC_BAD gettext("File Is Not A Text File -- BAD MAGIC")
 #endif
 #ifndef _ERROR_MAGIC_INIT
 #define _ERROR_MAGIC_INIT gettext("Oh-No! I was unable to initialize magic the magic library\nSkipping magic!")
@@ -434,7 +441,7 @@
 #define _ERROR_MAGIC_DB gettext("Uh-oh! I can not load the magic database\nSkipping!")
 #endif
 #ifndef _ERROR_STR_REV
-#define _ERROR_STR_REV gettext("Document text changes have failed!\n\tcoult not convert the new content to UTF-8.\n")
+#define _ERROR_STR_REV gettext("Document text changes have failed!\n\tcould not convert the new content to UTF-8.\n")
 #endif
 #ifndef _QUIT_TOOLBAR
 #define _QUIT_TOOLBAR gettext("Quit")
@@ -495,12 +502,6 @@
 #endif
 #ifndef _CHECKED_FILE_SERIOUS_ERROR_
 #define _CHECKED_FILE_SERIOUS_ERROR_ -2
-#endif
-#ifndef _HASH_MENU_F_TO_MD5
-#define _HASH_MENU_F_TO_MD5 gettext("Hash File To Clipboard [MD5]...")
-#endif
-#ifndef _HASH_MENU_F_TO_MD5
-#define _HASH_MENU_F_TO_MD5 gettext("Hash File To Clipboard [MD5]...")
 #endif
 #ifndef _ENABLE_FILE_WATCH_MESSAGE_HEADER
 #define _ENABLE_FILE_WATCH_MESSAGE_HEADER gettext("Experimental File Watching Toggled")

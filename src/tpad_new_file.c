@@ -30,9 +30,9 @@ extern int madetemp;
 void new_file(void){
 
     if(save_modified()) {
-        gtk_source_buffer_begin_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+        gtk_text_buffer_begin_irreversible_action(GTK_TEXT_BUFFER(mBuff));
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff),"",-1);
-        gtk_source_buffer_end_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+        gtk_text_buffer_end_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 	        gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
 		tpad_open_guard_cleanup();
 		madetemp = 0;

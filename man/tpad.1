@@ -1,7 +1,7 @@
 .TH TPAD 1 "17 July 2026" "" "User Commands"
 
 .SH NAME
-tpad \- GTK based simple, fast, and easy to use text editor.
+tpad \- simple, fast, and easy to use text editor.
 
 .SH SYNOPSIS
 .B tpad
@@ -9,12 +9,24 @@ tpad \- GTK based simple, fast, and easy to use text editor.
 .br
 
 .SH DESCRIPTION
-\fBtpad\fP is a GTK text editor for plain text and source files.
+\fBtpad\fP is a text editor for plain text and source files. It provides a
+GTK frontend on Linux (GTK 4 on current systems or GTK 3 for compatibility)
+and a Qt 6 frontend on macOS, Windows, and Linux.
 .PP
-Use \fBFile \(-> Print...\fP or press \fBCtrl+P\fP to open the system GTK
-print dialog. The dialog provides the printers, print-to-file destination,
-paper size, orientation, page range, and other options supplied by the
-desktop print service.
+Use \fBFile \(-> Print...\fP or press \fBCtrl+P\fP to open the frontend's
+system print dialog. The dialog provides the printers, print-to-file
+destination, paper size, orientation, page range, and other options supplied
+by the desktop print service.
+.PP
+Successful opens and saves move a file to the top of
+\fBFile \(-> Open Recent\fP. Recording is enabled by default. Preferences can
+disable it or set a maximum from 0 to 1,000,000 entries; the default is 100
+and 0 means unlimited. Disabling history stops updates and disables Open
+Recent without deleting the existing list.
+.PP
+Frequency Analysis examines the current selection, or the whole document when
+nothing is selected, and displays a scrollable Unicode table with Character,
+Code point, Count, and Percent columns.
 .SH KEYBOARD SHORTCUTS
 .TP
 .B Ctrl+P
@@ -34,6 +46,14 @@ Redo the most recently undone edit.
 .SH FILES
 .TP
 .I ~/.tpad.cfg
-Per-user configuration data.
+Per-user configuration data for the GTK frontend.
+.TP
+.I ~/.tpad.recent
+Private, newest-first recent-file list shared by both frontends.
+.SH ENVIRONMENT
+.TP
+.B TPAD_RECENT_FILE
+An absolute path that replaces \fI~/.tpad.recent\fP. Relative values are
+ignored. This override is intended for isolated testing.
 .SH SEE ALSO
 .BR lp (1)

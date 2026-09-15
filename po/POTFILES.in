@@ -14,6 +14,7 @@ src/tpad_file.c
 src/tpad_find.c
 src/tpad_font.c
 src/tpad_fp.c
+src/tpad_frequency_analysis.c
 src/tpad_hash.c
 src/tpad_hconnect.c
 src/tpad_history.c

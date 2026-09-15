@@ -28,15 +28,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gtkspell/gtkspell.h>
-#include <gdk/gdkkeysyms.h>
 #include <glib/gprintf.h>
-#include <gtksourceview/gtksourcemark.h>
-#include <gtksourceview/gtksourceview.h>
-#include <gtksourceview/gtksourcebuffer.h>
-#include <gtksourceview/gtksourcelanguage.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
+#include <gtksourceview/gtksource.h>
+#include <libspelling.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

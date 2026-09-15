@@ -26,7 +26,6 @@ extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
 extern gchar *content;
 extern int tpad_wach_thread_set;
-extern GtkSpellChecker* doc_spelling;
 extern GdkDisplay* Display;
 
 static void clear_open_guard_state(void)
@@ -36,8 +35,26 @@ static void clear_open_guard_state(void)
 	g_clear_pointer(&origfile, g_free);
 }
 
+static void remember_recent_file(const gchar *path)
+{
+	const gboolean enabled = cfg_recent_files_enabled();
+	guint maximum;
+	GError *error = NULL;
+
+	if (!enabled)
+		return;
+	maximum = (guint) cfg_recent_files_limit();
+	if (!tpad_recent_files_add(path, TRUE, maximum, &error)) {
+		g_warning("Unable to update recent files: %s",
+		          error != NULL ? error->message : "unknown error");
+		g_clear_error(&error);
+	} else
+		tpad_ui_refresh_recent_menu();
+}
+
 int show_file(gchar *nfile){
 	gchar *newfile;
+	gchar *filename;
 	gchar *unknown_contents = NULL;
 	gchar *converted;
 	gsize length;
@@ -45,22 +62,30 @@ int show_file(gchar *nfile){
 	gint bom_detected;
 	gboolean guard_tracked = FALSE;
 
-	if (tpad_touch_check_file(nfile) < 0)
-		return 1;
-
 	newfile = check_file(nfile);
 	if (newfile == NULL)
 		return 1;
-
-	/* Read and validate the candidate completely before changing the current
-	 * path, guard, buffer, title, or BOM preference. */
-	if (!g_file_get_contents(newfile, &unknown_contents, &length, &err)) {
-		gerror_warn(err != NULL ? err->message : _CAN_NOT_READ_FILE,
-		            _CAN_NOT_READ_FILE, TRUE, FALSE);
-		g_clear_error(&err);
+	if (tpad_touch_check_file(newfile) < 0) {
 		g_free(newfile);
 		return 1;
 	}
+	filename = tpad_filename_from_utf8(newfile);
+	if (filename == NULL) {
+		g_free(newfile);
+		return 1;
+	}
+
+	/* Read and validate the candidate completely before changing the current
+	 * path, guard, buffer, title, or BOM preference. */
+	if (!g_file_get_contents(filename, &unknown_contents, &length, &err)) {
+		gerror_warn(err != NULL ? err->message : _CAN_NOT_READ_FILE,
+		            _CAN_NOT_READ_FILE, TRUE, FALSE);
+		g_clear_error(&err);
+		g_free(filename);
+		g_free(newfile);
+		return 1;
+	}
+	g_free(filename);
 	if (!tpad_string_is_text_data(unknown_contents, length)) {
 		gerror_warn(_BINARY_FILE_UNSUPPORTED, _CAN_NOT_READ_FILE,
 		            TRUE, FALSE);
@@ -100,9 +125,9 @@ int show_file(gchar *nfile){
 		origfile = g_strdup(newfile);
 	cfg_set_use_ut8bom(bom_detected);
 	g_clear_pointer(&content, g_free);
-	gtk_source_buffer_begin_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+	gtk_text_buffer_begin_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff), converted, -1);
-	gtk_source_buffer_end_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+	gtk_text_buffer_end_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
 	GtkTextIter iter;
 	gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff),&iter);
@@ -111,6 +136,7 @@ int show_file(gchar *nfile){
 	set_title();
 	set_language();
 	tpad_control_store_hash_of_current_file_set();
+	remember_recent_file(newfile);
 	g_free(unknown_contents);
 	g_free(converted);
 	g_free(newfile);

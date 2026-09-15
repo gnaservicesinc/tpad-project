@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
 	printf 'Usage: %s VERSION [CHANGE ...]\n' "${0##*/}" >&2
-	printf 'Example: %s 7.1.0.0 "Add system printing" "Refresh Snap packaging"\n' \
+	printf 'Example: %s 7.2.0.0 "Add the Qt frontend" "Refresh build docs"\n' \
 		"${0##*/}" >&2
 }
 
@@ -21,7 +21,7 @@ release_version=$1
 shift
 
 if [[ ! $release_version =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-	printf 'error: VERSION must contain four numeric components (for example, 7.1.0.0)\n' >&2
+	printf 'error: VERSION must contain four numeric components (for example, 7.2.0.0)\n' >&2
 	exit 2
 fi
 
@@ -29,7 +29,8 @@ package_version=$release_version
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 cd -- "$script_dir"
 
-for required_file in configure.ac debian/changelog snap/snapcraft.yaml autogen.sh; do
+for required_file in CMakeLists.txt configure.ac debian/changelog \
+	snap/snapcraft.yaml autogen.sh; do
 	if [[ ! -f $required_file ]]; then
 		printf 'error: expected %s in %s\n' "$required_file" "$script_dir" >&2
 		exit 1
@@ -77,11 +78,17 @@ TPAD_RELEASE_VERSION=$package_version perl -0pi -e '
 
 TPAD_RELEASE_VERSION=$package_version perl -0pi -e '
 	BEGIN { $changed = 0 }
+	$changed += s/^project\(tpad VERSION [^[:space:]\)]+/project(tpad VERSION $ENV{TPAD_RELEASE_VERSION}/m;
+	END { die "error: expected one version field in CMakeLists.txt\n" if $changed != 1 }
+' CMakeLists.txt
+
+TPAD_RELEASE_VERSION=$package_version perl -0pi -e '
+	BEGIN { $changed = 0 }
 	$changed += s/^version:.*$/version: '\''$ENV{TPAD_RELEASE_VERSION}'\''/m;
 	END { die "error: expected one version field in snap\/snapcraft.yaml\n" if $changed != 1 }
 ' snap/snapcraft.yaml
 
-printf 'Updated tpad to %s in Debian, Autotools, and Snap metadata.\n' \
+printf 'Updated tpad to %s in Debian, CMake, Autotools, and Snap metadata.\n' \
 	"$release_version"
 printf 'Regenerating Autotools files...\n'
 env -u NOCONFIGURE ./autogen.sh

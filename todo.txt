@@ -1,0 +1,64 @@
+
+
+Issue: apparmor dennied dbus.
+Q: I though we removed dubs to avoid delays with manual app store reviews? If so why is this happpening 
+
+Syslog:
+
+2026-08-09T14:57:13.208367-04:00 andrew-Apple-Virtualization-Generic-Platform systemd[1705]: Started snap.tpad-text-editor.tpad-09a22edf-1ced-4a93-811a-68ac8e1f6a65.scope.
+2026-08-09T14:57:13.260109-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: /snap/tpad-text-editor/39/gnome-platform/usr/lib/aarch64-linux-gnu/gtk-4.0/4.0.0/media/libmedia-gstreamer.so: undefined symbol: gdk_cicp_params_set_matrix_coefficients
+2026-08-09T14:57:13.260238-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: Failed to load module: /snap/tpad-text-editor/39/gnome-platform/usr/lib/aarch64-linux-gnu/gtk-4.0/4.0.0/media/libmedia-gstreamer.so
+2026-08-09T14:57:13.394368-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: libEGL warning: failed to get driver name for fd -1
+2026-08-09T14:57:13.394913-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: libEGL warning: MESA-LOADER: failed to retrieve device information
+2026-08-09T14:57:13.394945-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: libEGL warning: failed to get driver name for fd -1
+2026-08-09T14:57:13.397964-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: kauditd_printk_skb: 6 callbacks suppressed
+2026-08-09T14:57:13.397972-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.395:572): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.397973-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.396:573): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.397975-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.396:574): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/icd.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.400822-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.399:575): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/icd.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401821-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:576): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401829-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:577): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401829-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:578): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/icd.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401830-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:579): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401830-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:580): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.401831-04:00 andrew-Apple-Virtualization-Generic-Platform kernel: audit: type=1400 audit(1786301833.400:581): apparmor="DENIED" operation="open" class="file" profile="snap.tpad-text-editor.tpad" name="/etc/vulkan/implicit_layer.d/" pid=23325 comm="tpad" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+2026-08-09T14:57:13.407136-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: MESA: error: ZINK: failed to choose pdev
+2026-08-09T14:57:13.407585-04:00 andrew-Apple-Virtualization-Generic-Platform tpad-text-editor_tpad.desktop[23325]: libEGL warning: egl: failed to create dri2 screen
+2026-08-09T14:57:13.559783-04:00 andrew-Apple-Virtualization-Generic-Platform dbus-daemon[1742]: apparmor="DENIED" operation="dbus_method_call"  bus="session" path="/com/gnaservicesinc/tpad" interface="org.gtk.Actions" member="DescribeAll" name=":1.24" mask="receive" pid=23325 label="snap.tpad-text-editor.tpad" peer_pid=2010 peer_label="unconfined"
+2026-08-09T14:57:13.559944-04:00 andrew-Apple-Virtualization-Generic-Platform dbus-daemon[1742]: apparmor="DENIED" operation="dbus_method_call"  bus="session" path="/com/gnaservicesinc/tpad" interface="org.freedesktop.DBus.Properties" member="GetAll" name=":1.24" mask="receive" pid=23325 label="snap.tpad-text-editor.tpad" peer_pid=2010 peer_label="unconfined"
+2026-08-09T14:57:13.626955-04:00 andrew-Apple-Virtualization-Generic-Platform dbus-daemon[1742]: apparmor="DENIED" operation="dbus_method_call"  bus="session" path="/com/gnaservicesinc/tpad/window/1" interface="org.gtk.Actions" member="DescribeAll" name=":1.24" mask="receive" pid=23325 label="snap.tpad-text-editor.tpad" peer_pid=2010 peer_label="unconfined"
+
+
+Issue: Launching the snap on Ubuntu tries and here fails to load GStreamer because it is not installed. Why is a text editor trying to load GStreamer? Can we not?
+
+Failure:
+/snap/tpad-text-editor/39/gnome-platform/usr/lib/aarch64-linux-gnu/gtk-4.0/4.0.0/media/libmedia-gstreamer.so: undefined symbol: gdk_cicp_params_set_matrix_coefficients
+Failed to load module: /snap/tpad-text-editor/39/gnome-platform/usr/lib/aarch64-linux-gnu/gtk-4.0/4.0.0/media/libmedia-gstreamer.so
+
+Issue: Warnings and errors launching the binary on Linux (snap or directly). Why does a text editor need to create a dri or choose a pdev? Can we not?
+
+libEGL warning: failed to get driver name for fd -1
+
+libEGL warning: MESA-LOADER: failed to retrieve device information
+
+libEGL warning: failed to get driver name for fd -1
+
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+
+Issue: Dragging a file or directory into tpad on the Mac/QT version produces undesirable results, adding the URI instead of the file path as expected.
+	Example: Dragging a file called quit.png into tpad from /opt/vrm/tpad-project
+	expected: /opt/vrm/tpad-project/quit.png
+	got: file:///opt/vrm/tpad-project/quit.png
+
+Issue: Save changes not detected correctly after opening a file on Mac / Qt version and then path and then results in a save dialogue as if I was saving an untitled document with no path for the first time like I had opened tpad blank. File names are not used; see tpad-project/saveas.png.
+
+So it is in a way 2 issues. 1 is that it should not be triggering the at all when there are no changes, and 2nd it didn't use the path or filename already set. (Clicking Save As from the main window does work as expected, defaulting to the file name in the correct path. The correct path is shown in the title bar. Save works.)
+
+Steps to reproduce on the Mac:
+andrewsmith@Andrews-Mac-Studio v % touch newblanktextfile.txt 
+andrewsmith@Andrews-Mac-Studio v % open -b com.gnaservicesinc.tpad newblanktextfile.txt
+** Add text**
+** Click Save**
+** Click Quit** 
+You get prompted about unsaved changes despite there being no unsaved changes, and if you click Save, it fails to use the existing file path and file name in the Save As dialogue.

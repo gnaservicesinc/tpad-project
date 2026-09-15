@@ -42,9 +42,9 @@ void set_buffer(void){
 	if (content == NULL)
 		return;
 
-		    gtk_source_buffer_begin_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+		    gtk_text_buffer_begin_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff),content,-1);
-        gtk_source_buffer_end_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+        gtk_text_buffer_end_irreversible_action(GTK_TEXT_BUFFER(mBuff));
         gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
         GtkTextIter iter;
         gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff),&iter);
@@ -71,10 +71,10 @@ if (data_to_convert == NULL) return(FALSE);
 		return FALSE;
 	}
 
-gtk_source_buffer_begin_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+gtk_text_buffer_begin_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 
 gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff), converted, -1);
-	 gtk_source_buffer_end_not_undoable_action(GTK_SOURCE_BUFFER(mBuff));
+	 gtk_text_buffer_end_irreversible_action(GTK_TEXT_BUFFER(mBuff));
 	g_free(converted);
 	g_free(data_to_convert);
 	return(TRUE);

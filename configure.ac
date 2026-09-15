@@ -1,7 +1,24 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(tpad, 7.1.0.0,https://bugs.launchpad.net/tpad-project/+filebug)
+AC_INIT(tpad, 7.3.0.6,https://bugs.launchpad.net/tpad-project/+filebug)
+
+dnl Autoconf normally requires --enable-gtk3.  Keep that conventional spelling
+dnl while also accepting the shorter --gtk3 requested by the packaging recipe.
+dnl This diversion runs before Autoconf parses its command-line options.
+m4_divert_text([DEFAULTS], [
+tpad_arg_count=$#
+while test "$tpad_arg_count" -gt 0; do
+  tpad_arg=$1
+  shift
+  case $tpad_arg in
+    --gtk3) set -- "$@" --enable-gtk3 ;;
+    *) set -- "$@" "$tpad_arg" ;;
+  esac
+  tpad_arg_count=$((tpad_arg_count - 1))
+done
+])
+
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -135,9 +152,37 @@ dnl AM_CONDITIONAL(WITH_LIBUNITY, test "x$enable_libunity" = "xyes")
 
 LT_INIT
 
+AC_ARG_ENABLE([gtk3],
+  AS_HELP_STRING([--gtk3],
+    [build the legacy GTK 3 frontend (also accepts --enable-gtk3)]),
+  [AS_CASE([$enableval],
+    [yes|no], [enable_gtk3=$enableval],
+    [AC_MSG_ERROR([--enable-gtk3 accepts only yes or no])])],
+  [enable_gtk3=auto])
 
+AS_CASE([$enable_gtk3],
+  [yes], [tpad_use_gtk3=yes],
+  [no], [tpad_use_gtk3=no],
+  [auto], [
+    PKG_CHECK_EXISTS([gtk4 >= 4.10 gtksourceview-5 libspelling-1],
+      [tpad_use_gtk3=no], [tpad_use_gtk3=yes])
+  ])
 
-PKG_CHECK_MODULES([TPAD], [gtk+-3.0 gtksourceview-3.0 gtkspell3-3.0])
+AS_IF([test "x$tpad_use_gtk3" = "xyes"], [
+  PKG_CHECK_MODULES([TPAD],
+    [gtk+-3.0 gtksourceview-3.0 gtkspell3-3.0])
+  TPAD_FRONTEND_CPPFLAGS="-DTPAD_USE_GTK3=1"
+  AC_DEFINE([TPAD_USE_GTK3], [1],
+    [Define when building the legacy GTK 3 frontend])
+  AC_MSG_NOTICE([Tpad frontend: GTK 3])
+], [
+  PKG_CHECK_MODULES([TPAD],
+    [gtk4 >= 4.10 gtksourceview-5 libspelling-1])
+  TPAD_FRONTEND_CPPFLAGS=
+  AC_MSG_NOTICE([Tpad frontend: GTK 4])
+])
+AC_SUBST([TPAD_FRONTEND_CPPFLAGS])
+AM_CONDITIONAL([USE_GTK3], [test "x$tpad_use_gtk3" = "xyes"])
 
 dnl Ubuntu Trusty provides the sd-id128 API as a split pkg-config module,
 dnl while newer Ubuntu releases provide it through the unified libsystemd.

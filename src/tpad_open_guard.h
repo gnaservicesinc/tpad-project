@@ -25,5 +25,7 @@
 #include "tpad_headers.h"
 int tpad_open_guard_check_path(const gchar *current);
 gboolean tpad_open_guard_track_path(const gchar *current);
+gboolean tpad_open_guard_apply_enabled(gboolean enabled,
+	const gchar *current);
 void tpad_open_guard_cleanup(void);
 #endif

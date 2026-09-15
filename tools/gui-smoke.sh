@@ -24,6 +24,11 @@ xvfb-run -a bash -c '
 	test_dir=$(mktemp -d)
 	trap '\''rm -rf -- "$test_dir"'\'' EXIT
 	export TPAD_CONFIG_FILE="$test_dir/tpad.cfg"
+	export TPAD_RECENT_FILE="$test_dir/tpad.recent"
+	# A bare Xvfb session has no portal UI, even when the D-Bus service is
+	# activatable. Force GTKs native print dialog for this UI-level check.
+	export GDK_DEBUG=no-portals
+	export G_DEBUG="${G_DEBUG:-fatal-criticals}"
 	"$@" &
 	launcher_pid=$!
 
@@ -51,6 +56,36 @@ xvfb-run -a bash -c '
 		xdotool windowfocus --sync "$target"
 		xdotool key --clearmodifiers "$key"
 	}
+	wait_for_window_gone() {
+		local target=$1
+		for ((attempt = 0; attempt < 300; attempt++)); do
+			if ! xdotool getwindowname "$target" >/dev/null 2>&1; then
+				return 0
+			fi
+			sleep 0.1
+		done
+		return 1
+	}
+
+	# Exercise cancellation through the GTK 4 async file-dialog helper.
+	send_key_to_window "$window_id" ctrl+o
+	open_id=
+	for ((attempt = 0; attempt < 300; attempt++)); do
+		open_id=$(xdotool search --onlyvisible --name "^Open File" 2>/dev/null | head -n 1 || true)
+		if [[ -n $open_id ]]; then
+			break
+		fi
+		sleep 0.1
+	done
+	if [[ -z $open_id ]]; then
+		printf "error: Ctrl+O did not open the file dialog\n" >&2
+		exit 1
+	fi
+	send_key_to_window "$open_id" Escape
+	if ! wait_for_window_gone "$open_id"; then
+		printf "error: file dialog did not close after Escape\n" >&2
+		exit 1
+	fi
 
 	# Verify that the File -> Print action reaches GTKs system print dialog.
 	send_key_to_window "$window_id" ctrl+p
@@ -68,12 +103,7 @@ xvfb-run -a bash -c '
 	fi
 	send_key_to_window "$print_id" Escape
 
-	for ((attempt = 0; attempt < 300; attempt++)); do
-		if ! xdotool getwindowname "$print_id" >/dev/null 2>&1; then
-			break
-		fi
-		sleep 0.1
-	done
+	wait_for_window_gone "$print_id" || true
 
 	send_key_to_window "$window_id" ctrl+q
 	for ((attempt = 0; attempt < 300; attempt++)); do

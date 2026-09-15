@@ -37,44 +37,39 @@ void open_file(void){
 
 
 static void tpad_do_file_open_dialog(void){
-	gint response;
-	
-	GtkWidget *dialog=NULL;
-   
-        dialog = gtk_file_chooser_dialog_new("Open File",GTK_WINDOW(window),GTK_FILE_CHOOSER_ACTION_OPEN,"Cancel",GTK_RESPONSE_CANCEL,"Open",GTK_RESPONSE_ACCEPT,NULL);
-		gtk_file_chooser_set_show_hidden (GTK_FILE_CHOOSER(dialog),TRUE);
-
-	gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog),TRUE);
-	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),TRUE);
-	gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dialog),TRUE);
-
-
-        response = gtk_dialog_run(GTK_DIALOG(dialog));
-
-        if(response==GTK_RESPONSE_ACCEPT)
-	{
-	save_locked=FALSE;
-
-	// Not actually using URIs. Set local only so changing this function to the filenames one for simplicity. 
-	GSList *filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
+	GListModel *files = tpad_file_dialog_open_multiple(
+		GTK_WINDOW(window), gettext("Open File"));
 	gchar *current = tpad_fp_get_current();
 	gboolean have_current = current != NULL;
-	GSList *item;
 
-	for (item = filenames; item != NULL; item = item->next) {
-		gchar *filename = item->data;
+	if (files == NULL) {
+		g_free(current);
+		return;
+	}
+	save_locked = FALSE;
+	for (guint index = 0; index < g_list_model_get_n_items(files); index++) {
+		GFile *file = g_list_model_get_item(files, index);
+		gchar *filename = g_file_get_path(file);
+		gchar *utf8_filename;
+
+		g_object_unref(file);
+		if (filename == NULL) {
+			gerror_warn(_CAN_NOT_READ_FILE,
+			            gettext("Only local files can be opened."), TRUE, FALSE);
+			continue;
+		}
+		utf8_filename = tpad_filename_to_utf8(filename);
+		g_free(filename);
+		if (utf8_filename == NULL)
+			continue;
 
 		if (have_current)
-			new_thread_tpad(filename);
-		else if (show_file(filename) == 0)
+			(void) new_thread_tpad(utf8_filename);
+		else if (show_file(utf8_filename) == 0)
 			have_current = TRUE;
+		g_free(utf8_filename);
 	}
 
 	g_free(current);
-	g_slist_free_full(filenames, g_free);
-
-		
-	} // Close Response Accepted.
-  // Close/Destroy dialog box
-  if(dialog) gtk_widget_destroy(GTK_WIDGET(dialog));
+	g_object_unref(files);
   }

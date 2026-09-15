@@ -21,43 +21,39 @@
 #include "tpad_headers.h"
 
 extern gchar *origfile;
+extern GtkWidget *window;
+static gboolean shutdown_started;
 
 //extern int tpad_wach_thread_set;
 //extern int run_count_update;
 
-void force_quit_program(void){
-		cfg_on_exit();
-		tpad_open_guard_cleanup();
-		tpad_free_spelling();
-		g_clear_pointer(&origfile, g_free);
-		tpad_control_cleanup();
-		gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-		gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-		tpad_fp_cleanup();
-		set_path_self_cleanup();
-		//ui_unity_destroy();
-		gtk_main_quit();
-		exit(0);
+static void clean_up_and_destroy_window(void)
+{
+	GtkWidget *closing_window = window;
 
+	if (shutdown_started)
+		return;
+	shutdown_started = TRUE;
+	cfg_on_exit();
+	tpad_open_guard_cleanup();
+	tpad_clipboards_store();
+	g_clear_pointer(&content, g_free);
+	tpad_free_spelling();
+	g_clear_pointer(&origfile, g_free);
+	tpad_control_cleanup();
+	tpad_fp_cleanup();
+	set_path_self_cleanup();
+	window = NULL;
+	if (closing_window != NULL)
+		gtk_window_destroy(GTK_WINDOW(closing_window));
+}
+
+void force_quit_program(void){
+	clean_up_and_destroy_window();
 }
 
 void quit_program(void){
 	//if(tpad_wach_thread_set) tpad_watch_exit();
-	if (save_modified()){
-		cfg_on_exit();
-		tpad_open_guard_cleanup();
-		gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-		gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-		//run_count_update=0;
-		//g_free(content);
-		g_clear_pointer(&content, g_free);
-		tpad_free_spelling();
-		g_clear_pointer(&origfile, g_free);
-		tpad_control_cleanup();
-		tpad_fp_cleanup();
-		set_path_self_cleanup();
-		//ui_unity_destroy();
-		gtk_main_quit();
-		exit(0);
-		}
+	if (save_modified())
+		clean_up_and_destroy_window();
 }

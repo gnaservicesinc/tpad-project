@@ -27,5 +27,5 @@
 #endif
 #include "tpad_headers.h"
 void set_language(void);
-void toggle_show_lang(GtkWidget *caller);
+void tpad_set_language_highlighting(gboolean enabled);
 #endif

@@ -19,6 +19,7 @@
  *  along with tpad.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************************************************/
 #include "tpad_headers.h"
+#include <sys/file.h>
 //////////////////////////////////////////////////////////////////////////
 /***********************************DEC**********************************/
 //////////////////////////////////////////////////////////////////////////
@@ -26,6 +27,8 @@
 
 static cfgSet userCfg;
 static char* ccfile;
+static gboolean cfg_needs_upgrade;
+static gboolean cfg_recent_settings_dirty;
 //////////////////////////////////////////////////////////////////////////
 static gboolean cfg_read_in(void);
 static void set_conf_defaults(void);
@@ -34,6 +37,8 @@ static void print_userCfg(const char *fun);
 static void config_file(void);
 static void reset_config(void);
 static gboolean read_in(void);
+static gboolean sync_recent_settings_from_stream(FILE *config);
+static gboolean sync_recent_settings_from_disk(gboolean acquire_lock);
 static void cfg_check(const char CallingFunction[]);
 static void do_tpad_config_write_out(void);
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +57,7 @@ void get_cfg_mask_int(gchar* description) {
 
 	#ifdef DEBUG_TOGGLE
 	int i = 0;
-	printf("\n\ndebugging information.\n\Description\t=\t%s\nbitmask (int)\t=\t%i\nbitmask\t=\t\n\t\t",description,userCfg.ibitmask);
+	printf("\n\ndebugging information.\nDescription\t=\t%s\nbitmask (int)\t=\t%i\nbitmask\t=\t\n\t\t",description,userCfg.ibitmask);
 	for(i=0;i <= POS_CFG_MAX_USED_VALUE; i++) ( ((userCfg.ibitmask >> i) & 1 )) ? printf("1") : printf("0");
 
 	printf("\n\t\t");
@@ -102,6 +107,18 @@ int cfg_line_wrap(void){
 int cfg_use_open_guard(void) {
 	cfg_check((gchar*)__func__);
 	return ( (int) ((userCfg.ibitmask >> POS_USE_OPEN_GUARD) & 1 ) );
+}
+int cfg_recent_files_enabled(void) {
+	if (!cfg_recent_settings_dirty)
+		(void) sync_recent_settings_from_disk(TRUE);
+	cfg_check((gchar*)__func__);
+	return ( (int) ((userCfg.ibitmask >> POS_RECENT_FILES) & 1 ) );
+}
+int cfg_recent_files_limit(void) {
+	if (!cfg_recent_settings_dirty)
+		(void) sync_recent_settings_from_disk(TRUE);
+	cfg_check((gchar*)__func__);
+	return userCfg.recent_files_limit;
 }
 int cfg_ut8bom(void) {
 	cfg_check((gchar*)__func__);
@@ -161,6 +178,18 @@ void cfg_set_use_open_guard(int opt) {
 		if(opt) userCfg.ibitmask ^= (-1 ^ userCfg.ibitmask) & (1 << POS_USE_OPEN_GUARD);
  		else userCfg.ibitmask ^= (-0 ^ userCfg.ibitmask) & (1 << POS_USE_OPEN_GUARD);
 }
+void cfg_set_recent_files_enabled(int opt) {
+		if(opt) userCfg.ibitmask ^= (-1 ^ userCfg.ibitmask) & (1 << POS_RECENT_FILES);
+		else userCfg.ibitmask ^= (-0 ^ userCfg.ibitmask) & (1 << POS_RECENT_FILES);
+		cfg_recent_settings_dirty = TRUE;
+}
+void cfg_set_recent_files_limit(int opt) {
+	if (opt >= 0 && opt <= TPAD_RECENT_FILES_MAXIMUM) {
+		userCfg.recent_files_limit = opt;
+		cfg_recent_settings_dirty = TRUE;
+	} else
+		gerror_warn(_ERROR_SETTING_SETTING,(gchar*)__func__,0,0);
+}
 void cfg_set_use_ut8bom(int opt) {
 		if(opt) userCfg.ibitmask ^= (-1 ^ userCfg.ibitmask) & (1 << POS_BOM8);
  		else userCfg.ibitmask ^= (-0 ^ userCfg.ibitmask) & (1 << POS_BOM8);
@@ -216,9 +245,16 @@ void cfg_set_auto_tab(int opt) {
 //////////////////////////////////////////////////////////////////////////
 
 void config_setup(void) {
+	gboolean loaded;
+
 	config_file();
+	cfg_recent_settings_dirty = FALSE;
 	set_conf_defaults();
-	if (!cfg_read_in())
+	cfg_needs_upgrade = FALSE;
+	loaded = cfg_read_in();
+	if (loaded && !cfg_needs_upgrade)
+		cfg_recent_settings_dirty = FALSE;
+	if (!loaded || cfg_needs_upgrade)
 		cfg_save();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -248,9 +284,10 @@ static void set_conf_defaults(void) {
 	userCfg.ibitmask=0;
 	userCfg.defualt_window_width=_DEFAULT_WINDOW_WIDTH;
 	userCfg.default_window_height=_DEFAULT_WINDOW_HEIGHT;
-	userCfg.undo_level=FALSE;
+	userCfg.undo_level=0;
 	userCfg.screenWidth=FALSE;
 	userCfg.screenHeight=FALSE;
+	userCfg.recent_files_limit=TPAD_RECENT_FILES_DEFAULT;
 	//uuid_generate(userCfg.configID);
 	cfg_set_use_ut8bom(FALSE);
 	#ifdef AUTO_TAB_TOGGLE
@@ -259,17 +296,24 @@ static void set_conf_defaults(void) {
 	cfg_set_show_line(TRUE);
 	cfg_set_show_lang(FALSE);
 	cfg_set_show_spelling(FALSE);
-	cfg_set_show_line(FALSE);
 	cfg_set_show_full_path(TRUE);
 	cfg_set_show_line_wrap(TRUE);
 	cfg_set_use_open_guard(FALSE);
+	cfg_set_recent_files_enabled(TRUE);
 
 }
 //////////////////////////////////////////////////////////////////////////
 static void print_userCfg(const char *fun){
 	(void) fun;
-	fprintf(stdout,"\nDEBUG\n\nDUMPING CONFIG\n");
-	fwrite(&userCfg, sizeof(cfgSet),1,stdout);
+	#ifdef DEBUG_TOGGLE
+	fprintf(stdout,
+	        "\nDEBUG\n\nINVALID CONFIG in %s\n"
+	        "ibitmask=%d width=%d height=%d undo=%d screen=%dx%d recent=%d\n",
+	        fun, userCfg.ibitmask, userCfg.defualt_window_width,
+	        userCfg.default_window_height, userCfg.undo_level,
+	        userCfg.screenWidth, userCfg.screenHeight,
+	        userCfg.recent_files_limit);
+	#endif
 }
 //////////////////////////////////////////////////////////////////////////
 
@@ -286,6 +330,11 @@ int is_userCfg_valid(void) {
 
 		if(userCfg.undo_level < 0 || userCfg.undo_level > UNDOMAX) 	{
  		return(FALSE);
+	}
+
+		if(userCfg.recent_files_limit < 0 ||
+		   userCfg.recent_files_limit > TPAD_RECENT_FILES_MAXIMUM) {
+	 return(FALSE);
 	}
 
 		return(TRUE);
@@ -318,7 +367,12 @@ static void clean_userCfg(void){
 
 
 		if(userCfg.undo_level < 0 || userCfg.undo_level > UNDOMAX) {
-			 userCfg.undo_level=FALSE;
+			 userCfg.undo_level=0;
+		}
+
+		if(userCfg.recent_files_limit < 0 ||
+		   userCfg.recent_files_limit > TPAD_RECENT_FILES_MAXIMUM) {
+			 userCfg.recent_files_limit=TPAD_RECENT_FILES_DEFAULT;
 		}
 
 }
@@ -355,13 +409,40 @@ static gboolean read_in(void)
 {
 	FILE *ptr_cfg;
 	gboolean loaded;
-
+	int lock_result;
+	long file_size;
+	const size_t legacy_size = offsetof(cfgSet, recent_files_limit);
 
 	ptr_cfg=fopen(ccfile,"rb");
 	if (!ptr_cfg)
 		return FALSE;
+	do {
+		lock_result = flock(fileno(ptr_cfg), LOCK_SH);
+	} while (lock_result != 0 && errno == EINTR);
+	if (lock_result != 0) {
+		(void) fclose(ptr_cfg);
+		return FALSE;
+	}
 
-	loaded = fread(&userCfg, sizeof(cfgSet), 1, ptr_cfg) == 1;
+	loaded = fseek(ptr_cfg, 0, SEEK_END) == 0;
+	file_size = loaded ? ftell(ptr_cfg) : -1;
+	if (loaded)
+		loaded = fseek(ptr_cfg, 0, SEEK_SET) == 0;
+	if (loaded && file_size == (long) sizeof(cfgSet)) {
+		loaded = fread(&userCfg, sizeof(cfgSet), 1, ptr_cfg) == 1;
+	} else if (loaded && file_size == (long) legacy_size) {
+		/* The recent-file fields were appended so all legacy values retain
+		 * their original offsets.  Supply defaults only for the new values. */
+		loaded = fread(&userCfg, legacy_size, 1, ptr_cfg) == 1;
+		if (loaded) {
+			userCfg.recent_files_limit = TPAD_RECENT_FILES_DEFAULT;
+			cfg_set_recent_files_enabled(TRUE);
+			cfg_needs_upgrade = TRUE;
+		}
+	} else {
+		loaded = FALSE;
+	}
+	(void) flock(fileno(ptr_cfg), LOCK_UN);
 	if (fclose(ptr_cfg) != 0)
 		loaded = FALSE;
 	if (!loaded)
@@ -372,19 +453,95 @@ static gboolean read_in(void)
 
 }
 //////////////////////////////////////////////////////////////////////////
+static gboolean sync_recent_settings_from_stream(FILE *config)
+{
+	cfgSet stored;
+	gboolean loaded = FALSE;
+	long file_size;
+
+	if (fseek(config, 0, SEEK_END) == 0) {
+		file_size = ftell(config);
+		if (file_size == (long) sizeof(stored) &&
+		    fseek(config, 0, SEEK_SET) == 0 &&
+		    fread(&stored, sizeof(stored), 1, config) == 1 &&
+		    stored.recent_files_limit >= 0 &&
+		    stored.recent_files_limit <= TPAD_RECENT_FILES_MAXIMUM) {
+			userCfg.ibitmask &= ~(1 << POS_RECENT_FILES);
+			userCfg.ibitmask |= stored.ibitmask & (1 << POS_RECENT_FILES);
+			userCfg.recent_files_limit = stored.recent_files_limit;
+			loaded = TRUE;
+		}
+	}
+	return loaded;
+}
+//////////////////////////////////////////////////////////////////////////
+static gboolean sync_recent_settings_from_disk(gboolean acquire_lock)
+{
+	FILE *config;
+	gboolean loaded = FALSE;
+	int lock_result = 0;
+
+	if (ccfile == NULL)
+		return FALSE;
+	config = fopen(ccfile, "rb");
+	if (config == NULL)
+		return FALSE;
+	if (acquire_lock) {
+		do {
+			lock_result = flock(fileno(config), LOCK_SH);
+		} while (lock_result != 0 && errno == EINTR);
+	}
+	if (lock_result == 0)
+		loaded = sync_recent_settings_from_stream(config);
+	if (acquire_lock && lock_result == 0)
+		(void) flock(fileno(config), LOCK_UN);
+	(void) fclose(config);
+	return loaded;
+}
+//////////////////////////////////////////////////////////////////////////
 static void do_tpad_config_write_out(void)
 {
 	FILE *ptr_cfg;
-	gboolean failed;
-	ptr_cfg=fopen(ccfile,"wb");
+	gboolean failed = TRUE;
+	int lock_descriptor;
+	int lock_result;
+	struct stat config_status;
 
-	if(!ptr_cfg) reset_config ();
-	else {
-		failed = fwrite(&userCfg, sizeof(cfgSet), 1, ptr_cfg) != 1;
-		if (fclose(ptr_cfg) != 0)
-			failed = TRUE;
-		if (failed)
-			gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
-			}
-
+	lock_descriptor = g_open(ccfile, O_CREAT | O_RDWR, 0600);
+	if (lock_descriptor < 0) {
+		gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
+		return;
+	}
+	if (fstat(lock_descriptor, &config_status) != 0 ||
+	    !S_ISREG(config_status.st_mode)) {
+		(void) close(lock_descriptor);
+		gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
+		return;
+	}
+	do {
+		lock_result = flock(lock_descriptor, LOCK_EX);
+	} while (lock_result != 0 && errno == EINTR);
+	if (lock_result != 0) {
+		(void) close(lock_descriptor);
+		gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
+		return;
+	}
+	ptr_cfg = fdopen(lock_descriptor, "r+b");
+	if (ptr_cfg == NULL) {
+		(void) close(lock_descriptor);
+		gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
+		return;
+	}
+	if (!cfg_recent_settings_dirty)
+		(void) sync_recent_settings_from_stream(ptr_cfg);
+	failed = fseek(ptr_cfg, 0, SEEK_SET) != 0 ||
+	         ftruncate(lock_descriptor, 0) != 0 ||
+	         fwrite(&userCfg, sizeof(cfgSet), 1, ptr_cfg) != 1 ||
+	         fflush(ptr_cfg) != 0 || fsync(lock_descriptor) != 0;
+	if (fclose(ptr_cfg) != 0)
+		failed = TRUE;
+	if (failed)
+		gerror_warn(_FAILED_SAVE_FILE, ccfile, TRUE, FALSE);
+	if (!failed)
+		cfg_recent_settings_dirty = FALSE;
 }

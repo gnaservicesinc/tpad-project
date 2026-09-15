@@ -51,19 +51,11 @@ static void tpad_print_draw_page(GtkPrintOperation *operation,
 
 static void tpad_print_show_error(const GError *error)
 {
-	GtkWidget *dialog;
 	const gchar *detail;
 
 	detail = error != NULL ? error->message : _PRINT_FAILED_UNKNOWN;
 	g_warning("%s: %s", _PRINT_FAILED, detail);
-
-	dialog = gtk_message_dialog_new(GTK_WINDOW(window),
-		GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-		GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", _PRINT_FAILED);
-	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
-										"%s", detail);
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);
+	tpad_alert_show(GTK_WINDOW(window), _PRINT_FAILED, detail);
 }
 
 static GtkPrintOperationResult tpad_print_run(GtkPrintOperationAction action,
@@ -128,7 +120,8 @@ void print(const gchar *s){
 	(void) s;
 	// Stay silent if debugging is disabled. 
 	#ifdef DEBUG_TOGGLE
-	g_print("tpad([%s]v.%s): %s\n",GDK_CURRENT_TIME,VERSION,s);
+	g_print("tpad([%u]v.%s): %s\n", (guint) GDK_CURRENT_TIME, VERSION,
+	        s != NULL ? s : "");
 	#endif
 }
 
@@ -138,6 +131,8 @@ void print_title(gchar* str){
 	#ifdef DEBUG_TOGGLE
 	gint ihHash=0, ihStr=0,ihTmp=0;
 	register gint i=0;
+	if (str == NULL)
+		str = "";
 	ihHash=HASH_PRINT_COUNT / 2;
 	ihStr=str_size(str) / 2;
 	ihTmp= (gint) ihHash - ihStr;
@@ -153,6 +148,6 @@ void print_title(gchar* str){
 	for (i = 0; i < HASH_PRINT_COUNT; i++) {
 		printf("\x23");
 	}
-	printf("\nTIMESTAMP\t=\t%s\n",GDK_CURRENT_TIME);
+	printf("\nTIMESTAMP\t=\t%u\n",(guint) GDK_CURRENT_TIME);
 	#endif
 }

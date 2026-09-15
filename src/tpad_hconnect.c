@@ -20,150 +20,89 @@
  ********************************************************************************/
 #include "tpad_headers.h"
 
+typedef gchar *(*TpadTextTransform)(const gchar *text);
+typedef gchar *(*TpadFileTransform)(void);
 
-extern gboolean searchCase;
-extern gboolean doCOVT;
+static void transform_primary_clipboard(TpadTextTransform transform)
+{
+	gchar *clipboard_text;
+	gchar *result;
 
-
-		void h512_connector(GtkWidget *caller){
-	(void) caller;
-	gchar *clipboard_text = NULL;
-	gchar *recived = NULL;
-
-	// Safely get clipboard text
-	clipboard_text = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	if (clipboard_text == NULL) return;
-
-	// Calculate hash
-	recived = str2sha512(clipboard_text);
+	clipboard_text = tpad_clipboard_read_primary_text();
+	if (clipboard_text == NULL)
+		return;
+	result = transform(clipboard_text);
 	g_free(clipboard_text);
+	if (result != NULL && strlen(result) > 2)
+		tpad_clipboard_set_text(result);
+	g_free(result);
+}
 
-	// Set result to clipboard if valid
-	if (recived != NULL && strlen(recived) > 2) {
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), recived, strlen(recived));
-		gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
+static void transform_file_to_clipboard(TpadFileTransform transform)
+{
+	gchar *result = transform();
 
-	g_free(recived);
-	}
-		void h256_connector(GtkWidget *caller){
+	if (result != NULL)
+		tpad_clipboard_set_text(result);
+	g_free(result);
+}
+
+void h512_connector(GtkWidget *caller)
+{
 	(void) caller;
-	gchar *clipboard_text = NULL;
-	gchar *recived = NULL;
+	transform_primary_clipboard(str2sha512);
+}
 
-	// Safely get clipboard text
-	clipboard_text = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	if (clipboard_text == NULL) return;
-
-	// Calculate hash
-	recived = str2sha256(clipboard_text);
-	g_free(clipboard_text);
-
-	// Set result to clipboard if valid
-	if (recived != NULL && strlen(recived) > 2) {
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), recived, strlen(recived));
-		gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
-
-	g_free(recived);
-	}
-		void hmd5_connector(GtkWidget *caller){
+void h256_connector(GtkWidget *caller)
+{
 	(void) caller;
-	gchar *clipboard_text = NULL;
-	gchar *recived = NULL;
+	transform_primary_clipboard(str2sha256);
+}
 
-	// Safely get clipboard text
-	clipboard_text = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	if (clipboard_text == NULL) return;
-
-	// Calculate hash
-	recived = str2md5(clipboard_text);
-	g_free(clipboard_text);
-
-	// Set result to clipboard if valid
-	if (recived != NULL && strlen(recived) > 2) {
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), recived, strlen(recived));
-		gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
-
-	g_free(recived);
-	}
-	void base64_connector(GtkWidget *caller){
+void hmd5_connector(GtkWidget *caller)
+{
 	(void) caller;
-	gchar *clipboard_text = NULL;
-	gchar *recived = NULL;
+	transform_primary_clipboard(str2md5);
+}
 
-	// Safely get clipboard text
-	clipboard_text = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	if (clipboard_text == NULL) return;
-
-	// Calculate base64
-	recived = str2base64(clipboard_text);
-	g_free(clipboard_text);
-
-	// Set result to clipboard if valid
-	if (recived != NULL && strlen(recived) > 2) {
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), recived, strlen(recived));
-		gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
-
-	g_free(recived);
-	}
-		void fbase64_connector(GtkWidget *caller){
+void base64_connector(GtkWidget *caller)
+{
 	(void) caller;
-	gchar *clipboard_text = NULL;
-	gchar *recived = NULL;
+	transform_primary_clipboard(str2base64);
+}
 
-	// Safely get clipboard text
-	clipboard_text = gtk_clipboard_wait_for_text(GTK_CLIPBOARD(gtk_clipboard_get(GDK_SELECTION_PRIMARY)));
-	if (clipboard_text == NULL) return;
-
-	// Decode base64
-	recived = strFrombase64(clipboard_text);
-	g_free(clipboard_text);
-
-	// Set result to clipboard if valid
-	if (recived != NULL && strlen(recived) > 2) {
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), recived, strlen(recived));
-		gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	}
-
-	g_free(recived);
-	}
-		void base64_file_connector(GtkWidget *caller){
+void fbase64_connector(GtkWidget *caller)
+{
 	(void) caller;
-	char* recived= (char*) file2base64();
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
-	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	g_free(recived);
-	}
-		void fbase64_file_connector(GtkWidget *caller){
-	(void) caller;
-	char* recived= (char*) filefrombase64();
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
-	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	g_free(recived);
-	}
+	transform_primary_clipboard(strFrombase64);
+}
 
-		void h512_file_connector(GtkWidget *caller){
+void base64_file_connector(GtkWidget *caller)
+{
 	(void) caller;
-		char* recived= (char*) file2sha512();
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
-	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	g_free(recived);
+	transform_file_to_clipboard(file2base64);
+}
 
-	}
-		void h256_file_connector(GtkWidget *caller){
+void fbase64_file_connector(GtkWidget *caller)
+{
 	(void) caller;
-	char* recived= (char*) file2sha256();
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
-	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	g_free(recived);
-	}
-		void hmd5_file_connector(GtkWidget *caller){
+	transform_file_to_clipboard(filefrombase64);
+}
+
+void h512_file_connector(GtkWidget *caller)
+{
 	(void) caller;
-		char* recived= (char*) file2md5();
-		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),recived ,strlen(recived));
-	gtk_clipboard_store (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
-	g_free(recived);
-	}
+	transform_file_to_clipboard(file2sha512);
+}
+
+void h256_file_connector(GtkWidget *caller)
+{
+	(void) caller;
+	transform_file_to_clipboard(file2sha256);
+}
+
+void hmd5_file_connector(GtkWidget *caller)
+{
+	(void) caller;
+	transform_file_to_clipboard(file2md5);
+}

@@ -21,7 +21,7 @@
 #ifndef ERROR_WARN_H
 #define ERROR_WARN_H
 #include "tpad_headers.h"
-#define _ERROR_INFO gettext("Error Deatils:")
+#define _ERROR_INFO gettext("Error Details:")
 #define _ERROR_OCCURED gettext("An error has occurred: %s")
 #define _ERROR_MSG gettext("An error has occurred and the program may abort.\nAny unsaved work may be lost.\nIf you believe that a bug in tpad is the root cause report a bug at\nhttps://bugs.launchpad.net/tpad-project \nThe following message may help you determine the cause\n\n%s\n")
 void gerror_log(const gchar *c_msg);

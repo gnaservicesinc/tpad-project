@@ -23,12 +23,14 @@ extern GtkSourceBuffer *mBuff;
 extern GtkSourceView *view;
 
 void do_undo(void){
-   if(gtk_source_buffer_can_undo(GTK_SOURCE_BUFFER(mBuff))) gtk_source_buffer_undo(GTK_SOURCE_BUFFER(mBuff));
+   if (mBuff != NULL && gtk_text_buffer_get_can_undo(GTK_TEXT_BUFFER(mBuff)))
+	   gtk_text_buffer_undo(GTK_TEXT_BUFFER(mBuff));
 }
 
 
 void do_redo(void){
-  if(gtk_source_buffer_can_redo(GTK_SOURCE_BUFFER(mBuff)))  gtk_source_buffer_redo(GTK_SOURCE_BUFFER(mBuff));
+  if (mBuff != NULL && gtk_text_buffer_get_can_redo(GTK_TEXT_BUFFER(mBuff)))
+	  gtk_text_buffer_redo(GTK_TEXT_BUFFER(mBuff));
 }
 
 void on_past (GtkWidget *caller){

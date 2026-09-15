@@ -24,4 +24,5 @@
 int str_size(char* string);
 gint gtk_text_buffer_get_word_count (GtkTextBuffer *buffer);
 gboolean tpad_string_is_text_data(const gchar *data, gsize length);
+gchar *tpad_string_format_drop_paths(const gchar *const *paths, gsize length);
 #endif

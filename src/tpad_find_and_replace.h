@@ -27,5 +27,7 @@
 #endif
 #include "tpad_headers.h"
 char *tpad_replace_str(const char *str, const char *old, const char *new);
+char *tpad_replace_str_full(const char *str, const char *old, const char *new,
+				gboolean case_sensitive);
 int opt_find_replace(void);
 #endif

@@ -1,0 +1,151 @@
+tpad (7.3.0.6) stonking; urgency=high
+
+  * Build the GTK 4 and GTK 3 frontends with _FORTIFY_SOURCE=3.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Tue, 15 Sep 2026 00:30:53 -0400
+
+tpad (7.3.0.5) stonking; urgency=high
+
+  * Correct find and replace selection, case, COVT, and undo behavior across
+    the GTK 4, GTK 3, and Qt frontends.
+  * Keep UTF-8 UI paths distinct from platform filename encoding at active
+    file, recent-document, guard, hash, and process boundaries.
+  * Repair configuration defaults, preprocessor guards, debug output, and
+    translated user-facing text after evidence-based audit review.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Tue, 15 Sep 2026 00:06:28 -0400
+
+tpad (7.3.0.4) stonking; urgency=high
+
+  * Stop unused GTK media and GPU backend probes in the Snap and default the
+    Linux frontend to Cairo rendering.
+  * Prevent confined GTK action exports from causing session D-Bus denials.
+  * Insert local paths instead of file URIs for Qt file and directory drops.
+  * Fix macOS platform-opened documents retaining clean save state and paths.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sun, 09 Aug 2026 15:22:38 -0400
+
+tpad (7.3.0.3) stonking; urgency=high
+
+  * Publish a fresh Snap revision after removing the unused session D-Bus
+    slot that sent the superseded 7.3.0.1 revisions to manual review.
+  * Document why the non-unique GTK application must not regain that slot.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Thu, 06 Aug 2026 03:13:16 -0400
+
+tpad (7.3.0.2) stonking; urgency=high
+
+  * Remove the unused Snap session D-Bus slot that forced manual store review.
+  * Stage the en_US Hunspell dictionary and expose the Enchant provider
+    modules required for spell checking under strict confinement.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Wed, 05 Aug 2026 13:02:41 -0400
+
+tpad (7.3.0.1) stonking; urgency=high
+
+  * Restore GTK 4 file and directory drops as quoted paths at the drop
+    point.
+  * Expose Enchant providers and the English dictionary inside the strict
+    Snap so spell checking initializes.
+  * Declare Tpad's session D-Bus service so GNOME Shell can inspect GTK
+    actions without AppArmor denials.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Mon, 20 Jul 2026 08:02:55 -0400
+
+tpad (7.3.0.0) stonking; urgency=high
+
+  * Migrate the Linux frontend to GTK 4 and GtkSourceView 5.
+  * Replace gtkspell with libspelling and port menus, dialogs, clipboard, and event handling to GTK 4 APIs.
+  * Preserve editor shortcuts, undo grouping, clipboard handoff, and dialog lifecycle behavior.
+  * Update Debian, Snap, documentation, and GTK workflow coverage for the new toolkit dependencies.
+  * Remove the unsupported Keep Window Above toggle; modern compositors control window stacking.
+  * Build Trusty through Jammy with the GTK 3 compatibility frontend and
+    coordinated legacy dependencies.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Mon, 20 Jul 2026 06:00:07 -0400
+
+tpad (7.2.0.3) stonking; urgency=high
+
+  * Prevent a macOS Writing Tools context-menu crash.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Mon, 20 Jul 2026 04:18:18 -0400
+
+tpad (7.2.0.2) stonking; urgency=high
+
+  * Apply concurrent-editing guard changes immediately in the GTK and Qt
+    frontends.
+  * Commit typed Qt preference values and prevent stale windows from reverting
+    guard settings.
+  * Clarify guard wording and align GTK preference controls with valid
+    configuration limits.
+  * Include all Qt and macOS sources and settings tests in release archives and
+    repair the Ninja test target.
+  * Give every four-part release a distinct Apple-compatible bundle build
+    version.
+  * Ship the accumulated Qt interface, recent-file, find, settings, Snap, and
+    toolchain fixes.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sun, 19 Jul 2026 19:34:48 -0400
+
+tpad (7.2.0.1) stonking; urgency=high
+
+  * Deploy shared Qt frameworks and plugins into macOS build bundles.
+  * Fail macOS builds that produce an incomplete Qt application bundle.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Fri, 17 Jul 2026 20:37:48 -0400
+
+tpad (7.2.0.0) stonking; urgency=high
+
+  * Add a cross-platform Qt 6 frontend for macOS and Windows.
+  * Add CMake frontend, Qt path, static-kit, and deployment options.
+  * Document GTK and Qt 6.11.1 build and deployment workflows.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Fri, 17 Jul 2026 17:52:32 -0400
+
+tpad (7.1.0.0) stonking; urgency=high
+
+  * Add GTK system printing and print integration coverage.
+  * Migrate strict Snap packaging to Core 26 and refresh dependencies.
+  * Refresh and harden the separate Mbed TLS hashing sources.
+  * Fix memory, encoding, file-safety, and release-audit findings.
+  * Add repeatable LLVM 23, Valgrind, fuzzing, GUI, and packaging tools.
+  * Restore Debhelper 9 and pkg-config compatibility for Trusty and Xenial.
+  * Keep the core tests compatible with Trusty's GLib 2.40 API.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Fri, 17 Jul 2026 16:51:33 -0400
+
+tpad (7.0.1.0-1) stonking; urgency=high
+
+  * Added fixes for each distribution series, now builds cleanly on all of them.
+  * Version bump to 7.0.1.0
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Thu, 16 Jul 2026 02:47:31 -0400
+
+tpad (7.0.0.6-1) stonking; urgency=high
+
+  * Restore builds with GCC's implicit-function-declaration error enabled.
+  * Replace obsolete Ubuntu build dependencies and support split systemd.
+  * Replace removed CDBS autotools rules with the debhelper sequencer.
+  * Remove generated build state containing developer-specific paths.
+  * Prevent shell injection when opening files in another tpad window.
+  * Fix out-of-bounds hash and BOM reads and hash complete binary files.
+  * Save files atomically and repair open-guard backup handling.
+  * Fix find-and-replace overflow, Base64, word-count, and startup bugs.
+  * Restore detached zero-, single-, and multi-file launcher behavior.
+  * Preserve external-change checks when Save As targets the open file.
+  * Fix GTK 3 callback signatures, font selection, spelling, and undo bugs.
+  * Refresh generated Autotools files and make distcheck pass again.
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Wed, 15 Jul 2026 02:47:31 -0400
+
+tpad (7.0.0.5-1) plucky; urgency=critical
+
+  * Fixed reported security issue Time-of-check time-of-use filesystem race condition
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sat, 14 May 2025 12:00:00 -0400
+
+tpad (6.5.1.4-3gna1) cosmic; urgency=critical
+
+  * Adding snap
+
+ -- Andrew Smith (GNA SERVICES INC) <Andrew@GNAServicesInc.com>  Sat, 17 Apr 2021 02:16:57 -0400

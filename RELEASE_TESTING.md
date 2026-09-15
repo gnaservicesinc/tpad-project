@@ -19,8 +19,10 @@ apt-get install --no-install-recommends \
 ```
 
 Install the project build dependencies listed in `debian/control` before the
-first build. About 4 GB of free disk space is sufficient because each audit
-uses a separate, small, out-of-tree build directory.
+first build. The GTK frontend requires GTK 4.10 or newer, GtkSourceView 5,
+and libspelling. Compatibility testing also requires GTK 3, GtkSourceView 3,
+and GtkSpell 3. About 4 GB of free disk space is sufficient because each
+audit uses a separate, small, out-of-tree build directory.
 
 The installed LLVM 23 manual is under `/usr/share/doc/clang-23/html/`. The
 online equivalents are the official Clang documentation for
@@ -99,10 +101,31 @@ renders a source buffer through the print compositor and verifies that GTK
 wrote a PDF. A physical printer should also be checked manually when one is
 available.
 
-GUI test scripts set `TPAD_CONFIG_FILE` to an absolute path in their temporary
-directory. Tpad accepts this override specifically so an automated test cannot
-read or overwrite the invoking account's normal `~/.tpad.cfg` preferences;
-relative override paths are ignored.
+Manual frontend UI checks should also confirm:
+
+- On macOS, the Qt toolbar is text-only, has no generic icons or drag handle,
+  and groups New/Open/Save/Save As, Reload, Undo/Redo, and Quit. The Edit menu
+  must still contain its complete action set. Right-click the editor with and
+  without a selection, choose Writing Tools, close it, and invoke it again;
+  each invocation must open the system UI without crashing.
+- GTK Frequency Analysis handles both selections and whole documents,
+  including Unicode and many unique characters, in a bounded, resizable,
+  scrollable table sorted by count. Whitespace-only input shows an information
+  dialog.
+- Both frontends default recent-file recording to enabled with a limit of 100.
+  Verify MRU ordering and deduplication, lowering the cap, 0 as unlimited, the
+  1,000,000 upper setting, typing a valid Qt limit before pressing OK, and
+  disabling/re-enabling without changing the retained history.
+- With a document already open, enabling the concurrent-editing guard must
+  acquire its guard immediately and disabling it must release the owned guard.
+  A pre-existing guard must be preserved, and newly opened Qt windows must see
+  the changed preference without restarting Tpad.
+
+GUI test scripts set `TPAD_CONFIG_FILE` and `TPAD_RECENT_FILE` to absolute
+paths in their temporary directory. Tpad accepts these overrides specifically
+so an automated test cannot read or overwrite the invoking account's normal
+`~/.tpad.cfg` preferences or `~/.tpad.recent` history; relative override paths
+are ignored.
 
 Memcheck treats definite and indirect leaks in the instrumented core test as
 failures. GUI, workflow, and print runs still use full leak reporting, but make
@@ -141,23 +164,37 @@ make distcheck
 dpkg-buildpackage -b -us -uc
 ```
 
+Also run an out-of-tree compatibility build before requesting the multi-series
+Launchpad recipe:
+
+```sh
+mkdir build-gtk3
+cd build-gtk3
+../configure --gtk3
+make -j"$(getconf _NPROCESSORS_ONLN)"
+make check
+cd ..
+```
+
 Validate `snap/snapcraft.yaml` with a Snapcraft version that supports the
-declared base. Core26 migration guidance is maintained in the official
+declared base. The current Core24 build uses Noble's
+`libgtksourceview-5-0` and `libspelling-1-1` runtime package names. Core26
+migration guidance is maintained in the official
 [Snapcraft base migration documentation](https://ubuntu.com/docs/snapcraft/9/how-to/change-bases/change-from-core24-to-core26/).
 
 Prepare the final release only after the audit is clean. Each argument after
 the four-component upstream version becomes a Debian changelog bullet:
 
 ```sh
-./prepare-release.sh 7.1.0.0 \
-  "Add GTK system printing." \
-  "Refresh the Snap for core26." \
+./prepare-release.sh 7.2.0.0 \
+  "Add the cross-platform Qt 6 frontend." \
+  "Add CMake platform and deployment options." \
   "Fix release-audit findings."
 ```
 
-The script writes version `7.1.0.0` to Debian, Snap, and `configure.ac`,
-creates a fresh changelog signature timestamp, runs `autogen.sh`, and finishes
-with `make distclean`.
+The script writes version `7.2.0.0` to Debian, Snap, `CMakeLists.txt`, and
+`configure.ac`, creates a fresh changelog signature timestamp, runs
+`autogen.sh`, and finishes with `make distclean`.
 
 The Launchpad recipe has daily builds enabled, so a push normally creates its
 all-series batch automatically. Check the recipe's build list for the pushed

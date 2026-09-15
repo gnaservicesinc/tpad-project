@@ -37,11 +37,6 @@ void rev_document(void)
 	(void) mod_doc(_METHOD_REVERSE);
 }
 
-void hex_document(void)
-{
-	(void) mod_doc(_METHOD_HEX);
-}
-
 gint mod_doc(int method)
 {
 	GtkTextIter start;
@@ -94,7 +89,11 @@ gint mod_doc(int method)
 		                             &selection_start, &start);
 		gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(mBuff), start_mark);
 	} else {
-		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(mBuff), modified, -1);
+		/* Keep the transformation undoable.  gtk_text_buffer_set_text()
+		 * starts an irreversible action in GTK 4 and cannot be nested in
+		 * the user action above. */
+		gtk_text_buffer_delete(GTK_TEXT_BUFFER(mBuff), &start, &end);
+		gtk_text_buffer_insert(GTK_TEXT_BUFFER(mBuff), &start, modified, -1);
 		gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(mBuff), &start);
 		gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(mBuff), &start);
 	}

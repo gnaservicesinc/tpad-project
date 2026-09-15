@@ -29,6 +29,22 @@ extern short iforce_save;
 extern gchar *origfile;
 extern int madetemp;
 
+static void remember_recent_file(const gchar *path)
+{
+	const gboolean enabled = cfg_recent_files_enabled();
+	guint maximum;
+	GError *error = NULL;
+
+	if (!enabled)
+		return;
+	maximum = (guint) cfg_recent_files_limit();
+	if (!tpad_recent_files_add(path, TRUE, maximum, &error)) {
+		g_warning("Unable to update recent files: %s",
+		          error != NULL ? error->message : "unknown error");
+		g_clear_error(&error);
+	}
+}
+
 static void set_file_error(GError **error, const gchar *operation,
                            const gchar *path, int error_number)
 {
@@ -223,6 +239,7 @@ static gboolean save_buffer_to_path(const gchar *path)
 	gsize converted_length = 0;
 	gsize output_length;
 	GError *error = NULL;
+	gchar *filename;
 	const gchar *codeset;
 	gboolean has_bom;
 	gboolean saved;
@@ -254,13 +271,21 @@ static gboolean save_buffer_to_path(const gchar *path)
 		return FALSE;
 	}
 
-	saved = atomic_replace_file(path, output, output_length, &error);
+	filename = tpad_filename_from_utf8(path);
+	if (filename == NULL) {
+		gerror_warn(_FAILED_SAVE_FILE, path, TRUE, FALSE);
+		g_free(output);
+		g_free(utf8);
+		return FALSE;
+	}
+	saved = atomic_replace_file(filename, output, output_length, &error);
 	if (!saved) {
 		gerror_warn(_FAILED_SAVE_FILE,
 		            error != NULL ? error->message : path, TRUE, FALSE);
 		g_clear_error(&error);
 	}
 
+	g_free(filename);
 	g_free(output);
 	g_free(utf8);
 	return saved;
@@ -276,30 +301,47 @@ static gboolean paths_refer_to_same_file(const gchar *left,
 	GFile *left_file;
 	GFile *right_file;
 	gboolean equal;
+	gchar *left_filename;
+	gchar *right_filename;
 
 	if (left == NULL || right == NULL)
 		return FALSE;
-	if (stat(left, &left_stat) == 0 && stat(right, &right_stat) == 0 &&
+	left_filename = tpad_filename_from_utf8(left);
+	right_filename = tpad_filename_from_utf8(right);
+	if (left_filename == NULL || right_filename == NULL) {
+		g_free(right_filename);
+		g_free(left_filename);
+		return FALSE;
+	}
+	if (stat(left_filename, &left_stat) == 0 &&
+	    stat(right_filename, &right_stat) == 0 &&
 	    left_stat.st_dev == right_stat.st_dev &&
-	    left_stat.st_ino == right_stat.st_ino)
+	    left_stat.st_ino == right_stat.st_ino) {
+		g_free(right_filename);
+		g_free(left_filename);
 		return TRUE;
+	}
 
-	left_resolved = realpath(left, NULL);
-	right_resolved = realpath(right, NULL);
+	left_resolved = realpath(left_filename, NULL);
+	right_resolved = realpath(right_filename, NULL);
 	if (left_resolved != NULL && right_resolved != NULL) {
 		equal = strcmp(left_resolved, right_resolved) == 0;
 		free(left_resolved);
 		free(right_resolved);
+		g_free(right_filename);
+		g_free(left_filename);
 		return equal;
 	}
 	free(left_resolved);
 	free(right_resolved);
 
-	left_file = g_file_new_for_path(left);
-	right_file = g_file_new_for_path(right);
+	left_file = g_file_new_for_path(left_filename);
+	right_file = g_file_new_for_path(right_filename);
 	equal = g_file_equal(left_file, right_file);
 	g_object_unref(left_file);
 	g_object_unref(right_file);
+	g_free(right_filename);
+	g_free(left_filename);
 	return equal;
 }
 
@@ -310,75 +352,47 @@ return(-1);
 }
 
 gint tpad_save_ondisk_change_detected(void) {
+	const gchar *buttons[] = {
+		_RELOAD_AND_DROP_UNSAVED_CHANGES,
+		_SAVE_FILE_ANYWAY,
+		_OPEN_FILE_SAVE_AS_INSTEAD,
+		_CANCEL,
+		NULL
+	};
+	gint response = tpad_alert_choose(GTK_WINDOW(window), _ON_DISK_CHANGES,
+	                                  NULL, buttons, 1, 3);
 
-	// returns 1 if file save should be forced
-
-	gint response=0;
-	GtkWidget *dialog;
-
-		dialog=gtk_message_dialog_new(GTK_WINDOW(window),
-							GTK_DIALOG_DESTROY_WITH_PARENT,
-							GTK_MESSAGE_QUESTION,
-							GTK_BUTTONS_NONE,
-							_ON_DISK_CHANGES);
-		gtk_dialog_add_button(GTK_DIALOG(dialog),_RELOAD_AND_DROP_UNSAVED_CHANGES,2);
-        	gtk_dialog_add_button(GTK_DIALOG(dialog),_SAVE_FILE_ANYWAY,1);
-        	gtk_dialog_add_button(GTK_DIALOG(dialog),_OPEN_FILE_SAVE_AS_INSTEAD,0);
-		gtk_dialog_add_button(GTK_DIALOG(dialog), _CANCEL,
-		                      GTK_RESPONSE_CANCEL);
-		response=gtk_dialog_run(GTK_DIALOG(dialog));
-		gtk_widget_destroy(dialog);
-
-
-
-		switch (response)
-			{
-
-			case 1:
-				return 1;
-
-			case 0:
-				return save_as() ? 2 : -1;
-			case 2:
-			{
-				gchar *current = tpad_fp_get_current();
-				new_thread_tpad(current);
-				g_free(current);
-				force_quit_program();
-				break;
-			}
-			default:
-				return(-1);
-			break;
-
-			}
-	
-	return(response);
+	switch (response) {
+	case 1:
+		return 1;
+	case 2:
+		return save_as() ? 2 : -1;
+	case 0:
+	{
+		gchar *current = tpad_fp_get_current();
+		(void) new_thread_tpad(current);
+		g_free(current);
+		force_quit_program();
+		return 2;
+	}
+	default:
+		return -1;
+	}
 }
 gint save_modified(void){
-        gint response=0;
-	GtkWidget *dialog;	
-	if(gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(mBuff))==TRUE) 
-	{
-		
-       	 	dialog= (GtkWidget *) gtk_message_dialog_new(GTK_WINDOW(window),GTK_DIALOG_DESTROY_WITH_PARENT,GTK_MESSAGE_QUESTION,GTK_BUTTONS_NONE,_SAVE_CHANGES);
-	
-        	gtk_dialog_add_button(GTK_DIALOG(dialog),_YES,1);
-        	gtk_dialog_add_button(GTK_DIALOG(dialog),_NO,0);
-		gtk_dialog_add_button(GTK_DIALOG(dialog), _CANCEL,
-		                      GTK_RESPONSE_CANCEL);
-	
-        	response=gtk_dialog_run(GTK_DIALOG(dialog));
-		gtk_widget_destroy(dialog);
+	const gchar *buttons[] = { _NO, _YES, _CANCEL, NULL };
+	gint response;
 
-		if(response == 0) return(1);
-		if(response == 1) return save_file() ? 1 : 0;
-
-		/* Cancel, delete-event, and every unexpected response keep the
-		 * document open. */
-		return(0);
-	}
-  return(1);
+	if (!gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(mBuff)))
+		return 1;
+	response = tpad_alert_choose(GTK_WINDOW(window), _SAVE_CHANGES, NULL,
+	                             buttons, 1, 2);
+	if (response == 0)
+		return 1;
+	if (response == 1)
+		return save_file() ? 1 : 0;
+	/* Dismissal and every unexpected response keep the document open. */
+	return 0;
 }
 gboolean save_file(void) {
 	gchar *path = tpad_fp_get_current();
@@ -403,6 +417,8 @@ gboolean save_file(void) {
 		g_free(path);
 		return FALSE;
 	}
+	remember_recent_file(path);
+	tpad_ui_refresh_recent_menu();
 	g_free(path);
 
 	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(mBuff),FALSE);
@@ -415,44 +431,43 @@ gboolean save_file(void) {
 	
 
 gboolean save_as(void){
-	GtkWidget *dialog;
+	GFile *selected_file;
 	gchar *current;
 	gchar *selected = NULL;
+	gchar *initial_path = NULL;
+	gchar *initial_name = NULL;
 	gint decision = 1;
 	gboolean selected_is_current = FALSE;
-
-
-    dialog = gtk_file_chooser_dialog_new(_SAVE_FILE,GTK_WINDOW(window),
-                                         GTK_FILE_CHOOSER_ACTION_SAVE,
-                                         _CANCEL,
-                                         GTK_RESPONSE_CANCEL,
-                                         _SAVE_TOOLBAR,
-                                         GTK_RESPONSE_ACCEPT,NULL);
-    gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER(dialog),TRUE);
-    gtk_file_chooser_set_show_hidden (GTK_FILE_CHOOSER(dialog),TRUE);
-    gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER(dialog),TRUE);
-	current = tpad_fp_get_current();
-	if(current != NULL){
-		gchar *basename = g_path_get_basename(current);
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), basename);
-		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), current);
-		g_free(basename);
-	}
-	else 
-	{
-		gchar *recent_path = getcRpath();
-		const gchar *folder = recent_path != NULL ? recent_path : g_get_home_dir();
-
-		if (folder != NULL)
-			gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), folder);
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog),
-		                                  _FALLBACK_SAVE_FILE_NAME);
-		g_free(recent_path);
-	}
-	
 	gboolean saved = FALSE;
-	if(gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
-		selected = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+	current = tpad_fp_get_current();
+	if (current != NULL) {
+		initial_path = g_strdup(current);
+		initial_name = g_path_get_basename(current);
+	} else {
+		initial_path = getcRpath();
+		if (initial_path == NULL)
+			initial_path = tpad_filename_to_utf8(g_get_home_dir());
+		initial_name = g_strdup(_FALLBACK_SAVE_FILE_NAME);
+	}
+	selected_file = tpad_file_dialog_save(GTK_WINDOW(window), _SAVE_FILE,
+	                                      initial_path, initial_name);
+	g_free(initial_path);
+	g_free(initial_name);
+	if (selected_file != NULL) {
+		gchar *selected_filename = g_file_get_path(selected_file);
+
+		g_object_unref(selected_file);
+		if (selected_filename != NULL) {
+			selected = tpad_filename_to_utf8(selected_filename);
+			g_free(selected_filename);
+		}
+		if (selected == NULL) {
+			gerror_warn(_FAILED_SAVE_FILE,
+			            gettext("Only local files can be saved."), TRUE, FALSE);
+			g_free(current);
+			return FALSE;
+		}
 		selected_is_current = selected != NULL &&
 		                      paths_refer_to_same_file(selected, current);
 		/* Selecting the current file must retain the normal external-change
@@ -460,7 +475,6 @@ gboolean save_as(void){
 		 * bypassing that check could overwrite another editor's changes. */
 		if (selected_is_current &&
 		    tpad_control_compare_stored_file_hash_to_current_ondisk_file_hash() != 0) {
-			gtk_widget_hide(dialog);
 			decision = tpad_save_ondisk_change_detected();
 			if (decision == 2)
 				saved = TRUE;
@@ -485,10 +499,11 @@ gboolean save_as(void){
 			set_title();
 			set_language();
 			tpad_control_store_hash_of_current_file_set();
+			remember_recent_file(selected);
+			tpad_ui_refresh_recent_menu();
 			saved = TRUE;
 		}
 	}
-	gtk_widget_destroy(GTK_WIDGET(dialog));
 	g_free(selected);
 	g_free(current);
 	return saved;

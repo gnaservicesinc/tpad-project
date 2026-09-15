@@ -60,6 +60,8 @@ gchar *get_currentfile_basename(void);
 gchar *get_currentfile_dirname(void);
 size_t tpad_get_file_size(char* filepath);
 gchar* getcRpath(void);
+gchar *tpad_filename_to_utf8(const gchar *path);
+gchar *tpad_filename_from_utf8(const gchar *path);
 gchar* clean_path(gchar *path);
 gchar* link_resolve(gchar* file);
 gint get_file_type( gchar *file);
