@@ -48,12 +48,12 @@ When the GTK 4 stack is unavailable, configure falls back to GTK 3. Install
 `./autogen.sh --gtk3` to select that compatibility frontend explicitly.
 
 The cross-platform frontend uses CMake. Qt is the default on macOS and
-Windows; this explicit form selects a Qt 6.11.1 installation:
+Windows; this explicit form selects a Qt 6.11.2 installation:
 
 ```sh
 cmake -S . -B build-qt \
   -DTPAD_USE_QT=ON \
-  -DTPAD_QT_PATH=/opt/Qt/6.11.1/macos \
+  -DTPAD_QT_PATH=/opt/Qt/6.11.2/macos \
   -DTPAD_QT_STATIC=OFF
 cmake --build build-qt --parallel
 ```

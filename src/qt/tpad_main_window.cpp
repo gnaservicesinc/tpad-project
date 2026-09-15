@@ -588,8 +588,10 @@ void TpadMainWindow::readSettings()
     QFont font = editor_->font();
     const QString serializedFont = settings.value(
         QStringLiteral("editor/font")).toString();
-    if (!serializedFont.isEmpty() && font.fromString(serializedFont))
+    if (!serializedFont.isEmpty() && font.fromString(serializedFont)) {
         editor_->setFont(font);
+        editor_->document()->setDefaultFont(font);
+    }
     editor_->setTabWidth(qBound(1,
         settings.value(QStringLiteral("editor/tabWidth"), 4).toInt(), 16));
 }
@@ -1372,10 +1374,20 @@ void TpadMainWindow::showFrequencyAnalysis()
 void TpadMainWindow::chooseFont()
 {
     bool accepted = false;
+    QFontDialog::FontDialogOptions options;
+#if defined(Q_OS_MACOS)
+    // The Cocoa font panel can accept a selection without returning the
+    // selected font reliably to a modal QFontDialog.  Use Qt's standard
+    // chooser on macOS so accepting the dialog always applies the choice.
+    options |= QFontDialog::DontUseNativeDialog;
+#endif
     const QFont font = QFontDialog::getFont(&accepted, editor_->font(), this,
-                                            tr("Select Editor Font"));
+                                            tr("Select Editor Font"), options);
     if (accepted) {
         editor_->setFont(font);
+        // QPlainTextEdit normally mirrors FontChange into its QTextDocument.
+        // Set it explicitly as the rendered-text contract as well.
+        editor_->document()->setDefaultFont(font);
         QSettings settings;
         settings.setValue(QStringLiteral("editor/font"), font.toString());
         editor_->setTabWidth(qBound(1,

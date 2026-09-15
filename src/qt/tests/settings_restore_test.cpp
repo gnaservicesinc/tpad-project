@@ -7,6 +7,7 @@
 #include <QEvent>
 #include <QFile>
 #include <QFileOpenEvent>
+#include <QFontDialog>
 #include <QFontMetricsF>
 #include <QLineEdit>
 #include <QMainWindow>
@@ -110,6 +111,11 @@ void verifyCase(const QString &documentPath, bool enabled, int tabWidth)
     expect(window.editor_->font().family() == savedFont.family()
                && window.editor_->font().pointSize() == savedFont.pointSize(),
            "saved editor font is applied");
+    expect(window.editor_->document()->defaultFont().family()
+                   == savedFont.family()
+               && window.editor_->document()->defaultFont().pointSize()
+                   == savedFont.pointSize(),
+           "saved editor font is used to render document text");
     const qreal expectedTabDistance =
         QFontMetricsF(window.editor_->font()).horizontalAdvance(QLatin1Char(' '))
         * tabWidth;
@@ -158,6 +164,50 @@ void verifyCase(const QString &documentPath, bool enabled, int tabWidth)
     expect(window.spellAction_->isChecked() == toggledSpelling
                && window.highlighter_->spellCheckingEnabled() == toggledSpelling,
            "runtime spelling toggle keeps action and backend synchronized");
+}
+
+void verifyFontSelection()
+{
+    QSettings settings;
+    settings.clear();
+
+    TpadMainWindow window;
+    window.editor_->setPlainText(QStringLiteral("Font selection preview"));
+    QFont selectedFont = window.editor_->font();
+    selectedFont.setPointSize(qMax(1, selectedFont.pointSize()) + 4);
+    selectedFont.setItalic(!selectedFont.italic());
+
+    bool foundDialog = false;
+    QFont acceptedFont;
+    QTimer::singleShot(0, [&acceptedFont, &foundDialog, &selectedFont] {
+        for (QWidget *widget : QApplication::topLevelWidgets()) {
+            auto *dialog = qobject_cast<QFontDialog *>(widget);
+            if (dialog == nullptr)
+                continue;
+            foundDialog = true;
+#if defined(Q_OS_MACOS)
+            expect(dialog->testOption(QFontDialog::DontUseNativeDialog),
+                   "macOS font selection avoids the unreliable native panel");
+#endif
+            dialog->setCurrentFont(selectedFont);
+            acceptedFont = dialog->currentFont();
+            dialog->accept();
+            return;
+        }
+    });
+
+    window.chooseFont();
+    expect(foundDialog, "editor font dialog is shown");
+    expect(window.editor_->font() == acceptedFont,
+           "selected editor font is applied to the widget");
+    expect(window.editor_->document()->defaultFont() == acceptedFont,
+           "selected editor font is used to render document text");
+
+    QFont savedFont;
+    expect(savedFont.fromString(
+               settings.value(QStringLiteral("editor/font")).toString())
+               && savedFont == acceptedFont,
+           "selected editor font is persisted");
 }
 
 void verifyTypedRecentMaximum()
@@ -380,6 +430,7 @@ int main(int argc, char **argv)
     verifyStaleWindowCannotRevertOpenGuard(true);
     verifyDroppedLocalPaths(documentsRoot.path());
     verifyFindAndReplace();
+    verifyFontSelection();
     verifyFileOpenSaveLifecycle(platformDocument);
 
     if (failures != 0) {
